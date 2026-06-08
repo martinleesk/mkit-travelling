@@ -2,21 +2,26 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🦵 旅行足迹檔案</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang HK', 'Microsoft JhengHei', sans-serif;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             min-height: 100vh;
             color: #fff;
-            padding: 20px;
+            padding: 16px;
+            padding-bottom: 100px;
         }
+
+        /* Container */
         .container {
             max-width: 600px;
             margin: 0 auto;
@@ -25,15 +30,15 @@
         /* Header */
         .header {
             text-align: center;
-            padding: 25px 0;
+            padding: 20px 0;
         }
         .header h1 {
-            font-size: 26px;
+            font-size: 24px;
             margin-bottom: 5px;
         }
         .header .subtitle {
             color: #94a3b8;
-            font-size: 13px;
+            font-size: 12px;
         }
 
         /* Search Bar */
@@ -86,6 +91,7 @@
             color: #94a3b8;
             cursor: pointer;
             transition: all 0.2s;
+            touch-action: manipulation;
         }
         .filter-pill:hover {
             background: rgba(255,255,255,0.12);
@@ -94,6 +100,9 @@
             background: #10b981;
             border-color: #10b981;
             color: #fff;
+        }
+        .filter-pill:active {
+            transform: scale(0.95);
         }
 
         /* Summary Card */
@@ -109,7 +118,7 @@
             display: none;
         }
         .total-amount {
-            font-size: 38px;
+            font-size: 36px;
             font-weight: bold;
             text-align: center;
             color: #10b981;
@@ -146,19 +155,67 @@
             margin-top: 2px;
         }
 
+        /* Charts Section */
+        .charts-section {
+            margin-bottom: 20px;
+        }
+        .chart-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .chart-title {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .chart-container {
+            position: relative;
+            height: 200px;
+            width: 100%;
+        }
+        .chart-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title.hidden {
+            display: none;
+        }
+
         /* Trip Cards */
         .trip-card {
             background: rgba(255,255,255,0.08);
             border-radius: 16px;
-            padding: 18px;
-            margin-bottom: 15px;
+            padding: 16px;
+            margin-bottom: 12px;
             border: 1px solid rgba(255,255,255,0.1);
+            touch-action: manipulation;
+        }
+        .trip-card:active {
+            transform: scale(0.98);
+            transition: transform 0.1s;
         }
         .trip-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
         .trip-date {
             font-size: 12px;
@@ -172,63 +229,56 @@
             border-radius: 12px;
         }
         .trip-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         .trip-expenses {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 6px;
         }
         .expense-tag {
             background: rgba(255,255,255,0.06);
             border-radius: 8px;
-            padding: 6px 10px;
+            padding: 5px 8px;
             font-size: 12px;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
         }
         .expense-tag .amount {
             color: #f87171;
             font-weight: 600;
         }
 
-        /* Section Title */
-        .section-title {
-            font-size: 16px;
-            font-weight: bold;
-            margin: 25px 0 12px;
-            padding-left: 12px;
-            border-left: 4px solid #10b981;
-        }
-        .section-title.hidden {
-            display: none;
-        }
-
-        /* All Expenses */
-        .all-expenses-list {
-            display: none;
-        }
-        .all-expenses-list.show {
-            display: block;
+        /* All Expenses Section */
+        .all-expenses-section {
+            margin-top: 20px;
         }
         .expense-item {
             background: rgba(255,255,255,0.05);
-            border-radius: 10px;
-            padding: 12px 15px;
-            margin-bottom: 8px;
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border: 1px solid rgba(255,255,255,0.05);
         }
         .expense-left {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
         .expense-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 18px;
         }
         .expense-info .name {
@@ -249,67 +299,94 @@
         /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 50px 20px;
+            padding: 40px 20px;
             color: #64748b;
         }
         .empty-state .icon {
             font-size: 48px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
         .empty-state.hidden {
             display: none;
         }
 
-        /* Footer */
-        .footer {
-            text-align: center;
-            padding: 30px 0;
-            color: #475569;
-            font-size: 12px;
+        /* Mobile Optimizations */
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+            .header h1 {
+                font-size: 22px;
+            }
+            .total-amount {
+                font-size: 32px;
+            }
+            .category-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .chart-row {
+                grid-template-columns: 1fr;
+            }
+            .chart-container {
+                height: 180px;
+            }
+            .filter-pills {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 5px;
+            }
+            .filter-pill {
+                flex-shrink: 0;
+            }
+        }
+
+        /* Smooth animations */
+        .trip-card, .expense-item, .chart-card {
+            transition: transform 0.2s, box-shadow 0.2s;
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Header -->
         <div class="header">
             <h1>🦵 旅行足迹檔案</h1>
-            <div class="subtitle">記錄每一段旅程</div>
+            <div class="subtitle">2026年6月7日 · 深圳灣</div>
         </div>
 
-        <!-- Search -->
+        <!-- Search Bar -->
         <div class="search-bar">
             <span class="search-icon">🔍</span>
-            <input type="text" id="searchInput" placeholder="搜尋餐廳、地點..." oninput="applyFilters()">
+            <input type="text" id="searchInput" placeholder="搜尋餐廳、地點...">
         </div>
 
-        <!-- Location Filter -->
+        <!-- Filter Pills -->
         <div class="filter-section">
-            <div class="filter-label">📍 地點</div>
-            <div class="filter-pills">
-                <span class="filter-pill active" data-filter="location" data-value="all" onclick="toggleFilter(this)">全部</span>
-                <span class="filter-pill" data-filter="location" data-value="深圳" onclick="toggleFilter(this)">🇨🇳 深圳</span>
-                <span class="filter-pill" data-filter="location" data-value="香港" onclick="toggleFilter(this)">🇭🇰 香港</span>
-                <span class="filter-pill" data-filter="location" data-value="澳門" onclick="toggleFilter(this)">🇲🇴 澳門</span>
-                <span class="filter-pill" data-filter="location" data-value="台灣" onclick="toggleFilter(this)">🇹🇼 台灣</span>
+            <div class="filter-label">地區</div>
+            <div class="filter-pills" id="locationFilters">
+                <div class="filter-pill active" data-value="all">全部</div>
+                <div class="filter-pill" data-value="深圳">🇨🇳 深圳</div>
+                <div class="filter-pill" data-value="香港">🇭🇰 香港</div>
+                <div class="filter-pill" data-value="澳門">🇲🇴 澳門</div>
+                <div class="filter-pill" data-value="台灣">🇹🇼 台灣</div>
             </div>
         </div>
 
-        <!-- Category Filter -->
         <div class="filter-section">
-            <div class="filter-label">💰 類別</div>
-            <div class="filter-pills">
-                <span class="filter-pill active" data-filter="category" data-value="all" onclick="toggleFilter(this)">全部</span>
-                <span class="filter-pill" data-filter="category" data-value="餐飲" onclick="toggleFilter(this)">🍽️ 餐飲</span>
-                <span class="filter-pill" data-filter="category" data-value="交通" onclick="toggleFilter(this)">🚌 交通</span>
-                <span class="filter-pill" data-filter="category" data-value="休閒" onclick="toggleFilter(this)">💆 休閒</span>
-                <span class="filter-pill" data-filter="category" data-value="購物" onclick="toggleFilter(this)">🛍️ 購物</span>
-                <span class="filter-pill" data-filter="category" data-value="收藏" onclick="toggleFilter(this)">🎴 收藏</span>
+            <div class="filter-label">類別</div>
+            <div class="filter-pills" id="categoryFilters">
+                <div class="filter-pill active" data-value="all">全部</div>
+                <div class="filter-pill" data-value="交通">🚌 交通</div>
+                <div class="filter-pill" data-value="餐飲">🍽️ 餐飲</div>
+                <div class="filter-pill" data-value="休閒">💆 休閒</div>
+                <div class="filter-pill" data-value="購物">🛍️ 購物</div>
             </div>
         </div>
 
         <!-- Summary Card -->
         <div class="summary-card" id="summaryCard">
-            <div class="total-amount" id="totalAmount">HK$0</div>
+            <div class="total-amount" id="totalAmount">HK$0.00</div>
             <div class="total-label">總消費</div>
             <div class="category-grid">
                 <div class="category-item">
@@ -330,84 +407,196 @@
                 <div class="category-item">
                     <div class="icon">🛍️</div>
                     <div class="amount" id="catShopping">$0</div>
-                    <div class="label">其他</div>
+                    <div class="label">購物</div>
                 </div>
             </div>
         </div>
 
-        <!-- Trip List -->
-        <div class="section-title" id="tripSectionTitle">📅 行程列表</div>
-        <div id="tripList"></div>
-
-        <!-- All Expenses -->
-        <div class="section-title" id="expenseSectionTitle">💸 消費記錄</div>
-        <div class="all-expenses-list" id="allExpensesList"></div>
-
-        <!-- Empty State -->
-        <div class="empty-state" id="emptyState">
-            <div class="icon">🔍</div>
-            <div>未找到符合條件嘅記錄</div>
+        <!-- Charts Section -->
+        <div class="charts-section" id="chartsSection">
+            <div class="chart-row">
+                <div class="chart-card">
+                    <div class="chart-title">📊 消費分佈</div>
+                    <div class="chart-container">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">📈 類別比較</div>
+                    <div class="chart-container">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="footer">
-            🦵 旅行足迹檔案<br>Generated by MKiT
+        <!-- Trip Section -->
+        <div id="tripSectionTitle" class="section-title">📍 行程記錄</div>
+        <div id="tripList"></div>
+
+        <!-- All Expenses Section -->
+        <div class="all-expenses-section" id="expenseSectionTitle">
+            <div class="section-title">💸 消費明細</div>
+            <div id="allExpensesList"></div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state hidden" id="emptyState">
+            <div class="icon">🔍</div>
+            <div>找不到相關消費記錄</div>
         </div>
     </div>
 
     <script>
-        // Trip Data - Add new trips here
+        // Trip data
         const trips = [
             {
-                id: "trip_001",
-                name: "深圳灣一日遊",
-                date: "2026年6月7日",
-                location: "深圳",
+                id: 1,
+                name: '深圳灣一日遊',
+                date: '2026年6月7日',
+                location: '深圳',
                 expenses: [
-                    { name: "ZAKC 直通車（去程）", category: "交通", icon: "🚌", amount: 60.00, time: "11:50" },
-                    { name: "深圳通", category: "交通", icon: "🚇", amount: 14.00, time: "14:22 · 16:27 · 17:10 · 21:15" },
-                    { name: "NEED韓國料理（團購）", category: "餐飲", icon: "🍽️", amount: 231.48, time: "14:44" },
-                    { name: "NEED韓國料理（加單）", category: "餐飲", icon: "🍽️", amount: 37.22, time: "15:52" },
-                    { name: "寶可夢卡牌道館", category: "收藏", icon: "🎴", amount: 150.53, time: "16:36" },
-                    { name: "ZAKC 直通車（回程）", category: "交通", icon: "🚌", amount: 60.00, time: "16:49" },
-                    { name: "泰适SPA（團購）×2", category: "休閒", icon: "💆", amount: 786.32, time: "19:35" },
-                    { name: "蔡潤越南粉", category: "餐飲", icon: "🍜", amount: 147.73, time: "20:13" }
+                    { name: 'ZAKC直通車（去程）', amount: 60.00, category: '交通', icon: '🚌', time: '11:50' },
+                    { name: '泰适SPA馆', amount: 231.48, category: '休閒', icon: '💆', time: '14:44' },
+                    { name: 'NEED創意韓國料理', amount: 231.48, category: '餐飲', icon: '🍽️', time: '15:52' },
+                    { name: 'NEED創意韓國料理（加單）', amount: 37.22, category: '餐飲', icon: '🍽️', time: '15:52' },
+                    { name: 'ZAKC直通車（回程）', amount: 60.00, category: '交通', icon: '🚌', time: '16:49' },
+                    { name: '美團餐飲團購', amount: 393.16, category: '餐飲', icon: '🍽️', time: '19:35' },
+                    { name: '美團餐飲團購', amount: 393.16, category: '餐飲', icon: '🍽️', time: '19:35' },
+                    { name: '蔡潤越南粉', amount: 147.73, category: '餐飲', icon: '🍽️', time: '20:13' }
                 ]
             }
-            // Add more trips here:
-            // {
-            //     id: "trip_002",
-            //     name: "澳門美食之旅",
-            //     date: "2026年x月x日",
-            //     location: "澳門",
-            //     expenses: [...]
-            // }
         ];
 
-        // Current filters
+        // Filter state
         let currentFilters = {
-            location: "all",
-            category: "all",
-            search: ""
+            location: 'all',
+            category: 'all',
+            search: ''
         };
 
-        function toggleFilter(element) {
-            const filterType = element.dataset.filter;
-            const value = element.dataset.value;
+        // Chart instances
+        let pieChart = null;
+        let barChart = null;
 
-            // Update active state
-            document.querySelectorAll(`[data-filter="${filterType}"]`).forEach(pill => {
-                pill.classList.remove('active');
+        // Color palette
+        const colors = {
+            transport: '#3b82f6',
+            food: '#f97316',
+            leisure: '#10b981',
+            shopping: '#8b5cf6',
+            other: '#64748b'
+        };
+
+        // Initialize charts
+        function initCharts() {
+            const pieCtx = document.getElementById('pieChart').getContext('2d');
+            const barCtx = document.getElementById('barChart').getContext('2d');
+
+            // Pie Chart
+            pieChart = new Chart(pieCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['交通', '餐飲', '休閒', '購物'],
+                    datasets: [{
+                        data: [0, 0, 0, 0],
+                        backgroundColor: [colors.transport, colors.food, colors.leisure, colors.shopping],
+                        borderWidth: 0,
+                        cutout: '65%'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#94a3b8',
+                                font: { size: 11 },
+                                padding: 10,
+                                usePointStyle: true
+                            }
+                        }
+                    }
+                }
             });
-            element.classList.add('active');
 
-            // Update filter
-            currentFilters[filterType] = value;
-            applyFilters();
+            // Bar Chart
+            barChart = new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['交通', '餐飲', '休閒', '購物'],
+                    datasets: [{
+                        data: [0, 0, 0, 0],
+                        backgroundColor: [colors.transport, colors.food, colors.leisure, colors.shopping],
+                        borderRadius: 6,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#64748b', font: { size: 11 } }
+                        },
+                        y: {
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: '#64748b', font: { size: 10 } }
+                        }
+                    }
+                }
+            });
         }
 
+        // Update charts
+        function updateCharts(totals) {
+            const data = [totals.transport, totals.food, totals.leisure, totals.shopping];
+
+            pieChart.data.datasets[0].data = data;
+            pieChart.update();
+
+            barChart.data.datasets[0].data = data;
+            barChart.update();
+
+            // Show/hide charts section
+            const hasData = data.some(v => v > 0);
+            document.getElementById('chartsSection').style.display = hasData ? 'block' : 'none';
+        }
+
+        // Filter click handlers
+        document.querySelectorAll('.filter-pills').forEach(container => {
+            container.addEventListener('click', (e) => {
+                const pill = e.target.closest('.filter-pill');
+                if (!pill) return;
+
+                // Update active state
+                container.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+
+                // Get filter type and value
+                const filterType = container.id === 'locationFilters' ? 'location' : 'category';
+                const value = pill.dataset.value;
+
+                // Update filter
+                currentFilters[filterType] = value;
+                applyFilters();
+            });
+        });
+
+        // Search input
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            currentFilters.search = e.target.value.toLowerCase();
+            applyFilters();
+        });
+
         function applyFilters() {
-            const searchValue = document.getElementById('searchInput').value.toLowerCase();
-            currentFilters.search = searchValue;
+            const searchValue = currentFilters.search;
 
             // Filter trips and expenses
             let totalTransport = 0, totalFood = 0, totalLeisure = 0, totalOther = 0;
@@ -474,6 +663,14 @@
             document.getElementById('catFood').textContent = `$${totalFood.toFixed(0)}`;
             document.getElementById('catLeisure').textContent = `$${totalLeisure.toFixed(0)}`;
             document.getElementById('catShopping').textContent = `$${totalOther.toFixed(0)}`;
+
+            // Update charts
+            updateCharts({
+                transport: totalTransport,
+                food: totalFood,
+                leisure: totalLeisure,
+                shopping: totalOther
+            });
 
             // Show/hide summary
             if (filteredExpenses.length === 0) {
@@ -543,11 +740,10 @@
             };
 
             if (expenses.length === 0) {
-                container.classList.remove('show');
+                container.innerHTML = '';
                 return;
             }
 
-            container.classList.add('show');
             container.innerHTML = expenses.map(exp => `
                 <div class="expense-item">
                     <div class="expense-left">
@@ -562,8 +758,11 @@
             `).join('');
         }
 
-        // Initial render
-        applyFilters();
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+            applyFilters();
+        });
     </script>
 </body>
 </html>
