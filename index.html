@@ -685,6 +685,296 @@
         .timeline-card .trip-location { background: rgba(16,185,129,0.15); color: var(--accent); font-size: 11px; padding: 3px 8px; border-radius: 8px; }
         .timeline-card .trip-summary { font-size: 12px; color: var(--text-secondary); display: flex; gap: 12px; }
 
+
+        
+        /* ===== DESKTOP LAYOUT ===== */
+        @media (min-width: 1024px) {
+            body {
+                padding: 40px;
+                padding-bottom: 120px;
+            }
+            
+            .container {
+                max-width: 900px;
+                margin: 0 auto;
+            }
+            
+            .header {
+                padding: 30px 0;
+                margin-bottom: 30px;
+            }
+            
+            .header h1 {
+                font-size: 32px;
+            }
+            
+            .header .subtitle {
+                font-size: 14px;
+            }
+            
+            /* Country Grid - larger cards */
+            .country-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 20px;
+            }
+            
+            .country-card {
+                padding: 24px 16px;
+                border-radius: 20px;
+            }
+            
+            .country-card .flag {
+                font-size: 48px;
+                margin-bottom: 10px;
+            }
+            
+            .country-card .name {
+                font-size: 15px;
+            }
+            
+            .country-card .count {
+                font-size: 13px;
+            }
+            
+            /* Quick Stats - larger */
+            .quick-stats {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 24px;
+                margin-bottom: 30px;
+            }
+            
+            .stat-card {
+                padding: 24px;
+                border-radius: 20px;
+            }
+            
+            .stat-icon {
+                font-size: 28px;
+                margin-bottom: 10px;
+            }
+            
+            .stat-value {
+                font-size: 28px;
+            }
+            
+            .stat-label {
+                font-size: 14px;
+                margin-top: 4px;
+            }
+            
+            /* Timeline - more spacious */
+            .timeline {
+                padding-left: 30px;
+            }
+            
+            .timeline::before {
+                left: 8px;
+            }
+            
+            .timeline-item {
+                margin-bottom: 24px;
+                padding-left: 30px;
+            }
+            
+            .timeline-item::before {
+                left: -25px;
+                top: 10px;
+                width: 16px;
+                height: 16px;
+            }
+            
+            .timeline-card {
+                padding: 20px 24px;
+                border-radius: 16px;
+            }
+            
+            .timeline-card .trip-title {
+                font-size: 18px;
+            }
+            
+            .timeline-card .trip-summary {
+                font-size: 14px;
+            }
+            
+            /* Charts - larger */
+            .chart-container {
+                height: 280px;
+            }
+            
+            /* Search bar - larger */
+            .search-bar {
+                padding: 16px 20px;
+                border-radius: 16px;
+            }
+            
+            .search-bar input {
+                font-size: 16px;
+            }
+            
+            /* Quick filters */
+            .quick-filters {
+                gap: 12px;
+                margin-bottom: 20px;
+            }
+            
+            .quick-filter {
+                padding: 10px 18px;
+                font-size: 13px;
+            }
+            
+            /* Filter pills */
+            .filter-pill {
+                padding: 8px 18px;
+                font-size: 14px;
+            }
+            
+            /* Summary card */
+            .summary-card {
+                padding: 28px;
+                border-radius: 24px;
+            }
+            
+            .total-amount {
+                font-size: 48px;
+            }
+            
+            .category-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 16px;
+                margin-top: 20px;
+            }
+            
+            .category-item {
+                padding: 18px 12px;
+                border-radius: 14px;
+            }
+            
+            .category-item .icon {
+                font-size: 28px;
+            }
+            
+            .category-item .amount {
+                font-size: 18px;
+            }
+            
+            .category-item .label {
+                font-size: 13px;
+            }
+            
+            /* Expense items */
+            .expense-item {
+                padding: 18px 20px;
+                margin-bottom: 12px;
+            }
+            
+            .expense-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 22px;
+            }
+            
+            .expense-info .name {
+                font-size: 16px;
+            }
+            
+            .expense-info .trip-name {
+                font-size: 13px;
+            }
+            
+            .expense-amount {
+                font-size: 18px;
+            }
+            
+            /* Map */
+            #map {
+                height: 350px;
+                border-radius: 16px;
+            }
+            
+            /* Trip card */
+            .trip-card {
+                padding: 20px;
+                border-radius: 20px;
+            }
+            
+            .trip-title {
+                font-size: 18px;
+            }
+            
+            /* Section titles */
+            .section-title {
+                font-size: 18px;
+                margin-bottom: 16px;
+            }
+            
+            /* Modal */
+            .modal {
+                max-width: 480px;
+                padding: 32px;
+            }
+            
+            .modal h3 {
+                font-size: 22px;
+            }
+            
+            .modal-input {
+                padding: 16px 20px;
+                font-size: 16px;
+                margin-bottom: 16px;
+            }
+            
+            .modal-btn {
+                padding: 14px;
+                font-size: 15px;
+            }
+        }
+        
+        /* ===== LARGE DESKTOP ===== */
+        @media (min-width: 1440px) {
+            body {
+                padding: 60px;
+            }
+            
+            .container {
+                max-width: 1100px;
+            }
+            
+            .header h1 {
+                font-size: 36px;
+            }
+            
+            .country-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            }
+            
+            .stat-value {
+                font-size: 32px;
+            }
+        }
+
+
+        /* Mobile specific */
+        @media (max-width: 480px) {
+            body { padding: 12px; padding-bottom: 80px; }
+            .header h1 { font-size: 22px; }
+            .total-amount { font-size: 32px; }
+            .category-grid { grid-template-columns: repeat(2, 1fr); }
+            .chart-row { grid-template-columns: 1fr; }
+            .chart-container { height: 180px; }
+            .filter-pills { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; padding-bottom: 5px; }
+            .filter-pill { flex-shrink: 0; }
+            #map { height: 200px; }
+            .country-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+            .country-card { padding: 14px 10px; }
+            .country-card .flag { font-size: 28px; }
+            .country-card .name { font-size: 11px; }
+            .country-card .count { font-size: 10px; }
+            .quick-stats { gap: 10px; }
+            .stat-card { padding: 14px 10px; }
+            .stat-value { font-size: 16px; }
+            .stat-label { font-size: 10px; }
+        }
+
     </style>
 </head>
 <body>
