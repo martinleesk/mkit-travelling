@@ -975,11 +975,108 @@
             .stat-label { font-size: 10px; }
         }
 
+
+        
+        /* ===== SIDEBAR NAVIGATION ===== */
+        .app-layout { display: flex; min-height: 100vh; }
+        
+        .sidebar {
+            position: fixed;
+            left: 0; top: 0; bottom: 0;
+            width: 68px;
+            background: rgba(20, 20, 35, 0.98);
+            backdrop-filter: blur(12px);
+            border-right: 1px solid rgba(255,255,255,0.06);
+            display: flex; flex-direction: column;
+            align-items: center; padding: 16px 0;
+            z-index: 1000;
+        }
+        
+        .sidebar-logo { font-size: 26px; margin-bottom: 24px; }
+        
+        .nav-item {
+            width: 50px; height: 50px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 14px; margin-bottom: 6px;
+            cursor: pointer; transition: all 0.25s;
+            font-size: 22px; color: #6b7280;
+            position: relative;
+        }
+        .nav-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
+        .nav-item.active {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(16,185,129,0.35);
+        }
+        .nav-item .nav-label {
+            position: absolute; left: 62px;
+            background: #1a1a2e; padding: 6px 12px;
+            border-radius: 8px; font-size: 13px;
+            white-space: nowrap; opacity: 0;
+            pointer-events: none; transition: opacity 0.2s;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .nav-item:hover .nav-label { opacity: 1; }
+        
+        .sidebar-spacer { flex: 1; }
+        
+        .theme-btn {
+            width: 50px; height: 50px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 14px; cursor: pointer;
+            transition: all 0.25s; font-size: 22px;
+            color: #6b7280; background: none; border: none;
+        }
+        .theme-btn:hover { background: rgba(255,255,255,0.06); color: #fff; }
+        
+        /* Main content */
+        .main-content {
+            flex: 1;
+            margin-left: 68px;
+            min-height: 100vh;
+        }
+        
+        /* Page sections */
+        .page-section { display: none; }
+        .page-section.active { display: block; }
+        
+        /* Mobile bottom nav */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed; bottom: 0; left: 0; right: 0; top: auto;
+                width: 100%; height: 68px;
+                flex-direction: row; justify-content: space-around;
+                padding: 0 8px; border-right: none;
+                border-top: 1px solid rgba(255,255,255,0.06);
+            }
+            .sidebar-logo, .sidebar-spacer { display: none; }
+            .nav-item { width: 52px; height: 52px; margin-bottom: 0; font-size: 20px; }
+            .nav-item .nav-label { display: none; }
+            .main-content { margin-left: 0; margin-bottom: 68px; padding: 12px; }
+        }
+        
+        /* Desktop sidebar */
+        @media (min-width: 1024px) {
+            .sidebar { width: 76px; }
+            .main-content { margin-left: 76px; padding: 24px 32px; }
+            .nav-item { width: 54px; height: 54px; font-size: 24px; }
+        }
+        
+        @media (min-width: 1440px) {
+            .sidebar { width: 84px; }
+            .main-content { margin-left: 84px; padding: 30px 50px; }
+            .nav-item { width: 58px; height: 58px; font-size: 26px; }
+        }
+
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
+        
+                <!-- HOME SECTION -->
+                <section class="page-section active" id="homeSection">
+                    <div class="container">
+
         <div class="header">
             <div class="header-top">
                 <div>
@@ -1141,7 +1238,14 @@
             </div>
         </div>
 
-        <!-- Map Section -->
+        
+                    </div><!-- end container -->
+                </section><!-- end homeSection -->
+                
+                <!-- MAP SECTION -->
+                <section class="page-section" id="mapSection">
+                    <div class="container">
+
         <div class="map-section">
             <div class="map-card">
                 <div class="map-header">
@@ -1154,7 +1258,14 @@
             </div>
         </div>
 
-        <!-- Charts Section -->
+        
+                    </div><!-- end container -->
+                </section><!-- end mapSection -->
+                
+                <!-- STATS SECTION -->
+                <section class="page-section" id="statsSection">
+                    <div class="container">
+
         <div class="charts-section" id="chartsSection">
             <div class="chart-row">
                 <div class="chart-card">
@@ -1172,17 +1283,69 @@
             </div>
         </div>
 
-        <!-- Trip Section -->
+        
+                    </div><!-- end container -->
+                </section><!-- end statsSection -->
+                
+                <!-- TRIPS SECTION -->
+                <section class="page-section" id="tripsSection">
+                    <div class="container">
+
         <div id="tripSectionTitle" class="section-title">📍 行程記錄</div>
         <div id="tripList"></div>
 
-        <!-- All Expenses Section -->
+        
+                    </div><!-- end container -->
+                </section><!-- end tripsSection -->
+                
+                <!-- SEARCH SECTION -->
+                <section class="page-section" id="searchSection">
+                    <div class="container">
+
         <div class="all-expenses-section" id="expenseSectionTitle">
             <div class="section-title">💸 消費明細</div>
             <div id="allExpensesList"></div>
         </div>
 
-        <!-- Empty State -->
+        
+                    
+                </section><!-- end tripsSection -->
+                
+                <!-- SEARCH SECTION -->
+                <section class="page-section" id="searchSection">
+                    <div class="container">
+
+                    </div><!-- end container -->
+                </section><!-- end searchSection -->
+                
+                <!-- SETTINGS SECTION -->
+                <section class="page-section" id="settingsSection">
+                    <div class="container">
+                        <div class="settings-content">
+                            <h2 style="margin-bottom:20px;">⚙️ 設定</h2>
+                            <div style="background:rgba(255,255,255,0.08);border-radius:16px;padding:20px;margin-bottom:16px;">
+                                <h3 style="font-size:15px;margin-bottom:12px;">🎨 外觀</h3>
+                                <div style="display:flex;align-items:center;justify-content:space-between;">
+                                    <span>深色模式</span>
+                                    <button onclick="toggleTheme()" style="background:#10b981;color:#fff;border:none;padding:8px 16px;border-radius:10px;cursor:pointer;">切換</button>
+                                </div>
+                            </div>
+                            <div style="background:rgba(255,255,255,0.08);border-radius:16px;padding:20px;margin-bottom:16px;">
+                                <h3 style="font-size:15px;margin-bottom:12px;">💾 數據</h3>
+                                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                                    <button onclick="exportData()" style="background:rgba(255,255,255,0.1);color:#fff;border:none;padding:10px 16px;border-radius:10px;cursor:pointer;">📤 匯出數據</button>
+                                    <button onclick="alert('請聯繫我們導入數據')" style="background:rgba(255,255,255,0.1);color:#fff;border:none;padding:10px 16px;border-radius:10px;cursor:pointer;">📥 匯入數據</button>
+                                </div>
+                            </div>
+                            <div style="background:rgba(255,255,255,0.08);border-radius:16px;padding:20px;">
+                                <h3 style="font-size:15px;margin-bottom:12px;">ℹ️ 關於</h3>
+                                <p style="color:#6b7280;font-size:13px;">旅行足跡檔案 v1.0</p>
+                                <p style="color:#6b7280;font-size:12px;margin-top:6px;">記錄你的每一次旅程 ✈️</p>
+                            </div>
+                        </div>
+                    </div>
+                </section><!-- end settingsSection -->
+
         <div class="empty-state hidden" id="emptyState">
             <div class="icon">🔍</div>
             <div>找不到相關消費記錄</div>
@@ -1930,6 +2093,53 @@
             document.getElementById('totalPlaces').textContent = totalPlaces;
         }
 
+        
+        
+        // ===== Page Navigation =====
+        function navigateToPage(pageName) {
+            // Update nav items
+            document.querySelectorAll(".nav-item").forEach(n => {
+                n.classList.toggle("active", n.dataset.page === pageName);
+            });
+            
+            // Show/hide page sections
+            document.querySelectorAll(".page-section").forEach(s => {
+                s.classList.toggle("active", s.id === pageName + "Section");
+            });
+            
+            // Special handling
+            if (pageName === "map" && typeof map !== "undefined" && map) {
+                setTimeout(() => map.invalidateSize(), 150);
+            }
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+        
+        // Nav click handlers
+        document.querySelectorAll(".nav-item[data-page]").forEach(nav => {
+            nav.addEventListener("click", () => {
+                navigateToPage(nav.dataset.page);
+            });
+        });
+        
+        // Sidebar theme button
+        document.getElementById("sidebarThemeBtn").addEventListener("click", toggleTheme);
+
+        
+        function exportData() {
+            const data = {
+                trips: trips,
+                exportedAt: new Date().toISOString()
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "travel-data-" + new Date().toISOString().split("T")[0] + ".json";
+            a.click();
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             renderTripTabs();
@@ -1941,5 +2151,7 @@
             applyFilters();
         });
     </script>
-</body>
+            </main>
+        </div>
+    </body>
 </html>
