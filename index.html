@@ -16,11 +16,12 @@
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang HK', 'Microsoft JhengHei', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            background: var(--bg-primary);
             min-height: 100vh;
-            color: #fff;
+            color: var(--text-primary);
             padding: 16px;
             padding-bottom: 100px;
+            transition: background 0.3s, color 0.3s;
         }
 
         /* Container */
@@ -637,27 +638,143 @@
             padding: 8px; background: rgba(255,255,255,0.03); border-radius: 8px;
         }
 
+
+        /* Theme Toggle */
+        .header-top { display: flex; justify-content: space-between; align-items: center; }
+        .theme-toggle {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 12px; width: 44px; height: 44px; font-size: 20px;
+            cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .theme-toggle:hover { background: var(--bg-card-hover); transform: scale(1.05); }
+        
+        /* Country Section */
+        .country-section { margin-bottom: 20px; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .country-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px; }
+        .country-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 16px; padding: 16px 12px; text-align: center;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .country-card:hover { background: var(--bg-card-hover); transform: translateY(-2px); box-shadow: 0 4px 12px var(--shadow); }
+        .country-card .flag { font-size: 32px; margin-bottom: 6px; }
+        .country-card .name { font-size: 12px; color: var(--text-secondary); }
+        .country-card .count { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+        
+        /* Quick Stats */
+        .quick-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+        .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; text-align: center; }
+        .stat-icon { font-size: 20px; margin-bottom: 6px; }
+        .stat-value { font-size: 18px; font-weight: bold; color: var(--accent); }
+        .stat-label { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+        
+        /* Timeline */
+        .timeline-section { margin-bottom: 20px; }
+        .year-filter { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; color: var(--text-primary); font-size: 12px; }
+        .timeline { position: relative; padding-left: 20px; }
+        .timeline::before { content: ''; position: absolute; left: 6px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+        .timeline-item { position: relative; margin-bottom: 16px; padding-left: 20px; }
+        .timeline-item::before { content: ''; position: absolute; left: -17px; top: 8px; width: 12px; height: 12px; background: var(--accent); border-radius: 50%; border: 2px solid var(--bg-primary); }
+        .timeline-date { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+        .timeline-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; cursor: pointer; transition: all 0.2s; }
+        .timeline-card:hover { background: var(--bg-card-hover); transform: translateX(4px); }
+        .timeline-card .trip-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .timeline-card .trip-title { font-size: 15px; font-weight: bold; }
+        .timeline-card .trip-location { background: rgba(16,185,129,0.15); color: var(--accent); font-size: 11px; padding: 3px 8px; border-radius: 8px; }
+        .timeline-card .trip-summary { font-size: 12px; color: var(--text-secondary); display: flex; gap: 12px; }
+
     </style>
 </head>
 <body>
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>🦵 旅行足迹檔案</h1>
-            <div class="subtitle" id="tripCount">1個旅程 · 總消費 HK$0</div>
+            <div class="header-top">
+                <div>
+                    <h1>🌍 旅行足迹</h1>
+                    <div class="subtitle" id="tripCount">1個旅程 · 總消費 HK$0</div>
+                </div>
+                <button class="theme-toggle" id="themeToggle" title="切換主題">
+                    <span id="themeIcon">🌙</span>
+                </button>
+            </div>
         </div>
 
-        <!-- Trip Selector -->
-        <div class="trip-selector">
+        <!-- Country Quick Access -->
+        <div class="country-section">
+            <div class="section-header">
+                <div class="section-title">🏷️ 我的旅程</div>
+                <button class="add-trip-btn" id="addTripBtn">
+                    <span>＋</span> 新旅程
+                </button>
+            </div>
+            <div class="country-grid" id="countryGrid"></div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="quick-stats" id="quickStats">
+            <div class="stat-card">
+                <div class="stat-icon">✈️</div>
+                <div class="stat-value" id="totalTrips">1</div>
+                <div class="stat-label">旅程</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value" id="totalSpent">HK$0</div>
+                <div class="stat-label">總消費</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📍</div>
+                <div class="stat-value" id="totalPlaces">0</div>
+                <div class="stat-label">地點</div>
+            </div>
+        </div>
+
+        <!-- Timeline / Recent Trips -->
+        <div class="timeline-section" id="timelineSection">
+            <div class="section-header">
+                <div class="section-title">📅 時間線</div>
+                <select class="year-filter" id="yearFilter">
+                    <option value="all">全部年份</option>
+                </select>
+            </div>
+            <div class="timeline" id="timeline"></div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-wrapper">
+            <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="搜尋旅程、消費、地點...">
+                <button class="search-clear" id="searchClear">×</button>
+            </div>
+            <div class="search-suggestions" id="searchSuggestions"></div>
+        </div>
+        
+        <!-- Quick Filters -->
+        <div class="quick-filters" id="quickFilters">
+            <div class="quick-filter" data-filter="today">📅 今日</div>
+            <div class="quick-filter" data-filter="week">🗓️ 本週</div>
+            <div class="quick-filter" data-filter="month">📆 本月</div>
+            <div class="quick-filter" data-filter="high">💰 高消費</div>
+            <div class="quick-filter" data-filter="food">🍽️ 美食</div>
+            <div class="quick-filter" data-filter="transport">🚌 交通</div>
+        </div>
+        
+        <!-- Search Stats -->
+        <div class="search-stats" id="searchStats"></div>
+
+        <!-- Trip Selector (hidden, using new homepage) -->
+        <div class="trip-selector" style="display:none;">
             <div class="trip-selector-header">
                 <div class="trip-selector-title">📍 切換旅程</div>
                 <button class="add-trip-btn" id="addTripBtn">
                     <span>＋</span> 新旅程
                 </button>
             </div>
-            <div class="trip-tabs" id="tripTabs">
-                <!-- Trip tabs will be rendered here -->
-            </div>
+            <div class="trip-tabs" id="tripTabs"></div>
         </div>
 
         <!-- Search Bar -->
@@ -802,13 +919,14 @@
     </div>
 
     <script>
-        // Default trip data
+        // Default trip data with country tags
         const defaultTrips = [
             {
                 id: 1,
                 name: '深圳灣一日遊',
                 date: '2026-06-07',
                 location: '深圳',
+                country: '中國',
                 center: [22.4709, 113.9295],
                 places: [
                     { name: '深圳灣口岸', lat: 22.4709, lng: 113.9295, type: 'transport', icon: '🚌', time: '11:50' },
@@ -1437,9 +1555,97 @@
             return results;
         }
 
+        
+        // Theme toggle
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            document.getElementById('themeIcon').textContent = theme === 'dark' ? '🌙' : '☀️';
+        }
+        
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme') || 'dark';
+            setTheme(current === 'dark' ? 'light' : 'dark');
+        });
+        
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        setTheme(savedTheme);
+        
+        // Country flags
+        const countryFlags = {
+            '日本': '🇯🇵', '東京': '🇯🇵', '大阪': '🇯🇵', '京都': '🇯🇵',
+            '澳洲': '🇦🇺', '悉尼': '🇦🇺', '墨爾本': '🇦🇺',
+            '中國': '🇨🇳', '上海': '🇨🇳', '深圳': '🇨🇳', '北京': '🇨🇳',
+            '台灣': '🇹🇼', '台北': '🇹🇼', '高雄': '🇹🇼',
+            '香港': '🇭🇰', '澳門': '🇲🇴',
+            '泰國': '🇹🇭', '曼谷': '🇹🇭',
+            '韓國': '🇰🇷', '首爾': '🇰🇷',
+            '新加坡': '🇸🇬',
+            '美國': '🇺🇸', '歐洲': '🇪🇺', '英國': '🇬🇧', '法國': '🇫🇷'
+        };
+        
+        function getCountryFlag(country) {
+            return countryFlags[country] || '🌍';
+        }
+        
+        // Render country grid
+        function renderCountryGrid() {
+            const container = document.getElementById('countryGrid');
+            const countryCount = {};
+            trips.forEach(trip => {
+                const country = trip.country || '其他';
+                countryCount[country] = (countryCount[country] || 0) + 1;
+            });
+            let html = '';
+            for (const [country, count] of Object.entries(countryCount)) {
+                html += '<div class="country-card" data-country="' + country + '">';
+                html += '<div class="flag">' + getCountryFlag(country) + '</div>';
+                html += '<div class="name">' + country + '</div>';
+                html += '<div class="count">' + count + '個旅程</div>';
+                html += '</div>';
+            }
+            container.innerHTML = html;
+        }
+        
+        // Render timeline
+        function renderTimeline() {
+            const container = document.getElementById('timeline');
+            const sortedTrips = [...trips].sort((a, b) => new Date(b.date) - new Date(a.date));
+            container.innerHTML = sortedTrips.map(trip => {
+                const total = trip.expenses.reduce((s, e) => s + e.amount, 0);
+                return '<div class="timeline-item" data-trip-id="' + trip.id + '">' +
+                    '<div class="timeline-date">' + trip.date + '</div>' +
+                    '<div class="timeline-card">' +
+                        '<div class="trip-header">' +
+                            '<div class="trip-title">' + getCountryFlag(trip.country || trip.location) + ' ' + trip.name + '</div>' +
+                            '<div class="trip-location">' + (trip.location || trip.country) + '</div>' +
+                        '</div>' +
+                        '<div class="trip-summary">' +
+                            '<span>💰 HK$' + Math.round(total) + '</span>' +
+                            '<span>📍 ' + trip.places.length + '個地點</span>' +
+                            '<span>💸 ' + trip.expenses.length + '項消費</span>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
+        }
+        
+        // Update quick stats
+        function updateQuickStats() {
+            document.getElementById('totalTrips').textContent = trips.length;
+            const totalSpent = trips.reduce((sum, t) => sum + t.expenses.reduce((s, e) => s + e.amount, 0), 0);
+            document.getElementById('totalSpent').textContent = 'HK$' + Math.round(totalSpent);
+            const totalPlaces = trips.reduce((sum, t) => sum + t.places.length, 0);
+            document.getElementById('totalPlaces').textContent = totalPlaces;
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             renderTripTabs();
+            renderCountryGrid();
+            renderTimeline();
+            updateQuickStats();
             initCharts();
             initMap();
             applyFilters();
