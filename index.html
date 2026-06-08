@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🦵 旅行足迹檔案</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         * {
             margin: 0;
@@ -185,6 +187,70 @@
             gap: 15px;
         }
 
+        /* Map Section */
+        .map-section {
+            margin-bottom: 20px;
+        }
+        .map-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            overflow: hidden;
+        }
+        .map-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .map-title {
+            font-size: 14px;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .map-toggle {
+            background: rgba(16,185,129,0.2);
+            color: #10b981;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .map-toggle:hover {
+            background: rgba(16,185,129,0.3);
+        }
+        #map {
+            height: 250px;
+            border-radius: 12px;
+            z-index: 1;
+        }
+        .leaflet-popup-content-wrapper {
+            background: #1a1a2e;
+            color: #fff;
+            border-radius: 12px;
+        }
+        .leaflet-popup-tip {
+            background: #1a1a2e;
+        }
+        .popup-content {
+            padding: 5px;
+        }
+        .popup-content h4 {
+            font-size: 14px;
+            margin-bottom: 4px;
+            color: #10b981;
+        }
+        .popup-content p {
+            font-size: 12px;
+            color: #94a3b8;
+            margin: 2px 0;
+        }
+
         /* Section Title */
         .section-title {
             font-size: 16px;
@@ -206,6 +272,7 @@
             margin-bottom: 12px;
             border: 1px solid rgba(255,255,255,0.1);
             touch-action: manipulation;
+            cursor: pointer;
         }
         .trip-card:active {
             transform: scale(0.98);
@@ -339,11 +406,31 @@
             .filter-pill {
                 flex-shrink: 0;
             }
+            #map {
+                height: 200px;
+            }
         }
 
         /* Smooth animations */
-        .trip-card, .expense-item, .chart-card {
+        .trip-card, .expense-item, .chart-card, .map-card {
             transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        /* Leaflet dark theme override */
+        .leaflet-control-zoom a {
+            background: #1a1a2e !important;
+            color: #fff !important;
+            border-color: rgba(255,255,255,0.1) !important;
+        }
+        .leaflet-control-zoom a:hover {
+            background: #16213e !important;
+        }
+        .leaflet-control-attribution {
+            background: rgba(26,26,46,0.8) !important;
+            color: #64748b !important;
+        }
+        .leaflet-control-attribution a {
+            color: #10b981 !important;
         }
     </style>
 </head>
@@ -412,6 +499,19 @@
             </div>
         </div>
 
+        <!-- Map Section -->
+        <div class="map-section">
+            <div class="map-card">
+                <div class="map-header">
+                    <div class="map-title">🗺️ 足迹地圖</div>
+                    <button class="map-toggle" id="mapToggle">展開地圖</button>
+                </div>
+                <div id="mapWrapper" style="display:none;">
+                    <div id="map"></div>
+                </div>
+            </div>
+        </div>
+
         <!-- Charts Section -->
         <div class="charts-section" id="chartsSection">
             <div class="chart-row">
@@ -448,13 +548,20 @@
     </div>
 
     <script>
-        // Trip data
+        // Trip data with coordinates
         const trips = [
             {
                 id: 1,
                 name: '深圳灣一日遊',
                 date: '2026年6月7日',
                 location: '深圳',
+                center: [22.4709, 113.9295],
+                places: [
+                    { name: '深圳灣口岸', lat: 22.4709, lng: 113.9295, type: 'transport', icon: '🚌', time: '11:50' },
+                    { name: '泰适SPA馆', lat: 22.4938, lng: 113.9304, type: 'leisure', icon: '💆', time: '14:44' },
+                    { name: 'NEED創意韓國料理', lat: 22.4855, lng: 113.9412, type: 'food', icon: '🍽️', time: '15:52' },
+                    { name: '蔡潤越南粉', lat: 22.5012, lng: 113.9283, type: 'food', icon: '🍽️', time: '20:13' }
+                ],
                 expenses: [
                     { name: 'ZAKC直通車（去程）', amount: 60.00, category: '交通', icon: '🚌', time: '11:50' },
                     { name: '泰适SPA馆', amount: 231.48, category: '休閒', icon: '💆', time: '14:44' },
@@ -478,6 +585,8 @@
         // Chart instances
         let pieChart = null;
         let barChart = null;
+        let map = null;
+        let markers = [];
 
         // Color palette
         const colors = {
@@ -487,6 +596,103 @@
             shopping: '#8b5cf6',
             other: '#64748b'
         };
+
+        // Type colors for map markers
+        const typeColors = {
+            transport: '#3b82f6',
+            food: '#f97316',
+            leisure: '#10b981',
+            shopping: '#8b5cf6'
+        };
+
+        // Map toggle
+        document.getElementById('mapToggle').addEventListener('click', function() {
+            const wrapper = document.getElementById('mapWrapper');
+            const btn = document.getElementById('mapToggle');
+            if (wrapper.style.display === 'none') {
+                wrapper.style.display = 'block';
+                btn.textContent = '收合地圖';
+                if (map) {
+                    setTimeout(() => map.invalidateSize(), 100);
+                }
+            } else {
+                wrapper.style.display = 'none';
+                btn.textContent = '展開地圖';
+            }
+        });
+
+        // Initialize map
+        function initMap() {
+            map = L.map('map').setView([22.4900, 113.9300], 13);
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
+                maxZoom: 19
+            }).addTo(map);
+
+            // Add markers for current trip
+            updateMapMarkers();
+        }
+
+        // Create custom marker icon
+        function createMarkerIcon(type, icon) {
+            const color = typeColors[type] || colors.other;
+            return L.divIcon({
+                className: 'custom-marker',
+                html: `<div style="
+                    background: ${color};
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 50% 50% 50% 0;
+                    transform: rotate(-45deg);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                    border: 2px solid rgba(255,255,255,0.3);
+                ">
+                    <span style="transform: rotate(45deg); font-size: 14px;">${icon}</span>
+                </div>`,
+                iconSize: [32, 32],
+                iconAnchor: [16, 32],
+                popupAnchor: [0, -32]
+            });
+        }
+
+        // Update map markers
+        function updateMapMarkers() {
+            if (!map) return;
+
+            // Clear existing markers
+            markers.forEach(m => map.removeLayer(m));
+            markers = [];
+
+            // Add markers for all places
+            trips.forEach(trip => {
+                trip.places.forEach(place => {
+                    const marker = L.marker([place.lat, place.lng], {
+                        icon: createMarkerIcon(place.type, place.icon)
+                    });
+
+                    marker.bindPopup(`
+                        <div class="popup-content">
+                            <h4>${place.name}</h4>
+                            <p>${place.icon} ${place.type === 'food' ? '餐飲' : place.type === 'leisure' ? '休閒' : '交通'}</p>
+                            <p>🕐 ${place.time}</p>
+                        </div>
+                    `);
+
+                    marker.addTo(map);
+                    markers.push(marker);
+                });
+            });
+
+            // Fit bounds if markers exist
+            if (markers.length > 0) {
+                const group = L.featureGroup(markers);
+                map.fitBounds(group.getBounds().pad(0.2));
+            }
+        }
 
         // Initialize charts
         function initCharts() {
@@ -761,6 +967,7 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             initCharts();
+            initMap();
             applyFilters();
         });
     </script>
