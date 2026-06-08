@@ -43,6 +43,80 @@
             font-size: 12px;
         }
 
+        /* Trip Selector */
+        .trip-selector {
+            background: rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .trip-selector-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .trip-selector-title {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+        .add-trip-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .add-trip-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        .trip-tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .trip-tab {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 10px 16px;
+            font-size: 13px;
+            color: #94a3b8;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .trip-tab:hover {
+            background: rgba(255,255,255,0.12);
+        }
+        .trip-tab.active {
+            background: #10b981;
+            border-color: #10b981;
+            color: #fff;
+        }
+        .trip-tab .trip-delete {
+            margin-left: 5px;
+            opacity: 0.6;
+            font-size: 11px;
+        }
+        .trip-tab .trip-delete:hover {
+            opacity: 1;
+        }
+
         /* Search Bar */
         .search-bar {
             background: rgba(255,255,255,0.08);
@@ -377,6 +451,92 @@
             display: none;
         }
 
+        /* Add Trip Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        .modal-overlay.hidden {
+            display: none;
+        }
+        .modal {
+            background: #1a1a2e;
+            border-radius: 20px;
+            padding: 24px;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .modal h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .modal-input {
+            width: 100%;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: #fff;
+            font-size: 15px;
+            margin-bottom: 12px;
+            outline: none;
+        }
+        .modal-input:focus {
+            border-color: #10b981;
+        }
+        .modal-select {
+            width: 100%;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: #fff;
+            font-size: 15px;
+            margin-bottom: 12px;
+            outline: none;
+        }
+        .modal-select option {
+            background: #1a1a2e;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+        .modal-btn.cancel {
+            background: rgba(255,255,255,0.08);
+            color: #94a3b8;
+        }
+        .modal-btn.confirm {
+            background: #10b981;
+            color: #fff;
+        }
+        .modal-btn:hover {
+            transform: scale(1.02);
+        }
+
         /* Mobile Optimizations */
         @media (max-width: 480px) {
             body {
@@ -412,8 +572,8 @@
         }
 
         /* Smooth animations */
-        .trip-card, .expense-item, .chart-card, .map-card {
-            transition: transform 0.2s, box-shadow 0.2s;
+        .trip-card, .expense-item, .chart-card, .map-card, .trip-tab {
+            transition: all 0.2s;
         }
 
         /* Leaflet dark theme override */
@@ -439,7 +599,20 @@
         <!-- Header -->
         <div class="header">
             <h1>🦵 旅行足迹檔案</h1>
-            <div class="subtitle">2026年6月7日 · 深圳灣</div>
+            <div class="subtitle" id="tripCount">1個旅程 · 總消費 HK$0</div>
+        </div>
+
+        <!-- Trip Selector -->
+        <div class="trip-selector">
+            <div class="trip-selector-header">
+                <div class="trip-selector-title">📍 切換旅程</div>
+                <button class="add-trip-btn" id="addTripBtn">
+                    <span>＋</span> 新旅程
+                </button>
+            </div>
+            <div class="trip-tabs" id="tripTabs">
+                <!-- Trip tabs will be rendered here -->
+            </div>
         </div>
 
         <!-- Search Bar -->
@@ -547,13 +720,32 @@
         </div>
     </div>
 
+    <!-- Add Trip Modal -->
+    <div class="modal-overlay hidden" id="addTripModal">
+        <div class="modal">
+            <h3>🧳 新旅程</h3>
+            <input type="text" class="modal-input" id="newTripName" placeholder="旅程名稱 (例如：澳門美食之旅)">
+            <input type="date" class="modal-input" id="newTripDate">
+            <select class="modal-select" id="newTripLocation">
+                <option value="深圳">🇨🇳 深圳</option>
+                <option value="香港">🇭🇰 香港</option>
+                <option value="澳門">🇲🇴 澳門</option>
+                <option value="台灣">🇹🇼 台灣</option>
+            </select>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" id="cancelTripBtn">取消</button>
+                <button class="modal-btn confirm" id="confirmTripBtn">創建</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Trip data with coordinates
-        const trips = [
+        // Default trip data
+        const defaultTrips = [
             {
                 id: 1,
                 name: '深圳灣一日遊',
-                date: '2026年6月7日',
+                date: '2026-06-07',
                 location: '深圳',
                 center: [22.4709, 113.9295],
                 places: [
@@ -574,6 +766,28 @@
                 ]
             }
         ];
+
+        // Load trips from localStorage or use default
+        let trips = JSON.parse(localStorage.getItem('travelTrips')) || JSON.parse(JSON.stringify(defaultTrips));
+        let currentTripId = parseInt(localStorage.getItem('currentTripId')) || trips[0].id;
+
+        // Save trips to localStorage
+        function saveTrips() {
+            localStorage.setItem('travelTrips', JSON.stringify(trips));
+            localStorage.setItem('currentTripId', currentTripId);
+        }
+
+        // Get current trip
+        function getCurrentTrip() {
+            return trips.find(t => t.id === currentTripId) || trips[0];
+        }
+
+        // Get total across all trips
+        function getTotalAcrossAllTrips() {
+            return trips.reduce((sum, t) => {
+                return sum + t.expenses.reduce((s, e) => s + e.amount, 0);
+            }, 0);
+        }
 
         // Filter state
         let currentFilters = {
@@ -605,6 +819,103 @@
             shopping: '#8b5cf6'
         };
 
+        // Location emoji map
+        const locationEmoji = {
+            '深圳': '🇨🇳',
+            '香港': '🇭🇰',
+            '澳門': '🇲🇴',
+            '台灣': '🇹🇼'
+        };
+
+        // Render trip tabs
+        function renderTripTabs() {
+            const container = document.getElementById('tripTabs');
+            container.innerHTML = trips.map(trip => `
+                <div class="trip-tab ${trip.id === currentTripId ? 'active' : ''}" data-id="${trip.id}">
+                    <span>${locationEmoji[trip.location] || '📍'}</span>
+                    <span>${trip.name}</span>
+                    <span class="trip-delete" data-id="${trip.id}">×</span>
+                </div>
+            `).join('');
+
+            // Update header subtitle
+            const total = getTotalAcrossAllTrips();
+            document.getElementById('tripCount').textContent = `${trips.length}個旅程 · 總消費 HK$${total.toFixed(0)}`;
+        }
+
+        // Trip tab click
+        document.getElementById('tripTabs').addEventListener('click', (e) => {
+            const tab = e.target.closest('.trip-tab');
+            const deleteBtn = e.target.closest('.trip-delete');
+
+            if (deleteBtn) {
+                e.stopPropagation();
+                const id = parseInt(deleteBtn.dataset.id);
+                if (trips.length > 1) {
+                    trips = trips.filter(t => t.id !== id);
+                    if (currentTripId === id) {
+                        currentTripId = trips[0].id;
+                    }
+                    saveTrips();
+                    renderTripTabs();
+                    applyFilters();
+                    updateMapMarkers();
+                } else {
+                    alert('起碼要有一個旅程！');
+                }
+                return;
+            }
+
+            if (tab) {
+                currentTripId = parseInt(tab.dataset.id);
+                saveTrips();
+                renderTripTabs();
+                applyFilters();
+                updateMapMarkers();
+            }
+        });
+
+        // Add trip modal
+        document.getElementById('addTripBtn').addEventListener('click', () => {
+            document.getElementById('addTripModal').classList.remove('hidden');
+            document.getElementById('newTripName').value = '';
+            document.getElementById('newTripDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('newTripName').focus();
+        });
+
+        document.getElementById('cancelTripBtn').addEventListener('click', () => {
+            document.getElementById('addTripModal').classList.add('hidden');
+        });
+
+        document.getElementById('confirmTripBtn').addEventListener('click', () => {
+            const name = document.getElementById('newTripName').value.trim();
+            const date = document.getElementById('newTripDate').value;
+            const location = document.getElementById('newTripLocation').value;
+
+            if (!name) {
+                alert('請輸入旅程名稱');
+                return;
+            }
+
+            const newTrip = {
+                id: Date.now(),
+                name: name,
+                date: date,
+                location: location,
+                center: [22.5, 114.0],
+                places: [],
+                expenses: []
+            };
+
+            trips.push(newTrip);
+            currentTripId = newTrip.id;
+            saveTrips();
+            renderTripTabs();
+            applyFilters();
+            updateMapMarkers();
+            document.getElementById('addTripModal').classList.add('hidden');
+        });
+
         // Map toggle
         document.getElementById('mapToggle').addEventListener('click', function() {
             const wrapper = document.getElementById('mapWrapper');
@@ -630,7 +941,6 @@
                 maxZoom: 19
             }).addTo(map);
 
-            // Add markers for current trip
             updateMapMarkers();
         }
 
@@ -663,31 +973,29 @@
         function updateMapMarkers() {
             if (!map) return;
 
-            // Clear existing markers
             markers.forEach(m => map.removeLayer(m));
             markers = [];
 
-            // Add markers for all places
-            trips.forEach(trip => {
-                trip.places.forEach(place => {
-                    const marker = L.marker([place.lat, place.lng], {
-                        icon: createMarkerIcon(place.type, place.icon)
-                    });
+            const currentTrip = getCurrentTrip();
+            const typeLabels = { transport: '交通', food: '餐飲', leisure: '休閒', shopping: '購物' };
 
-                    marker.bindPopup(`
-                        <div class="popup-content">
-                            <h4>${place.name}</h4>
-                            <p>${place.icon} ${place.type === 'food' ? '餐飲' : place.type === 'leisure' ? '休閒' : '交通'}</p>
-                            <p>🕐 ${place.time}</p>
-                        </div>
-                    `);
-
-                    marker.addTo(map);
-                    markers.push(marker);
+            currentTrip.places.forEach(place => {
+                const marker = L.marker([place.lat, place.lng], {
+                    icon: createMarkerIcon(place.type, place.icon)
                 });
+
+                marker.bindPopup(`
+                    <div class="popup-content">
+                        <h4>${place.name}</h4>
+                        <p>${place.icon} ${typeLabels[place.type] || '其他'}</p>
+                        <p>🕐 ${place.time}</p>
+                    </div>
+                `);
+
+                marker.addTo(map);
+                markers.push(marker);
             });
 
-            // Fit bounds if markers exist
             if (markers.length > 0) {
                 const group = L.featureGroup(markers);
                 map.fitBounds(group.getBounds().pad(0.2));
@@ -699,7 +1007,6 @@
             const pieCtx = document.getElementById('pieChart').getContext('2d');
             const barCtx = document.getElementById('barChart').getContext('2d');
 
-            // Pie Chart
             pieChart = new Chart(pieCtx, {
                 type: 'doughnut',
                 data: {
@@ -728,7 +1035,6 @@
                 }
             });
 
-            // Bar Chart
             barChart = new Chart(barCtx, {
                 type: 'bar',
                 data: {
@@ -770,7 +1076,6 @@
             barChart.data.datasets[0].data = data;
             barChart.update();
 
-            // Show/hide charts section
             const hasData = data.some(v => v > 0);
             document.getElementById('chartsSection').style.display = hasData ? 'block' : 'none';
         }
@@ -781,15 +1086,12 @@
                 const pill = e.target.closest('.filter-pill');
                 if (!pill) return;
 
-                // Update active state
                 container.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
                 pill.classList.add('active');
 
-                // Get filter type and value
                 const filterType = container.id === 'locationFilters' ? 'location' : 'category';
                 const value = pill.dataset.value;
 
-                // Update filter
                 currentFilters[filterType] = value;
                 applyFilters();
             });
@@ -804,7 +1106,6 @@
         function applyFilters() {
             const searchValue = currentFilters.search;
 
-            // Filter trips and expenses
             let totalTransport = 0, totalFood = 0, totalLeisure = 0, totalOther = 0;
             let filteredTrips = [];
             let filteredExpenses = [];
@@ -813,12 +1114,10 @@
                 let tripMatches = true;
                 let tripExpenses = [];
 
-                // Location filter
                 if (currentFilters.location !== "all" && trip.location !== currentFilters.location) {
                     tripMatches = false;
                 }
 
-                // Search filter
                 if (searchValue) {
                     const searchLower = searchValue.toLowerCase();
                     const nameMatch = trip.name.toLowerCase().includes(searchLower);
@@ -831,7 +1130,6 @@
                     }
                 }
 
-                // Category filter
                 if (currentFilters.category !== "all") {
                     tripExpenses = trip.expenses.filter(e => e.category === currentFilters.category);
                     if (tripExpenses.length === 0) {
@@ -845,13 +1143,12 @@
                     filteredTrips.push(trip);
                     trip.expenses.forEach(exp => {
                         if (currentFilters.category === "all" || exp.category === currentFilters.category) {
-                            filteredExpenses.push({...exp, tripName: trip.name, tripDate: trip.date});
+                            filteredExpenses.push({...exp, tripName: trip.name, tripDate: trip.date, tripLocation: trip.location});
                         }
                     });
                 }
             });
 
-            // Calculate totals
             filteredExpenses.forEach(exp => {
                 switch(exp.category) {
                     case "交通": totalTransport += exp.amount; break;
@@ -863,14 +1160,12 @@
 
             const total = totalTransport + totalFood + totalLeisure + totalOther;
 
-            // Update UI
             document.getElementById('totalAmount').textContent = `HK$${total.toFixed(2)}`;
             document.getElementById('catTransport').textContent = `$${totalTransport.toFixed(0)}`;
             document.getElementById('catFood').textContent = `$${totalFood.toFixed(0)}`;
             document.getElementById('catLeisure').textContent = `$${totalLeisure.toFixed(0)}`;
             document.getElementById('catShopping').textContent = `$${totalOther.toFixed(0)}`;
 
-            // Update charts
             updateCharts({
                 transport: totalTransport,
                 food: totalFood,
@@ -878,22 +1173,17 @@
                 shopping: totalOther
             });
 
-            // Show/hide summary
             if (filteredExpenses.length === 0) {
                 document.getElementById('summaryCard').classList.add('hidden');
             } else {
                 document.getElementById('summaryCard').classList.remove('hidden');
             }
 
-            // Show/hide sections
             document.getElementById('tripSectionTitle').classList.toggle('hidden', filteredTrips.length === 0);
             document.getElementById('expenseSectionTitle').classList.toggle('hidden', filteredExpenses.length === 0);
             document.getElementById('emptyState').classList.toggle('hidden', filteredExpenses.length > 0);
 
-            // Render trips
             renderTrips(filteredTrips);
-
-            // Render all expenses
             renderExpenses(filteredExpenses);
         }
 
@@ -907,12 +1197,6 @@
 
             container.innerHTML = filteredTrips.map(trip => {
                 const total = trip.expenses.reduce((sum, e) => sum + e.amount, 0);
-                const locationEmoji = {
-                    '深圳': '🇨🇳',
-                    '香港': '🇭🇰',
-                    '澳門': '🇲🇴',
-                    '台灣': '🇹🇼'
-                };
 
                 return `
                     <div class="trip-card">
@@ -956,7 +1240,7 @@
                         <div class="expense-icon">${iconMap[exp.category] || '💰'}</div>
                         <div class="expense-info">
                             <div class="name">${exp.name}</div>
-                            <div class="trip-name">${exp.tripName} · ${exp.time}</div>
+                            <div class="trip-name">${locationEmoji[exp.tripLocation] || '📍'} ${exp.tripName} · ${exp.time}</div>
                         </div>
                     </div>
                     <div class="expense-amount">−$${exp.amount.toFixed(2)}</div>
@@ -966,6 +1250,7 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
+            renderTripTabs();
             initCharts();
             initMap();
             applyFilters();
