@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🦵 旅行足迹檔案</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang HK', 'Microsoft JhengHei', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 25px 0;
+        }
+        .header h1 {
+            font-size: 26px;
+            margin-bottom: 5px;
+        }
+        .header .subtitle {
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        /* Search Bar */
+        .search-bar {
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .search-bar input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+        }
+        .search-bar input::placeholder {
+            color: #64748b;
+        }
+        .search-icon {
+            color: #64748b;
+            font-size: 18px;
+        }
+
+        /* Filter Pills */
+        .filter-section {
+            margin-bottom: 15px;
+        }
+        .filter-label {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 8px;
+            padding-left: 5px;
+        }
+        .filter-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .filter-pill {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 13px;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-pill:hover {
+            background: rgba(255,255,255,0.12);
+        }
+        .filter-pill.active {
+            background: #10b981;
+            border-color: #10b981;
+            color: #fff;
+        }
+
+        /* Summary Card */
+        .summary-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .summary-card.hidden {
+            display: none;
+        }
+        .total-amount {
+            font-size: 38px;
+            font-weight: bold;
+            text-align: center;
+            color: #10b981;
+        }
+        .total-label {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 13px;
+            margin-top: 3px;
+        }
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .category-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 12px 8px;
+            text-align: center;
+        }
+        .category-item .icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        .category-item .amount {
+            font-size: 15px;
+            font-weight: bold;
+        }
+        .category-item .label {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        /* Trip Cards */
+        .trip-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .trip-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .trip-date {
+            font-size: 12px;
+            color: #64748b;
+        }
+        .trip-location {
+            background: rgba(16,185,129,0.2);
+            color: #10b981;
+            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 12px;
+        }
+        .trip-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .trip-expenses {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .expense-tag {
+            background: rgba(255,255,255,0.06);
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .expense-tag .amount {
+            color: #f87171;
+            font-weight: 600;
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 25px 0 12px;
+            padding-left: 12px;
+            border-left: 4px solid #10b981;
+        }
+        .section-title.hidden {
+            display: none;
+        }
+
+        /* All Expenses */
+        .all-expenses-list {
+            display: none;
+        }
+        .all-expenses-list.show {
+            display: block;
+        }
+        .expense-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .expense-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .expense-icon {
+            font-size: 18px;
+        }
+        .expense-info .name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .expense-info .trip-name {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+        .expense-amount {
+            font-size: 15px;
+            font-weight: bold;
+            color: #f87171;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #64748b;
+        }
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        .empty-state.hidden {
+            display: none;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            color: #475569;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🦵 旅行足迹檔案</h1>
+            <div class="subtitle">記錄每一段旅程</div>
+        </div>
+
+        <!-- Search -->
+        <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="搜尋餐廳、地點..." oninput="applyFilters()">
+        </div>
+
+        <!-- Location Filter -->
+        <div class="filter-section">
+            <div class="filter-label">📍 地點</div>
+            <div class="filter-pills">
+                <span class="filter-pill active" data-filter="location" data-value="all" onclick="toggleFilter(this)">全部</span>
+                <span class="filter-pill" data-filter="location" data-value="深圳" onclick="toggleFilter(this)">🇨🇳 深圳</span>
+                <span class="filter-pill" data-filter="location" data-value="香港" onclick="toggleFilter(this)">🇭🇰 香港</span>
+                <span class="filter-pill" data-filter="location" data-value="澳門" onclick="toggleFilter(this)">🇲🇴 澳門</span>
+                <span class="filter-pill" data-filter="location" data-value="台灣" onclick="toggleFilter(this)">🇹🇼 台灣</span>
+            </div>
+        </div>
+
+        <!-- Category Filter -->
+        <div class="filter-section">
+            <div class="filter-label">💰 類別</div>
+            <div class="filter-pills">
+                <span class="filter-pill active" data-filter="category" data-value="all" onclick="toggleFilter(this)">全部</span>
+                <span class="filter-pill" data-filter="category" data-value="餐飲" onclick="toggleFilter(this)">🍽️ 餐飲</span>
+                <span class="filter-pill" data-filter="category" data-value="交通" onclick="toggleFilter(this)">🚌 交通</span>
+                <span class="filter-pill" data-filter="category" data-value="休閒" onclick="toggleFilter(this)">💆 休閒</span>
+                <span class="filter-pill" data-filter="category" data-value="購物" onclick="toggleFilter(this)">🛍️ 購物</span>
+                <span class="filter-pill" data-filter="category" data-value="收藏" onclick="toggleFilter(this)">🎴 收藏</span>
+            </div>
+        </div>
+
+        <!-- Summary Card -->
+        <div class="summary-card" id="summaryCard">
+            <div class="total-amount" id="totalAmount">HK$0</div>
+            <div class="total-label">總消費</div>
+            <div class="category-grid">
+                <div class="category-item">
+                    <div class="icon">🚌</div>
+                    <div class="amount" id="catTransport">$0</div>
+                    <div class="label">交通</div>
+                </div>
+                <div class="category-item">
+                    <div class="icon">🍽️</div>
+                    <div class="amount" id="catFood">$0</div>
+                    <div class="label">餐飲</div>
+                </div>
+                <div class="category-item">
+                    <div class="icon">💆</div>
+                    <div class="amount" id="catLeisure">$0</div>
+                    <div class="label">休閒</div>
+                </div>
+                <div class="category-item">
+                    <div class="icon">🛍️</div>
+                    <div class="amount" id="catShopping">$0</div>
+                    <div class="label">其他</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trip List -->
+        <div class="section-title" id="tripSectionTitle">📅 行程列表</div>
+        <div id="tripList"></div>
+
+        <!-- All Expenses -->
+        <div class="section-title" id="expenseSectionTitle">💸 消費記錄</div>
+        <div class="all-expenses-list" id="allExpensesList"></div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState">
+            <div class="icon">🔍</div>
+            <div>未找到符合條件嘅記錄</div>
+        </div>
+
+        <div class="footer">
+            🦵 旅行足迹檔案<br>Generated by MKiT
+        </div>
+    </div>
+
+    <script>
+        // Trip Data - Add new trips here
+        const trips = [
+            {
+                id: "trip_001",
+                name: "深圳灣一日遊",
+                date: "2026年6月7日",
+                location: "深圳",
+                expenses: [
+                    { name: "ZAKC 直通車（去程）", category: "交通", icon: "🚌", amount: 60.00, time: "11:50" },
+                    { name: "深圳通", category: "交通", icon: "🚇", amount: 14.00, time: "14:22 · 16:27 · 17:10 · 21:15" },
+                    { name: "NEED韓國料理（團購）", category: "餐飲", icon: "🍽️", amount: 231.48, time: "14:44" },
+                    { name: "NEED韓國料理（加單）", category: "餐飲", icon: "🍽️", amount: 37.22, time: "15:52" },
+                    { name: "寶可夢卡牌道館", category: "收藏", icon: "🎴", amount: 150.53, time: "16:36" },
+                    { name: "ZAKC 直通車（回程）", category: "交通", icon: "🚌", amount: 60.00, time: "16:49" },
+                    { name: "泰适SPA（團購）×2", category: "休閒", icon: "💆", amount: 786.32, time: "19:35" },
+                    { name: "蔡潤越南粉", category: "餐飲", icon: "🍜", amount: 147.73, time: "20:13" }
+                ]
+            }
+            // Add more trips here:
+            // {
+            //     id: "trip_002",
+            //     name: "澳門美食之旅",
+            //     date: "2026年x月x日",
+            //     location: "澳門",
+            //     expenses: [...]
+            // }
+        ];
+
+        // Current filters
+        let currentFilters = {
+            location: "all",
+            category: "all",
+            search: ""
+        };
+
+        function toggleFilter(element) {
+            const filterType = element.dataset.filter;
+            const value = element.dataset.value;
+
+            // Update active state
+            document.querySelectorAll(`[data-filter="${filterType}"]`).forEach(pill => {
+                pill.classList.remove('active');
+            });
+            element.classList.add('active');
+
+            // Update filter
+            currentFilters[filterType] = value;
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const searchValue = document.getElementById('searchInput').value.toLowerCase();
+            currentFilters.search = searchValue;
+
+            // Filter trips and expenses
+            let totalTransport = 0, totalFood = 0, totalLeisure = 0, totalOther = 0;
+            let filteredTrips = [];
+            let filteredExpenses = [];
+
+            trips.forEach(trip => {
+                let tripMatches = true;
+                let tripExpenses = [];
+
+                // Location filter
+                if (currentFilters.location !== "all" && trip.location !== currentFilters.location) {
+                    tripMatches = false;
+                }
+
+                // Search filter
+                if (searchValue) {
+                    const searchLower = searchValue.toLowerCase();
+                    const nameMatch = trip.name.toLowerCase().includes(searchLower);
+                    const expenseMatch = trip.expenses.some(e =>
+                        e.name.toLowerCase().includes(searchLower) ||
+                        e.category.toLowerCase().includes(searchLower)
+                    );
+                    if (!nameMatch && !expenseMatch) {
+                        tripMatches = false;
+                    }
+                }
+
+                // Category filter
+                if (currentFilters.category !== "all") {
+                    tripExpenses = trip.expenses.filter(e => e.category === currentFilters.category);
+                    if (tripExpenses.length === 0) {
+                        tripMatches = false;
+                    }
+                } else {
+                    tripExpenses = trip.expenses;
+                }
+
+                if (tripMatches) {
+                    filteredTrips.push(trip);
+                    trip.expenses.forEach(exp => {
+                        if (currentFilters.category === "all" || exp.category === currentFilters.category) {
+                            filteredExpenses.push({...exp, tripName: trip.name, tripDate: trip.date});
+                        }
+                    });
+                }
+            });
+
+            // Calculate totals
+            filteredExpenses.forEach(exp => {
+                switch(exp.category) {
+                    case "交通": totalTransport += exp.amount; break;
+                    case "餐飲": totalFood += exp.amount; break;
+                    case "休閒": totalLeisure += exp.amount; break;
+                    default: totalOther += exp.amount;
+                }
+            });
+
+            const total = totalTransport + totalFood + totalLeisure + totalOther;
+
+            // Update UI
+            document.getElementById('totalAmount').textContent = `HK$${total.toFixed(2)}`;
+            document.getElementById('catTransport').textContent = `$${totalTransport.toFixed(0)}`;
+            document.getElementById('catFood').textContent = `$${totalFood.toFixed(0)}`;
+            document.getElementById('catLeisure').textContent = `$${totalLeisure.toFixed(0)}`;
+            document.getElementById('catShopping').textContent = `$${totalOther.toFixed(0)}`;
+
+            // Show/hide summary
+            if (filteredExpenses.length === 0) {
+                document.getElementById('summaryCard').classList.add('hidden');
+            } else {
+                document.getElementById('summaryCard').classList.remove('hidden');
+            }
+
+            // Show/hide sections
+            document.getElementById('tripSectionTitle').classList.toggle('hidden', filteredTrips.length === 0);
+            document.getElementById('expenseSectionTitle').classList.toggle('hidden', filteredExpenses.length === 0);
+            document.getElementById('emptyState').classList.toggle('hidden', filteredExpenses.length > 0);
+
+            // Render trips
+            renderTrips(filteredTrips);
+
+            // Render all expenses
+            renderExpenses(filteredExpenses);
+        }
+
+        function renderTrips(filteredTrips) {
+            const container = document.getElementById('tripList');
+
+            if (filteredTrips.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
+            container.innerHTML = filteredTrips.map(trip => {
+                const total = trip.expenses.reduce((sum, e) => sum + e.amount, 0);
+                const locationEmoji = {
+                    '深圳': '🇨🇳',
+                    '香港': '🇭🇰',
+                    '澳門': '🇲🇴',
+                    '台灣': '🇹🇼'
+                };
+
+                return `
+                    <div class="trip-card">
+                        <div class="trip-header">
+                            <div class="trip-date">${trip.date}</div>
+                            <div class="trip-location">${locationEmoji[trip.location] || '📍'} ${trip.location}</div>
+                        </div>
+                        <div class="trip-title">${trip.name}</div>
+                        <div class="trip-expenses">
+                            ${trip.expenses.slice(0, 4).map(exp => `
+                                <div class="expense-tag">
+                                    <span>${exp.icon}</span>
+                                    <span class="amount">−$${exp.amount.toFixed(0)}</span>
+                                </div>
+                            `).join('')}
+                            ${trip.expenses.length > 4 ? `<div class="expense-tag">+${trip.expenses.length - 4}項</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderExpenses(expenses) {
+            const container = document.getElementById('allExpensesList');
+            const iconMap = {
+                '交通': '🚌',
+                '餐飲': '🍽️',
+                '休閒': '💆',
+                '收藏': '🎴',
+                '購物': '🛍️'
+            };
+
+            if (expenses.length === 0) {
+                container.classList.remove('show');
+                return;
+            }
+
+            container.classList.add('show');
+            container.innerHTML = expenses.map(exp => `
+                <div class="expense-item">
+                    <div class="expense-left">
+                        <div class="expense-icon">${iconMap[exp.category] || '💰'}</div>
+                        <div class="expense-info">
+                            <div class="name">${exp.name}</div>
+                            <div class="trip-name">${exp.tripName} · ${exp.time}</div>
+                        </div>
+                    </div>
+                    <div class="expense-amount">−$${exp.amount.toFixed(2)}</div>
+                </div>
+            `).join('');
+        }
+
+        // Initial render
+        applyFilters();
+    </script>
+</body>
+</html>
