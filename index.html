@@ -25,6 +25,7 @@
             --shadow-glow: 0 0 20px var(--accent-glow);
             --radius: 20px;
             --radius-sm: 12px;
+            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         [data-theme="light"] {
@@ -50,6 +51,37 @@
             line-height: 1.5;
         }
         
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .animate-fade { animation: fadeIn 0.4s var(--transition) forwards; }
+        .animate-slide { animation: slideIn 0.4s var(--transition) forwards; }
+        .animate-scale { animation: scaleIn 0.3s var(--transition) forwards; }
+        
+        .stagger-1 { animation-delay: 0.05s; opacity: 0; }
+        .stagger-2 { animation-delay: 0.1s; opacity: 0; }
+        .stagger-3 { animation-delay: 0.15s; opacity: 0; }
+        .stagger-4 { animation-delay: 0.2s; opacity: 0; }
+        .stagger-5 { animation-delay: 0.25s; opacity: 0; }
+        
         /* Layout */
         .app-layout {
             display: flex;
@@ -74,6 +106,7 @@
             font-size: 28px;
             margin-bottom: 28px;
             filter: drop-shadow(0 0 8px var(--accent-glow));
+            animation: pulse 3s ease-in-out infinite;
         }
         
         .sidebar-nav {
@@ -93,7 +126,7 @@
             justify-content: center;
             font-size: 24px;
             cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all var(--transition);
             color: var(--text-secondary);
             background: transparent;
             border: none;
@@ -103,6 +136,7 @@
         .nav-item:hover {
             background: var(--border);
             color: var(--text-primary);
+            transform: scale(1.05);
         }
         
         .nav-item.active {
@@ -137,10 +171,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s;
+            transition: all var(--transition);
         }
         
-        .sidebar-theme:hover { border-color: var(--accent); }
+        .sidebar-theme:hover { 
+            border-color: var(--accent);
+            transform: rotate(15deg);
+        }
         
         /* Main Content */
         .main-content {
@@ -151,12 +188,18 @@
         }
         
         /* Page */
-        .page { display: none; }
-        .page.active { display: block; }
+        .page { 
+            display: none; 
+            animation: fadeIn 0.3s ease forwards;
+        }
+        .page.active { 
+            display: block; 
+        }
         
         /* Header */
         .page-header {
-            margin-bottom: 28px;
+            margin-bottom: 24px;
+            animation: fadeIn 0.4s ease forwards;
         }
         
         .page-header h1 {
@@ -176,8 +219,9 @@
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 20px;
-            margin-bottom: 24px;
+            padding: 18px 20px;
+            margin-bottom: 20px;
+            animation: fadeIn 0.4s ease forwards;
         }
         
         .filter-row {
@@ -191,50 +235,55 @@
             background: var(--bg-secondary);
             border: 1px solid var(--border);
             border-radius: var(--radius-sm);
-            padding: 12px 16px;
+            padding: 11px 14px;
             color: var(--text-primary);
             font-size: 14px;
             cursor: pointer;
-            min-width: 140px;
+            min-width: 130px;
             outline: none;
-            transition: border-color 0.2s;
+            transition: all var(--transition);
         }
         
         .filter-select:hover { border-color: var(--accent); }
-        
+        .filter-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
         .filter-select option { background: var(--bg-card); }
         
         .filter-search {
             flex: 1;
-            min-width: 200px;
+            min-width: 180px;
             background: var(--bg-secondary);
             border: 1px solid var(--border);
             border-radius: var(--radius-sm);
-            padding: 12px 16px;
+            padding: 11px 14px;
             color: var(--text-primary);
             font-size: 14px;
             outline: none;
-            transition: border-color 0.2s;
+            transition: all var(--transition);
         }
         
-        .filter-search:focus { border-color: var(--accent); }
+        .filter-search:focus { 
+            border-color: var(--accent); 
+            box-shadow: 0 0 0 3px var(--accent-soft);
+        }
         .filter-search::placeholder { color: var(--text-muted); }
         
         /* Trip Cards */
         .trip-list {
             display: grid;
-            gap: 16px;
+            gap: 14px;
         }
         
         .trip-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 22px 24px;
+            padding: 20px 22px;
             cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all var(--transition);
             position: relative;
             overflow: hidden;
+            opacity: 0;
+            animation: fadeIn 0.4s ease forwards;
         }
         
         .trip-card::before {
@@ -246,12 +295,12 @@
             height: 3px;
             background: linear-gradient(90deg, var(--accent), transparent);
             opacity: 0;
-            transition: opacity 0.25s;
+            transition: opacity var(--transition);
         }
         
         .trip-card:hover {
             border-color: var(--border-hover);
-            transform: translateY(-2px);
+            transform: translateY(-3px);
             box-shadow: var(--shadow);
         }
         
@@ -267,9 +316,9 @@
         .trip-info { flex: 1; }
         
         .trip-title {
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 600;
-            margin-bottom: 6px;
+            margin-bottom: 5px;
         }
         
         .trip-meta {
@@ -297,7 +346,7 @@
         
         .trip-stats {
             display: flex;
-            gap: 20px;
+            gap: 18px;
             margin-top: 14px;
             padding-top: 14px;
             border-top: 1px solid var(--border);
@@ -306,238 +355,411 @@
         .trip-stat {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 7px;
         }
         
-        .trip-stat-icon {
-            font-size: 18px;
-            opacity: 0.7;
-        }
-        
-        .trip-stat-value {
-            font-size: 15px;
-            font-weight: 600;
-        }
-        
-        .trip-stat-label {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
+        .trip-stat-icon { font-size: 16px; opacity: 0.7; }
+        .trip-stat-value { font-size: 14px; font-weight: 600; }
+        .trip-stat-label { font-size: 12px; color: var(--text-secondary); }
         
         /* Trip Detail */
-        .trip-detail {
-            display: none;
-        }
-        
-        .trip-detail.active {
+        .trip-detail { display: none; }
+        .trip-detail.active { 
             display: block;
+            animation: fadeIn 0.35s ease forwards;
         }
         
         .detail-header {
             display: flex;
             align-items: center;
-            gap: 16px;
-            margin-bottom: 24px;
+            gap: 14px;
+            margin-bottom: 22px;
         }
         
         .back-btn {
-            width: 44px;
-            height: 44px;
-            border-radius: 14px;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            font-size: 20px;
+            font-size: 18px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s;
+            transition: all var(--transition);
         }
         
-        .back-btn:hover { border-color: var(--accent); }
+        .back-btn:hover { 
+            border-color: var(--accent);
+            transform: scale(1.05);
+        }
         
         .detail-title {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
         }
         
         .detail-meta {
             color: var(--text-secondary);
-            font-size: 14px;
-            margin-top: 4px;
+            font-size: 13px;
+            margin-top: 3px;
         }
         
         /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 14px;
-            margin-bottom: 24px;
+            gap: 12px;
+            margin-bottom: 22px;
         }
         
         .stat-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius-sm);
-            padding: 18px;
+            padding: 16px;
             text-align: center;
+            transition: all var(--transition);
+            opacity: 0;
+            animation: fadeIn 0.4s ease forwards;
         }
         
-        .stat-icon { font-size: 26px; margin-bottom: 8px; }
-        .stat-value { font-size: 24px; font-weight: 700; }
-        .stat-label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+        .stat-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
         
-        /* Expense Section */
+        .stat-icon { font-size: 24px; margin-bottom: 6px; }
+        .stat-value { font-size: 22px; font-weight: 700; }
+        .stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 3px; }
+        
+        /* Section */
         .section-title {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
         
-        .expense-list {
-            margin-bottom: 24px;
-        }
-        
-        .expense-item {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            padding: 16px 18px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.2s;
-        }
-        
-        .expense-item:hover { border-color: var(--border-hover); }
-        
-        .expense-left { display: flex; align-items: center; gap: 14px; }
-        
-        .expense-icon {
-            width: 46px;
-            height: 46px;
-            background: var(--bg-secondary);
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-        }
-        
-        .expense-info .name { font-size: 15px; font-weight: 500; }
-        .expense-info .meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
-        
-        .expense-amount {
-            font-size: 17px;
-            font-weight: 700;
-            color: #f87171;
-        }
-        
-        /* Charts */
-        .chart-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-        
-        .chart-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            padding: 18px;
-        }
-        
-        .chart-card-title {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 14px;
-        }
-        
-        .chart-container { height: 220px; position: relative; }
-        
-        /* Map */
+        /* Map Container - Fixed spacing */
         .map-container {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius);
             padding: 20px;
-            margin-bottom: 24px;
+            margin-bottom: 22px;
+            animation: fadeIn 0.4s ease forwards;
         }
         
         .map-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
         
-        .map-title { font-size: 16px; font-weight: 600; }
+        .map-title { font-size: 15px; font-weight: 600; }
         
         .map-toggle {
             background: var(--accent);
             color: #fff;
             border: none;
-            padding: 10px 18px;
+            padding: 9px 16px;
             border-radius: 10px;
             font-size: 13px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all var(--transition);
         }
         
-        .map-toggle:hover { filter: brightness(1.1); }
+        .map-toggle:hover { 
+            filter: brightness(1.1);
+            transform: scale(1.02);
+        }
         
-        #map {
+        #map, #fullMap {
             height: 350px;
             border-radius: var(--radius-sm);
             z-index: 1;
         }
         
-        /* Place List */
+        #fullMap { height: 500px; }
+        
+        /* Places */
         .place-list {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 12px;
-            margin-bottom: 24px;
+            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+            gap: 10px;
+            margin-bottom: 22px;
         }
         
         .place-item {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius-sm);
-            padding: 16px;
+            padding: 14px;
             display: flex;
             align-items: center;
             gap: 12px;
+            transition: all var(--transition);
+        }
+        
+        .place-item:hover { 
+            border-color: var(--border-hover);
+            transform: scale(1.02);
         }
         
         .place-icon {
-            width: 40px;
-            height: 40px;
+            width: 38px;
+            height: 38px;
             background: var(--bg-secondary);
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 17px;
         }
         
-        .place-name { font-size: 14px; font-weight: 500; }
-        .place-time { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+        .place-name { font-size: 13px; font-weight: 500; }
+        .place-time { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+        
+        /* Charts */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 22px;
+        }
+        
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+        }
+        
+        .chart-card-title {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+        
+        .chart-container { height: 200px; position: relative; }
+        
+        /* Expense List */
+        .expense-list {
+            margin-bottom: 20px;
+        }
+        
+        .expense-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all var(--transition);
+            opacity: 0;
+            animation: fadeIn 0.3s ease forwards;
+        }
+        
+        .expense-item:hover { 
+            border-color: var(--border-hover);
+            transform: translateX(4px);
+        }
+        
+        .expense-left { display: flex; align-items: center; gap: 12px; }
+        
+        .expense-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all var(--transition);
+        }
+        
+        .expense-item:hover .expense-icon {
+            transform: scale(1.1);
+        }
+        
+        .expense-info .name { font-size: 14px; font-weight: 500; }
+        .expense-info .meta { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+        
+        .expense-amount {
+            font-size: 16px;
+            font-weight: 700;
+            color: #f87171;
+        }
+        
+        /* Calendar Page */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .calendar-nav {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .cal-nav-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+        }
+        
+        .cal-nav-btn:hover { 
+            border-color: var(--accent);
+            transform: scale(1.05);
+        }
+        
+        .calendar-month {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .cal-day-header {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-secondary);
+            padding: 8px 0;
+        }
+        
+        .cal-day {
+            aspect-ratio: 1;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition);
+            position: relative;
+        }
+        
+        .cal-day:hover {
+            border-color: var(--accent);
+            transform: scale(1.05);
+        }
+        
+        .cal-day.empty {
+            background: transparent;
+            border: none;
+            cursor: default;
+        }
+        
+        .cal-day.empty:hover { transform: none; }
+        
+        .cal-day.has-trip {
+            background: var(--accent-soft);
+            border-color: var(--accent);
+        }
+        
+        .cal-day-number {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .cal-day-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--accent);
+            margin-top: 3px;
+        }
+        
+        .cal-day-trip-name {
+            font-size: 9px;
+            color: var(--accent);
+            margin-top: 2px;
+            text-align: center;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            padding: 0 4px;
+        }
+        
+        /* Photo Gallery */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .photo-item {
+            aspect-ratio: 1;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .photo-item:hover {
+            transform: scale(1.03);
+            box-shadow: var(--shadow);
+        }
+        
+        .photo-placeholder {
+            color: var(--text-muted);
+            font-size: 48px;
+            opacity: 0.5;
+        }
+        
+        .photo-add {
+            border: 2px dashed var(--border);
+            background: transparent;
+        }
+        
+        .photo-add:hover {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+        }
+        
+        .photo-add-icon { font-size: 32px; }
         
         /* Settings */
         .settings-group {
-            margin-bottom: 28px;
+            margin-bottom: 24px;
         }
         
         .settings-title {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-secondary);
-            margin-bottom: 14px;
+            margin-bottom: 12px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -546,31 +768,34 @@
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius-sm);
-            padding: 16px 18px;
+            padding: 14px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 8px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all var(--transition);
         }
         
-        .settings-item:hover { border-color: var(--border-hover); }
+        .settings-item:hover { 
+            border-color: var(--border-hover);
+            transform: translateX(4px);
+        }
         
-        .settings-item-left { display: flex; align-items: center; gap: 14px; }
-        .settings-item-icon { font-size: 22px; }
-        .settings-item-label { font-size: 15px; }
-        .settings-item-desc { font-size: 12px; color: var(--text-secondary); }
+        .settings-item-left { display: flex; align-items: center; gap: 12px; }
+        .settings-item-icon { font-size: 20px; }
+        .settings-item-label { font-size: 14px; }
+        .settings-item-desc { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
         
         /* Toggle */
         .toggle {
-            width: 50px;
-            height: 30px;
+            width: 48px;
+            height: 28px;
             background: var(--bg-secondary);
-            border-radius: 15px;
+            border-radius: 14px;
             position: relative;
             cursor: pointer;
-            transition: background 0.25s;
+            transition: background var(--transition);
         }
         
         .toggle.active { background: var(--accent); }
@@ -578,13 +803,13 @@
         .toggle::after {
             content: '';
             position: absolute;
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             background: #fff;
             border-radius: 50%;
             top: 3px;
             left: 3px;
-            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform var(--transition);
         }
         
         .toggle.active::after { transform: translateX(20px); }
@@ -592,12 +817,12 @@
         /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
+            padding: 50px 20px;
             color: var(--text-secondary);
         }
         
-        .empty-state-icon { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
-        .empty-state-text { font-size: 15px; }
+        .empty-state-icon { font-size: 56px; margin-bottom: 14px; opacity: 0.4; }
+        .empty-state-text { font-size: 14px; }
         
         /* Mobile Nav */
         .mobile-nav {
@@ -627,7 +852,7 @@
             cursor: pointer;
             color: var(--text-secondary);
             font-size: 10px;
-            transition: all 0.2s;
+            transition: all var(--transition);
             border: none;
             background: none;
         }
@@ -636,21 +861,31 @@
         .mobile-nav-item-icon { font-size: 22px; }
         
         /* Leaflet Dark Theme */
-        .leaflet-popup-content-wrapper { background: var(--bg-card) !important; color: var(--text-primary) !important; border-radius: 14px !important; border: 1px solid var(--border) !important; }
+        .leaflet-popup-content-wrapper { 
+            background: var(--bg-card) !important; 
+            color: var(--text-primary) !important; 
+            border-radius: 14px !important; 
+            border: 1px solid var(--border) !important;
+            box-shadow: var(--shadow) !important;
+        }
         .leaflet-popup-tip { background: var(--bg-card) !important; }
-        .leaflet-popup-content { margin: 14px 16px !important; }
-        .leaflet-popup-content b { font-size: 14px; }
-        .leaflet-popup-content span { font-size: 12px; color: var(--text-secondary); }
-        .leaflet-control-zoom a { background: var(--bg-card) !important; color: var(--text-primary) !important; border-color: var(--border) !important; }
+        .leaflet-popup-content { margin: 12px 14px !important; }
+        .leaflet-popup-content b { font-size: 13px; }
+        .leaflet-popup-content span { font-size: 11px; color: var(--text-secondary); }
+        .leaflet-control-zoom a { 
+            background: var(--bg-card) !important; 
+            color: var(--text-primary) !important; 
+            border-color: var(--border) !important; 
+        }
         .leaflet-control-zoom a:hover { background: var(--bg-card-hover) !important; }
-        .leaflet-control-attribution { background: rgba(8,14,20,0.8) !important; color: var(--text-muted) !important; font-size: 10px; }
+        .leaflet-control-attribution { 
+            background: rgba(8,14,20,0.85) !important; 
+            color: var(--text-muted) !important; 
+            font-size: 10px; 
+        }
         .leaflet-control-attribution a { color: var(--text-secondary) !important; }
         
-        /* Custom Map Markers */
-        .custom-marker {
-            background: none !important;
-            border: none !important;
-        }
+        .custom-marker { background: none !important; border: none !important; }
         
         /* Responsive */
         @media (max-width: 1024px) {
@@ -662,20 +897,21 @@
             .sidebar { display: none; }
             .main-content { margin-left: 0; padding: 20px 16px; padding-bottom: 100px; }
             .mobile-nav { display: block; }
-            .page-header h1 { font-size: 26px; }
+            .page-header h1 { font-size: 24px; }
             .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-            .stat-value { font-size: 20px; }
-            .trip-stats { gap: 12px; }
+            .stat-value { font-size: 18px; }
             .place-list { grid-template-columns: 1fr; }
+            .photo-grid { grid-template-columns: repeat(3, 1fr); }
         }
         
         @media (max-width: 480px) {
             .filter-row { flex-direction: column; }
             .filter-select, .filter-search { width: 100%; }
             .stats-grid { grid-template-columns: 1fr 1fr; }
-            .trip-card { padding: 18px 16px; }
-            .trip-title { font-size: 16px; }
+            .trip-card { padding: 16px 14px; }
+            .trip-title { font-size: 15px; }
             #map { height: 250px; }
+            #fullMap { height: 400px; }
         }
     </style>
 </head>
@@ -697,10 +933,16 @@
                         <span class="nav-item-label">地圖</span>
                     </div>
                 </button>
-                <button class="nav-item" data-page="stats">
+                <button class="nav-item" data-page="calendar">
                     <div class="nav-item-wrap">
-                        <span>📊</span>
-                        <span class="nav-item-label">統計</span>
+                        <span>📅</span>
+                        <span class="nav-item-label">日曆</span>
+                    </div>
+                </button>
+                <button class="nav-item" data-page="photos">
+                    <div class="nav-item-wrap">
+                        <span>📸</span>
+                        <span class="nav-item-label">相片</span>
                     </div>
                 </button>
                 <button class="nav-item" data-page="settings">
@@ -723,7 +965,6 @@
                     <p>記錄你的每一段旅程</p>
                 </div>
                 
-                <!-- Filter Box -->
                 <div class="filter-box">
                     <div class="filter-row">
                         <select class="filter-select" id="filterCountry">
@@ -746,7 +987,6 @@
                     </div>
                 </div>
                 
-                <!-- Trip List -->
                 <div class="trip-list" id="tripList"></div>
             </div>
             
@@ -760,10 +1000,8 @@
                     </div>
                 </div>
                 
-                <!-- Stats Grid -->
                 <div class="stats-grid" id="statsGrid"></div>
                 
-                <!-- Map -->
                 <div class="map-container">
                     <div class="map-header">
                         <div class="map-title">🗺️ 足跡地圖</div>
@@ -774,11 +1012,9 @@
                     </div>
                 </div>
                 
-                <!-- Places -->
                 <div class="section-title">📍 行程地點</div>
                 <div class="place-list" id="placeList"></div>
                 
-                <!-- Charts -->
                 <div class="chart-grid">
                     <div class="chart-card">
                         <div class="chart-card-title">📊 消費分佈</div>
@@ -794,7 +1030,6 @@
                     </div>
                 </div>
                 
-                <!-- Expense List -->
                 <div class="section-title">💸 消費記錄</div>
                 <div class="expense-list" id="expenseList"></div>
             </div>
@@ -806,29 +1041,47 @@
                     <p>你走過的地方</p>
                 </div>
                 <div class="map-container">
-                    <div id="fullMap" style="height: 500px;"></div>
+                    <div id="fullMap"></div>
                 </div>
             </div>
             
-            <!-- Stats Page -->
-            <div class="page" id="page-stats">
+            <!-- Calendar Page -->
+            <div class="page" id="page-calendar">
                 <div class="page-header">
-                    <h1>📊 消費統計</h1>
-                    <p>分析你的消費習慣</p>
+                    <h1>📅 日曆視圖</h1>
+                    <p>按月份瀏覽旅程</p>
                 </div>
-                <div class="chart-grid">
-                    <div class="chart-card">
-                        <div class="chart-card-title">📊 消費分佈</div>
-                        <div class="chart-container">
-                            <canvas id="pieChart"></canvas>
-                        </div>
+                
+                <div class="calendar-header">
+                    <div class="calendar-nav">
+                        <button class="cal-nav-btn" id="prevMonth">←</button>
+                        <button class="cal-nav-btn" id="nextMonth">→</button>
                     </div>
-                    <div class="chart-card">
-                        <div class="chart-card-title">📈 類別比較</div>
-                        <div class="chart-container">
-                            <canvas id="barChart"></canvas>
-                        </div>
+                    <div class="calendar-month" id="currentMonth"></div>
+                </div>
+                
+                <div class="calendar-grid" id="calendarGrid"></div>
+                
+                <div class="section-title" style="margin-top: 24px;">📋 該月旅程</div>
+                <div id="monthTrips"></div>
+            </div>
+            
+            <!-- Photos Page -->
+            <div class="page" id="page-photos">
+                <div class="page-header">
+                    <h1>📸 相片記錄</h1>
+                    <p>記錄旅途中的精彩瞬間</p>
+                </div>
+                
+                <div class="photo-grid" id="photoGrid">
+                    <div class="photo-item photo-add" id="addPhoto">
+                        <span class="photo-add-icon">📷</span>
                     </div>
+                </div>
+                
+                <div class="empty-state" id="photoEmpty">
+                    <div class="empty-state-icon">📸</div>
+                    <div class="empty-state-text">點擊上方 + 添加相片記錄</div>
                 </div>
             </div>
             
@@ -876,6 +1129,19 @@
                         <span>→</span>
                     </div>
                 </div>
+                
+                <div class="settings-group">
+                    <div class="settings-title">關於</div>
+                    <div class="settings-item">
+                        <div class="settings-item-left">
+                            <span class="settings-item-icon">🦵</span>
+                            <div>
+                                <div class="settings-item-label">旅行足跡檔案</div>
+                                <div class="settings-item-desc">版本 1.0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
         
@@ -890,9 +1156,13 @@
                     <span class="mobile-nav-item-icon">🗺️</span>
                     <span>地圖</span>
                 </button>
-                <button class="mobile-nav-item" data-page="stats">
-                    <span class="mobile-nav-item-icon">📊</span>
-                    <span>統計</span>
+                <button class="mobile-nav-item" data-page="calendar">
+                    <span class="mobile-nav-item-icon">📅</span>
+                    <span>日曆</span>
+                </button>
+                <button class="mobile-nav-item" data-page="photos">
+                    <span class="mobile-nav-item-icon">📸</span>
+                    <span>相片</span>
                 </button>
                 <button class="mobile-nav-item" data-page="settings">
                     <span class="mobile-nav-item-icon">⚙️</span>
@@ -931,22 +1201,12 @@
         ];
 
         let trips = JSON.parse(localStorage.getItem('travelTrips')) || JSON.parse(JSON.stringify(defaultTrips));
+        let photos = JSON.parse(localStorage.getItem('travelPhotos')) || [];
         let currentTrip = null;
+        let currentMonth = new Date();
         let fullMap = null;
         let tripMap = null;
-        let pieChart, barChart, detailPieChart, detailBarChart;
-        
-        // Country flags
-        const countryFlags = {
-            'china': { flag: '🇨🇳', name: '中國' },
-            'hongkong': { flag: '🇭🇰', name: '香港' },
-            'macau': { flag: '🇲🇴', name: '澳門' },
-            'taiwan': { flag: '🇹🇼', name: '台灣' },
-            'japan': { flag: '🇯🇵', name: '日本' },
-            'korea': { flag: '🇰🇷', name: '韓國' },
-            'australia': { flag: '🇦🇺', name: '澳洲' },
-            'usa': { flag: '🇺🇸', name: '美國' }
-        };
+        let detailPieChart, detailBarChart;
         
         const typeColors = {
             transport: '#3b82f6',
@@ -975,15 +1235,8 @@
             }
             localStorage.setItem('theme', dark ? 'dark' : 'light');
             
-            // Re-init maps with correct tiles
-            if (fullMap) {
-                fullMap.remove();
-                initFullMap();
-            }
-            if (tripMap) {
-                tripMap.remove();
-                tripMap = null;
-            }
+            if (fullMap) { fullMap.remove(); fullMap = null; }
+            if (tripMap) { tripMap.remove(); tripMap = null; }
         }
 
         document.getElementById('themeToggle').addEventListener('click', () => {
@@ -1008,7 +1261,6 @@
             document.getElementById('page-' + pageId).classList.add('active');
             document.querySelectorAll(`[data-page="${pageId}"]`).forEach(n => n.classList.add('active'));
             
-            // Hide trip detail when leaving home
             if (pageId !== 'home' || !currentTrip) {
                 document.getElementById('tripDetail').classList.remove('active');
                 document.getElementById('page-home').classList.add('active');
@@ -1016,6 +1268,14 @@
             
             if (pageId === 'map' && fullMap) {
                 setTimeout(() => fullMap.invalidateSize(), 100);
+            }
+            
+            if (pageId === 'calendar') {
+                renderCalendar();
+            }
+            
+            if (pageId === 'photos') {
+                renderPhotos();
             }
         }
 
@@ -1030,28 +1290,16 @@
             renderTripList();
         });
 
-        // Filter
+        // Filters
         function applyFilters() {
             const country = document.getElementById('filterCountry').value;
             const year = document.getElementById('filterYear').value;
             const search = document.getElementById('filterSearch').value.toLowerCase();
             
             let filtered = trips;
-            
-            if (country) {
-                filtered = filtered.filter(t => t.country === country);
-            }
-            
-            if (year) {
-                filtered = filtered.filter(t => t.date.startsWith(year));
-            }
-            
-            if (search) {
-                filtered = filtered.filter(t => 
-                    t.name.toLowerCase().includes(search) || 
-                    t.location.toLowerCase().includes(search)
-                );
-            }
+            if (country) filtered = filtered.filter(t => t.country === country);
+            if (year) filtered = filtered.filter(t => t.date.startsWith(year));
+            if (search) filtered = filtered.filter(t => t.name.toLowerCase().includes(search) || t.location.toLowerCase().includes(search));
             
             renderTripList(filtered);
         }
@@ -1065,19 +1313,14 @@
             const container = document.getElementById('tripList');
             
             if (tripData.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">🦵</div>
-                        <div class="empty-state-text">沒有找到旅程記錄</div>
-                    </div>
-                `;
+                container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🦵</div><div class="empty-state-text">沒有找到旅程記錄</div></div>`;
                 return;
             }
             
-            container.innerHTML = tripData.map(trip => {
+            container.innerHTML = tripData.map((trip, i) => {
                 const total = trip.expenses.reduce((s, e) => s + e.amount, 0);
                 return `
-                    <div class="trip-card" data-id="${trip.id}">
+                    <div class="trip-card stagger-${Math.min(i + 1, 5)}" data-id="${trip.id}">
                         <div class="trip-header">
                             <div class="trip-info">
                                 <div class="trip-title">${trip.name}</div>
@@ -1101,18 +1344,16 @@
                             <div class="trip-stat">
                                 <span class="trip-stat-icon">🧾</span>
                                 <span class="trip-stat-value">${trip.expenses.length}</span>
-                                <span class="trip-stat-label">消費記錄</span>
+                                <span class="trip-stat-label">記錄</span>
                             </div>
                         </div>
                     </div>
                 `;
             }).join('');
             
-            // Click handler
             container.querySelectorAll('.trip-card').forEach(card => {
                 card.addEventListener('click', () => {
-                    const id = parseInt(card.dataset.id);
-                    showTripDetail(id);
+                    showTripDetail(parseInt(card.dataset.id));
                 });
             });
         }
@@ -1123,41 +1364,34 @@
             if (!trip) return;
             
             currentTrip = trip;
-            
             document.getElementById('detailTitle').textContent = trip.name;
             document.getElementById('detailMeta').textContent = `${trip.date} · ${trip.location}`;
             
-            // Stats
             const total = trip.expenses.reduce((s, e) => s + e.amount, 0);
-            const categories = {};
-            trip.expenses.forEach(e => {
-                categories[e.category] = (categories[e.category] || 0) + e.amount;
-            });
             
             document.getElementById('statsGrid').innerHTML = `
-                <div class="stat-card">
+                <div class="stat-card stagger-1">
                     <div class="stat-icon">💰</div>
                     <div class="stat-value">$${total.toFixed(0)}</div>
                     <div class="stat-label">總消費</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card stagger-2">
                     <div class="stat-icon">📍</div>
                     <div class="stat-value">${trip.places.length}</div>
                     <div class="stat-label">地點</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card stagger-3">
                     <div class="stat-icon">🧾</div>
                     <div class="stat-value">${trip.expenses.length}</div>
                     <div class="stat-label">記錄</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card stagger-4">
                     <div class="stat-icon">🍽️</div>
-                    <div class="stat-value">${Object.keys(categories).length}</div>
+                    <div class="stat-value">${Object.keys(trip.expenses.reduce((a, e) => (a[e.category] = 1, a), {})).length}</div>
                     <div class="stat-label">類別</div>
                 </div>
             `;
             
-            // Places
             document.getElementById('placeList').innerHTML = trip.places.map(p => `
                 <div class="place-item">
                     <div class="place-icon">${p.icon}</div>
@@ -1168,9 +1402,8 @@
                 </div>
             `).join('');
             
-            // Expenses
-            document.getElementById('expenseList').innerHTML = trip.expenses.map(exp => `
-                <div class="expense-item">
+            document.getElementById('expenseList').innerHTML = trip.expenses.map((exp, i) => `
+                <div class="expense-item" style="animation-delay: ${i * 0.03}s">
                     <div class="expense-left">
                         <div class="expense-icon">${exp.icon}</div>
                         <div class="expense-info">
@@ -1182,14 +1415,9 @@
                 </div>
             `).join('');
             
-            // Charts
             renderDetailCharts(trip);
-            
-            // Show detail view
             document.getElementById('tripDetail').classList.add('active');
             document.getElementById('page-home').classList.remove('active');
-            
-            // Init map after showing
             setTimeout(() => initTripMap(trip), 100);
         }
 
@@ -1207,11 +1435,7 @@
         });
 
         function initTripMap(trip) {
-            if (tripMap) {
-                tripMap.remove();
-                tripMap = null;
-            }
-            
+            if (tripMap) { tripMap.remove(); tripMap = null; }
             if (trip.places.length === 0) return;
             
             tripMap = L.map('map').setView([trip.places[0].lat, trip.places[0].lng], 13);
@@ -1221,18 +1445,15 @@
                 ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
                 : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
             
-            L.tileLayer(tileUrl, {
-                attribution: '© OpenStreetMap © CARTO',
-                maxZoom: 19
-            }).addTo(tripMap);
+            L.tileLayer(tileUrl, { attribution: '© OpenStreetMap © CARTO', maxZoom: 19 }).addTo(tripMap);
             
             trip.places.forEach(place => {
                 const color = typeColors[place.type] || '#64748b';
                 const icon = L.divIcon({
                     className: 'custom-marker',
-                    html: `<div style="background:${color};width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px ${color}66;font-size:16px;">${place.icon}</div>`,
-                    iconSize: [36, 36],
-                    iconAnchor: [18, 18]
+                    html: `<div style="background:${color};width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px ${color}66;font-size:15px;">${place.icon}</div>`,
+                    iconSize: [34, 34],
+                    iconAnchor: [17, 17]
                 });
                 
                 L.marker([place.lat, place.lng], { icon })
@@ -1253,28 +1474,21 @@
                     ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
                     : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
                 
-                L.tileLayer(tileUrl, {
-                    attribution: '© OpenStreetMap © CARTO',
-                    maxZoom: 19
-                }).addTo(fullMap);
+                L.tileLayer(tileUrl, { attribution: '© OpenStreetMap © CARTO', maxZoom: 19 }).addTo(fullMap);
             }
             
-            // Clear existing markers
             fullMap.eachLayer(layer => {
-                if (layer instanceof L.Marker) {
-                    fullMap.removeLayer(layer);
-                }
+                if (layer instanceof L.Marker) fullMap.removeLayer(layer);
             });
             
-            // Add markers for all places
             trips.forEach(trip => {
                 trip.places.forEach(place => {
                     const color = typeColors[place.type] || '#64748b';
                     const icon = L.divIcon({
                         className: 'custom-marker',
-                        html: `<div style="background:${color};width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px ${color}66;font-size:14px;">${place.icon}</div>`,
-                        iconSize: [32, 32],
-                        iconAnchor: [16, 16]
+                        html: `<div style="background:${color};width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px ${color}66;font-size:13px;">${place.icon}</div>`,
+                        iconSize: [30, 30],
+                        iconAnchor: [15, 15]
                     });
                     
                     L.marker([place.lat, place.lng], { icon })
@@ -1288,19 +1502,12 @@
         function renderDetailCharts(trip) {
             const totals = { '交通': 0, '餐飲': 0, '休閒': 0, '購物': 0 };
             trip.expenses.forEach(exp => {
-                if (totals[exp.category] !== undefined) {
-                    totals[exp.category] += exp.amount;
-                }
+                if (totals[exp.category] !== undefined) totals[exp.category] += exp.amount;
             });
             
             const labels = Object.keys(totals).filter(k => totals[k] > 0);
             const data = labels.map(l => totals[l]);
-            const colors = labels.map(l => {
-                if (l === '交通') return '#3b82f6';
-                if (l === '餐飲') return '#f97316';
-                if (l === '休閒') return '#10b981';
-                return '#8b5cf6';
-            });
+            const colors = labels.map(l => l === '交通' ? '#3b82f6' : l === '餐飲' ? '#f97316' : l === '休閒' ? '#10b981' : '#8b5cf6');
             
             if (detailPieChart) detailPieChart.destroy();
             if (detailBarChart) detailBarChart.destroy();
@@ -1308,80 +1515,152 @@
             detailPieChart = new Chart(document.getElementById('detailPieChart'), {
                 type: 'doughnut',
                 data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 0, cutout: '60%' }] },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'bottom', labels: { color: '#8899a6', font: { size: 12 }, padding: 15 } }
-                    }
-                }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#8899a6', font: { size: 12 }, padding: 15 } } } }
             });
             
             detailBarChart = new Chart(document.getElementById('detailBarChart'), {
                 type: 'bar',
                 data: { labels, datasets: [{ data, backgroundColor: colors, borderRadius: 8, borderSkipped: false }] },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { grid: { display: false }, ticks: { color: '#8899a6' } },
-                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8899a6' } }
-                    }
-                }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#8899a6' } }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8899a6' } } } }
             });
         }
 
-        function initCharts() {
-            const totals = { '交通': 0, '餐飲': 0, '休閒': 0, '購物': 0 };
-            const catMap = { '交通': '交通', '餐飲': '餐飲', '休閒': '休閒', '購物': '購物' };
+        // Calendar
+        function renderCalendar() {
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
             
-            trips.forEach(trip => {
-                trip.expenses.forEach(exp => {
-                    const key = catMap[exp.category] || '購物';
-                    totals[key] += exp.amount;
+            const monthNames = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
+            document.getElementById('currentMonth').textContent = `${year}年 ${monthNames[month]}`;
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            let html = '<div class="cal-day-header">日</div><div class="cal-day-header">一</div><div class="cal-day-header">二</div><div class="cal-day-header">三</div><div class="cal-day-header">四</div><div class="cal-day-header">五</div><div class="cal-day-header">六</div>';
+            
+            // Empty cells before first day
+            for (let i = 0; i < firstDay; i++) {
+                html += '<div class="cal-day empty"></div>';
+            }
+            
+            // Days
+            const tripDates = {};
+            trips.forEach(t => {
+                const d = t.date.substring(0, 10);
+                if (!tripDates[d]) tripDates[d] = [];
+                tripDates[d].push(t);
+            });
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const hasTrip = tripDates[dateStr];
+                
+                if (hasTrip) {
+                    html += `<div class="cal-day has-trip" data-date="${dateStr}">
+                        <div class="cal-day-number">${day}</div>
+                        <div class="cal-day-dot"></div>
+                        <div class="cal-day-trip-name">${hasTrip[0].name.substring(0, 6)}</div>
+                    </div>`;
+                } else {
+                    html += `<div class="cal-day"><div class="cal-day-number">${day}</div></div>`;
+                }
+            }
+            
+            document.getElementById('calendarGrid').innerHTML = html;
+            
+            // Month trips
+            const monthTrips = trips.filter(t => t.date.startsWith(`${year}-${String(month + 1).padStart(2, '0')}`));
+            const container = document.getElementById('monthTrips');
+            
+            if (monthTrips.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📅</div><div class="empty-state-text">這個月沒有旅程</div></div>';
+            } else {
+                container.innerHTML = monthTrips.map(trip => {
+                    const total = trip.expenses.reduce((s, e) => s + e.amount, 0);
+                    return `
+                        <div class="trip-card" data-id="${trip.id}" style="cursor:pointer;">
+                            <div class="trip-header">
+                                <div class="trip-info">
+                                    <div class="trip-title">${trip.name}</div>
+                                    <div class="trip-meta"><span class="trip-date">📅 ${trip.date}</span></div>
+                                </div>
+                                <div class="trip-location-badge">${trip.location}</div>
+                            </div>
+                            <div class="trip-stats">
+                                <div class="trip-stat">
+                                    <span class="trip-stat-icon">💰</span>
+                                    <span class="trip-stat-value">$${total.toFixed(0)}</span>
+                                    <span class="trip-stat-label">消費</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                container.querySelectorAll('.trip-card').forEach(card => {
+                    card.addEventListener('click', () => showTripDetail(parseInt(card.dataset.id)));
                 });
-            });
+            }
+        }
+
+        document.getElementById('prevMonth').addEventListener('click', () => {
+            currentMonth.setMonth(currentMonth.getMonth() - 1);
+            renderCalendar();
+        });
+
+        document.getElementById('nextMonth').addEventListener('click', () => {
+            currentMonth.setMonth(currentMonth.getMonth() + 1);
+            renderCalendar();
+        });
+
+        // Photos
+        function renderPhotos() {
+            const container = document.getElementById('photoGrid');
+            const empty = document.getElementById('photoEmpty');
             
-            const labels = Object.keys(totals).filter(k => totals[k] > 0);
-            const data = labels.map(l => totals[l]);
-            const colors = labels.map(l => {
-                if (l === '交通') return '#3b82f6';
-                if (l === '餐飲') return '#f97316';
-                if (l === '休閒') return '#10b981';
-                return '#8b5cf6';
-            });
+            if (photos.length === 0) {
+                empty.style.display = 'block';
+                container.innerHTML = `
+                    <div class="photo-item photo-add" id="addPhoto">
+                        <span class="photo-add-icon">📷</span>
+                    </div>
+                `;
+            } else {
+                empty.style.display = 'none';
+                container.innerHTML = photos.map((p, i) => `
+                    <div class="photo-item" data-index="${i}">
+                        <span class="photo-placeholder">🖼️</span>
+                    </div>
+                `).join('') + `
+                    <div class="photo-item photo-add" id="addPhoto">
+                        <span class="photo-add-icon">➕</span>
+                    </div>
+                `;
+            }
             
-            if (labels.length === 0) return;
-            
-            pieChart = new Chart(document.getElementById('pieChart'), {
-                type: 'doughnut',
-                data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 0, cutout: '60%' }] },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'bottom', labels: { color: '#8899a6', font: { size: 12 }, padding: 15 } } }
-                }
-            });
-            
-            barChart = new Chart(document.getElementById('barChart'), {
-                type: 'bar',
-                data: { labels, datasets: [{ data, backgroundColor: colors, borderRadius: 8, borderSkipped: false }] },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { grid: { display: false }, ticks: { color: '#8899a6' } },
-                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8899a6' } }
-                    }
-                }
+            document.getElementById('addPhoto').addEventListener('click', () => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.multiple = true;
+                input.onchange = (e) => {
+                    Array.from(e.target.files).forEach(file => {
+                        const reader = new FileReader();
+                        reader.onload = (ev) => {
+                            photos.push({ url: ev.target.result, date: new Date().toISOString().split('T')[0] });
+                            localStorage.setItem('travelPhotos', JSON.stringify(photos));
+                            renderPhotos();
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                };
+                input.click();
             });
         }
 
         // Export/Import
         document.getElementById('exportBtn').addEventListener('click', () => {
-            const data = JSON.stringify(trips, null, 2);
+            const data = JSON.stringify({ trips, photos }, null, 2);
             const blob = new Blob([data], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -1399,8 +1678,11 @@
                 const reader = new FileReader();
                 reader.onload = (ev) => {
                     try {
-                        trips = JSON.parse(ev.target.result);
+                        const data = JSON.parse(ev.target.result);
+                        if (data.trips) trips = data.trips;
+                        if (data.photos) photos = data.photos;
                         localStorage.setItem('travelTrips', JSON.stringify(trips));
+                        localStorage.setItem('travelPhotos', JSON.stringify(photos));
                         init();
                     } catch (err) {
                         alert('Invalid file format');
@@ -1415,7 +1697,6 @@
         function init() {
             renderTripList();
             initFullMap();
-            initCharts();
         }
 
         init();
