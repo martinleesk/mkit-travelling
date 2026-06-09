@@ -8,1379 +8,704 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
+        :root {
+            --bg-primary: #0f1923;
+            --bg-secondary: #1a2634;
+            --bg-card: #1e2a38;
+            --text-primary: #ffffff;
+            --text-secondary: #8899a6;
+            --accent: #10b981;
+            --accent-hover: #0ea572;
+            --border: rgba(255,255,255,0.08);
+            --shadow: 0 4px 24px rgba(0,0,0,0.3);
         }
+        
+        [data-theme="light"] {
+            --bg-primary: #f5f7fa;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --text-primary: #1a2634;
+            --text-secondary: #5c6c7c;
+            --border: rgba(0,0,0,0.08);
+            --shadow: 0 4px 24px rgba(0,0,0,0.08);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang HK', 'Microsoft JhengHei', sans-serif;
             background: var(--bg-primary);
             min-height: 100vh;
             color: var(--text-primary);
-            padding: 16px;
-            padding-bottom: 100px;
-            transition: background 0.3s, color 0.3s;
         }
-
-        /* Container */
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
+        
+        /* Layout */
+        .app-layout {
+            display: flex;
+            min-height: 100vh;
         }
-
-        /* Header */
-        .header {
-            text-align: center;
+        
+        /* Sidebar */
+        .sidebar {
+            width: 72px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
         }
-        .header h1 {
-            font-size: 24px;
-            margin-bottom: 5px;
+        
+        .sidebar-logo {
+            font-size: 26px;
+            margin-bottom: 24px;
         }
-        .header .subtitle {
-            color: #94a3b8;
-            font-size: 12px;
-        }
-
-        /* Trip Selector */
-        .trip-selector {
-            background: rgba(255,255,255,0.08);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .trip-selector-header {
+        
+        .sidebar-nav {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        .trip-selector-title {
-            font-size: 13px;
-            color: #94a3b8;
-        }
-        .add-trip-btn {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: #fff;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .add-trip-btn:hover {
-            transform: scale(1.02);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-        }
-        .trip-tabs {
-            display: flex;
+            flex-direction: column;
             gap: 8px;
-            overflow-x: auto;
-            padding-bottom: 5px;
-            -webkit-overflow-scrolling: touch;
+            width: 100%;
+            padding: 0 12px;
         }
-        .trip-tab {
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 10px 16px;
-            font-size: 13px;
-            color: #94a3b8;
+        
+        .nav-item {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
             cursor: pointer;
-            white-space: nowrap;
             transition: all 0.2s;
+            color: var(--text-secondary);
+            background: transparent;
+            border: none;
+        }
+        
+        .nav-item:hover {
+            background: var(--border);
+        }
+        
+        .nav-item.active {
+            background: var(--accent);
+            color: #fff;
+        }
+        
+        .nav-item-label {
+            font-size: 9px;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+        
+        .nav-item-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .sidebar-spacer { flex: 1; }
+        
+        .sidebar-theme {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            border: none;
+            background: var(--bg-card);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 72px;
+            padding: 24px;
+            max-width: 1000px;
+        }
+        
+        /* Page */
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        /* Header */
+        .page-header {
+            margin-bottom: 24px;
+        }
+        
+        .page-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
+        }
+        
+        .card-title {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
             gap: 6px;
-            flex-shrink: 0;
         }
-        .trip-tab:hover {
-            background: rgba(255,255,255,0.12);
+        
+        /* Quick Stats */
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
         }
-        .trip-tab.active {
-            background: #10b981;
-            border-color: #10b981;
-            color: #fff;
+        
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            border: 1px solid var(--border);
         }
-        .trip-tab .trip-delete {
-            margin-left: 5px;
-            opacity: 0.6;
-            font-size: 11px;
+        
+        .stat-icon { font-size: 24px; margin-bottom: 8px; }
+        .stat-value { font-size: 22px; font-weight: 700; }
+        .stat-label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+        
+        /* Country Grid */
+        .country-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 12px;
         }
-        .trip-tab .trip-delete:hover {
-            opacity: 1;
+        
+        .country-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 16px 12px;
+            text-align: center;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
         }
-
-        /* Search Bar */
+        
+        .country-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+        
+        .country-card .flag { font-size: 32px; margin-bottom: 6px; }
+        .country-card .name { font-size: 12px; font-weight: 600; }
+        .country-card .count { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+        
+        /* Search */
         .search-bar {
-            background: rgba(255,255,255,0.08);
-            border-radius: 12px;
-            padding: 12px 16px;
-            margin-bottom: 15px;
+            background: var(--bg-card);
+            border-radius: 14px;
+            padding: 14px 18px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
         }
+        
         .search-bar input {
             flex: 1;
             background: none;
             border: none;
-            color: #fff;
+            color: var(--text-primary);
             font-size: 15px;
             outline: none;
         }
-        .search-bar input::placeholder {
-            color: #64748b;
-        }
-        .search-icon {
-            color: #64748b;
-            font-size: 18px;
-        }
-
+        
+        .search-bar input::placeholder { color: var(--text-secondary); }
+        .search-icon { color: var(--text-secondary); font-size: 18px; }
+        
         /* Filter Pills */
-        .filter-section {
-            margin-bottom: 15px;
-        }
-        .filter-label {
-            font-size: 12px;
-            color: #64748b;
-            margin-bottom: 8px;
-            padding-left: 5px;
-        }
         .filter-pills {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
+            margin-bottom: 16px;
         }
+        
         .filter-pill {
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
             border-radius: 20px;
-            padding: 6px 14px;
+            padding: 8px 16px;
             font-size: 13px;
-            color: #94a3b8;
+            color: var(--text-secondary);
             cursor: pointer;
             transition: all 0.2s;
-            touch-action: manipulation;
         }
-        .filter-pill:hover {
-            background: rgba(255,255,255,0.12);
-        }
-        .filter-pill.active {
-            background: #10b981;
-            border-color: #10b981;
-            color: #fff;
-        }
-        .filter-pill:active {
-            transform: scale(0.95);
-        }
-
-        /* Summary Card */
-        .summary-card {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .summary-card.hidden {
-            display: none;
-        }
-        .total-amount {
-            font-size: 36px;
-            font-weight: bold;
-            text-align: center;
-            color: #10b981;
-        }
-        .total-label {
-            text-align: center;
-            color: #94a3b8;
-            font-size: 13px;
-            margin-top: 3px;
-        }
-        .category-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-top: 15px;
-        }
-        .category-item {
-            background: rgba(255,255,255,0.05);
-            border-radius: 10px;
-            padding: 12px 8px;
-            text-align: center;
-        }
-        .category-item .icon {
-            font-size: 20px;
-            margin-bottom: 4px;
-        }
-        .category-item .amount {
-            font-size: 15px;
-            font-weight: bold;
-        }
-        .category-item .label {
-            font-size: 11px;
-            color: #64748b;
-            margin-top: 2px;
-        }
-
-        /* Charts Section */
-        .charts-section {
-            margin-bottom: 20px;
-        }
-        .chart-card {
-            background: rgba(255,255,255,0.08);
-            border-radius: 16px;
+        
+        .filter-pill:hover { border-color: var(--accent); }
+        .filter-pill.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+        
+        /* Expense List */
+        .expense-item {
+            background: var(--bg-card);
+            border-radius: 14px;
             padding: 16px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .chart-title {
-            font-size: 14px;
-            color: #94a3b8;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .chart-container {
-            position: relative;
-            height: 200px;
-            width: 100%;
-        }
-        .chart-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        /* Map Section */
-        .map-section {
-            margin-bottom: 20px;
-        }
-        .map-card {
-            background: rgba(255,255,255,0.08);
-            border-radius: 16px;
-            padding: 16px;
-            border: 1px solid rgba(255,255,255,0.1);
-            overflow: hidden;
-        }
-        .map-header {
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            border: 1px solid var(--border);
         }
-        .map-title {
-            font-size: 14px;
-            color: #94a3b8;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .map-toggle {
-            background: rgba(16,185,129,0.2);
-            color: #10b981;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .map-toggle:hover {
-            background: rgba(16,185,129,0.3);
-        }
-        #map {
-            height: 250px;
+        
+        .expense-left { display: flex; align-items: center; gap: 12px; }
+        .expense-icon {
+            width: 44px; height: 44px;
+            background: var(--bg-secondary);
             border-radius: 12px;
-            z-index: 1;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
         }
-        .leaflet-popup-content-wrapper {
-            background: #1a1a2e;
-            color: #fff;
-            border-radius: 12px;
+        .expense-info .name { font-size: 15px; font-weight: 500; }
+        .expense-info .meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+        .expense-amount { font-size: 16px; font-weight: 700; color: #f87171; }
+        
+        /* Charts */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
         }
-        .leaflet-popup-tip {
-            background: #1a1a2e;
-        }
-        .popup-content {
-            padding: 5px;
-        }
-        .popup-content h4 {
-            font-size: 14px;
-            margin-bottom: 4px;
-            color: #10b981;
-        }
-        .popup-content p {
-            font-size: 12px;
-            color: #94a3b8;
-            margin: 2px 0;
-        }
-
-        /* Section Title */
-        .section-title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .section-title.hidden {
-            display: none;
-        }
-
-        /* Trip Cards */
-        .trip-card {
-            background: rgba(255,255,255,0.08);
+        
+        .chart-card {
+            background: var(--bg-card);
             border-radius: 16px;
             padding: 16px;
+            border: 1px solid var(--border);
+        }
+        
+        .chart-card-title {
+            font-size: 13px;
+            color: var(--text-secondary);
             margin-bottom: 12px;
-            border: 1px solid rgba(255,255,255,0.1);
-            touch-action: manipulation;
+        }
+        
+        .chart-container { height: 200px; position: relative; }
+        
+        /* Map */
+        #map {
+            height: 400px;
+            border-radius: 16px;
+            z-index: 1;
+        }
+        
+        .map-toggle {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 13px;
             cursor: pointer;
+            margin-bottom: 12px;
         }
-        .trip-card:active {
-            transform: scale(0.98);
-            transition: transform 0.1s;
+        
+        /* Trip List */
+        .trip-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border);
         }
+        
         .trip-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
-        }
-        .trip-date {
-            font-size: 12px;
-            color: #64748b;
-        }
-        .trip-location {
-            background: rgba(16,185,129,0.2);
-            color: #10b981;
-            font-size: 12px;
-            padding: 3px 10px;
-            border-radius: 12px;
-        }
-        .trip-title {
-            font-size: 16px;
-            font-weight: bold;
             margin-bottom: 8px;
         }
+        
+        .trip-date { font-size: 12px; color: var(--text-secondary); }
+        .trip-location {
+            background: rgba(16,185,129,0.15);
+            color: var(--accent);
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 10px;
+        }
+        
+        .trip-title { font-size: 17px; font-weight: 600; margin-bottom: 8px; }
+        
         .trip-expenses {
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
         }
+        
         .expense-tag {
-            background: rgba(255,255,255,0.06);
+            background: var(--bg-secondary);
             border-radius: 8px;
-            padding: 5px 8px;
+            padding: 4px 10px;
             font-size: 12px;
             display: flex;
             align-items: center;
             gap: 4px;
         }
-        .expense-tag .amount {
-            color: #f87171;
-            font-weight: 600;
+        
+        .expense-tag .amount { color: #f87171; font-weight: 600; }
+        
+        /* Settings */
+        .settings-group {
+            margin-bottom: 24px;
         }
-
-        /* All Expenses Section */
-        .all-expenses-section {
-            margin-top: 20px;
+        
+        .settings-title {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        .expense-item {
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
-            padding: 14px;
-            margin-bottom: 10px;
+        
+        .settings-item {
+            background: var(--bg-card);
+            border-radius: 14px;
+            padding: 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            margin-bottom: 8px;
+            cursor: pointer;
         }
-        .expense-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        
+        .settings-item-left { display: flex; align-items: center; gap: 12px; }
+        .settings-item-icon { font-size: 20px; }
+        .settings-item-label { font-size: 15px; }
+        .settings-item-desc { font-size: 12px; color: var(--text-secondary); }
+        
+        /* Toggle Switch */
+        .toggle {
+            width: 48px;
+            height: 28px;
+            background: var(--bg-secondary);
+            border-radius: 14px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s;
         }
-        .expense-icon {
-            width: 40px;
-            height: 40px;
-            background: rgba(255,255,255,0.08);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
+        
+        .toggle.active { background: var(--accent); }
+        
+        .toggle::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: #fff;
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+            transition: transform 0.2s;
         }
-        .expense-info .name {
-            font-size: 14px;
-            font-weight: 500;
-        }
-        .expense-info .trip-name {
-            font-size: 11px;
-            color: #64748b;
-            margin-top: 2px;
-        }
-        .expense-amount {
-            font-size: 15px;
-            font-weight: bold;
-            color: #f87171;
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #64748b;
-        }
-        .empty-state .icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-        }
-        .empty-state.hidden {
+        
+        .toggle.active::after { transform: translateX(20px); }
+        
+        /* Mobile Bottom Nav */
+        .mobile-nav {
             display: none;
-        }
-
-        /* Add Trip Modal */
-        .modal-overlay {
             position: fixed;
-            top: 0;
+            bottom: 0;
             left: 0;
             right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.7);
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            padding: 8px 16px;
+            z-index: 100;
+        }
+        
+        .mobile-nav-inner {
             display: flex;
+            justify-content: space-around;
+        }
+        
+        .mobile-nav-item {
+            display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 20px;
-        }
-        .modal-overlay.hidden {
-            display: none;
-        }
-        .modal {
-            background: #1a1a2e;
-            border-radius: 20px;
-            padding: 24px;
-            width: 100%;
-            max-width: 400px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .modal h3 {
-            font-size: 18px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .modal-input {
-            width: 100%;
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.1);
+            gap: 4px;
+            padding: 8px 12px;
             border-radius: 12px;
-            padding: 12px 16px;
-            color: #fff;
-            font-size: 15px;
-            margin-bottom: 12px;
-            outline: none;
-        }
-        .modal-input:focus {
-            border-color: #10b981;
-        }
-        .modal-select {
-            width: 100%;
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 12px 16px;
-            color: #fff;
-            font-size: 15px;
-            margin-bottom: 12px;
-            outline: none;
-        }
-        .modal-select option {
-            background: #1a1a2e;
-        }
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        .modal-btn {
-            flex: 1;
-            padding: 12px;
-            border-radius: 12px;
-            font-size: 14px;
             cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 10px;
             transition: all 0.2s;
             border: none;
-        }
-        .modal-btn.cancel {
-            background: rgba(255,255,255,0.08);
-            color: #94a3b8;
-        }
-        .modal-btn.confirm {
-            background: #10b981;
-            color: #fff;
-        }
-        .modal-btn:hover {
-            transform: scale(1.02);
-        }
-
-        /* Mobile Optimizations */
-        @media (max-width: 480px) {
-            body {
-                padding: 12px;
-            }
-            .header h1 {
-                font-size: 22px;
-            }
-            .total-amount {
-                font-size: 32px;
-            }
-            .category-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .chart-row {
-                grid-template-columns: 1fr;
-            }
-            .chart-container {
-                height: 180px;
-            }
-            .filter-pills {
-                overflow-x: auto;
-                flex-wrap: nowrap;
-                -webkit-overflow-scrolling: touch;
-                padding-bottom: 5px;
-            }
-            .filter-pill {
-                flex-shrink: 0;
-            }
-            #map {
-                height: 200px;
-            }
-        }
-
-        /* Smooth animations */
-        .trip-card, .expense-item, .chart-card, .map-card, .trip-tab {
-            transition: all 0.2s;
-        }
-
-        /* Leaflet dark theme override */
-        .leaflet-control-zoom a {
-            background: #1a1a2e !important;
-            color: #fff !important;
-            border-color: rgba(255,255,255,0.1) !important;
-        }
-        .leaflet-control-zoom a:hover {
-            background: #16213e !important;
-        }
-        .leaflet-control-attribution {
-            background: rgba(26,26,46,0.8) !important;
-            color: #64748b !important;
-        }
-        .leaflet-control-attribution a {
-            color: #10b981 !important;
-        }
-
-        /* Enhanced Search */
-        .search-wrapper { position: relative; }
-        .search-clear {
-            position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
-            background: none; border: none; color: #64748b; font-size: 18px; cursor: pointer; display: none;
-        }
-        .search-clear.visible { display: block; }
-        .search-suggestions {
-            position: absolute; top: 100%; left: 0; right: 0; background: #1a1a2e;
-            border-radius: 12px; margin-top: 5px; border: 1px solid rgba(255,255,255,0.1);
-            z-index: 100; display: none; max-height: 300px; overflow-y: auto;
-        }
-        .search-suggestions.visible { display: block; }
-        .suggestion-item {
-            padding: 12px 16px; cursor: pointer; display: flex; align-items: center;
-            gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .suggestion-item:last-child { border-bottom: none; }
-        .suggestion-item:hover { background: rgba(255,255,255,0.05); }
-        .suggestion-icon { font-size: 16px; }
-        .suggestion-text { flex: 1; }
-        .suggestion-text .name { font-size: 14px; color: #fff; }
-        .suggestion-text .meta { font-size: 11px; color: #64748b; margin-top: 2px; }
-        .suggestion-type {
-            font-size: 11px; color: #10b981; background: rgba(16,185,129,0.1);
-            padding: 3px 8px; border-radius: 8px;
-        }
-        .quick-filters {
-            display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto;
-            padding-bottom: 5px; -webkit-overflow-scrolling: touch;
-        }
-        .quick-filter {
-            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px; padding: 6px 12px; font-size: 12px; color: #94a3b8;
-            cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: all 0.2s;
-        }
-        .quick-filter:hover, .quick-filter.active {
-            background: #10b981; border-color: #10b981; color: #fff;
-        }
-        .search-stats {
-            font-size: 12px; color: #64748b; text-align: center; margin-bottom: 15px;
-            padding: 8px; background: rgba(255,255,255,0.03); border-radius: 8px;
-        }
-
-
-        /* Theme Toggle */
-        .header-top { display: flex; justify-content: space-between; align-items: center; }
-        .theme-toggle {
-            background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: 12px; width: 44px; height: 44px; font-size: 20px;
-            cursor: pointer; transition: all 0.2s;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .theme-toggle:hover { background: var(--bg-card-hover); transform: scale(1.05); }
-        
-        /* Country Section */
-        .country-section { margin-bottom: 20px; }
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .country-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px; }
-        .country-card {
-            background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: 16px; padding: 16px 12px; text-align: center;
-            cursor: pointer; transition: all 0.2s;
-        }
-        .country-card:hover { background: var(--bg-card-hover); transform: translateY(-2px); box-shadow: 0 4px 12px var(--shadow); }
-        .country-card .flag { font-size: 32px; margin-bottom: 6px; }
-        .country-card .name { font-size: 12px; color: var(--text-secondary); }
-        .country-card .count { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-        
-        /* Quick Stats */
-        .quick-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
-        .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; text-align: center; }
-        .stat-icon { font-size: 20px; margin-bottom: 6px; }
-        .stat-value { font-size: 18px; font-weight: bold; color: var(--accent); }
-        .stat-label { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-        
-        /* Timeline */
-        .timeline-section { margin-bottom: 20px; }
-        .year-filter { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; color: var(--text-primary); font-size: 12px; }
-        .timeline { position: relative; padding-left: 20px; }
-        .timeline::before { content: ''; position: absolute; left: 6px; top: 0; bottom: 0; width: 2px; background: var(--border); }
-        .timeline-item { position: relative; margin-bottom: 16px; padding-left: 20px; }
-        .timeline-item::before { content: ''; position: absolute; left: -17px; top: 8px; width: 12px; height: 12px; background: var(--accent); border-radius: 50%; border: 2px solid var(--bg-primary); }
-        .timeline-date { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
-        .timeline-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; cursor: pointer; transition: all 0.2s; }
-        .timeline-card:hover { background: var(--bg-card-hover); transform: translateX(4px); }
-        .timeline-card .trip-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .timeline-card .trip-title { font-size: 15px; font-weight: bold; }
-        .timeline-card .trip-location { background: rgba(16,185,129,0.15); color: var(--accent); font-size: 11px; padding: 3px 8px; border-radius: 8px; }
-        .timeline-card .trip-summary { font-size: 12px; color: var(--text-secondary); display: flex; gap: 12px; }
-
-
-        
-        /* ===== DESKTOP LAYOUT ===== */
-        @media (min-width: 1024px) {
-            body {
-                padding: 40px;
-                padding-bottom: 120px;
-            }
-            
-            .container {
-                max-width: 900px;
-                margin: 0 auto;
-            }
-            
-            .header {
-                padding: 30px 0;
-                margin-bottom: 30px;
-            }
-            
-            .header h1 {
-                font-size: 32px;
-            }
-            
-            .header .subtitle {
-                font-size: 14px;
-            }
-            
-            /* Country Grid - larger cards */
-            .country-grid {
-                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-                gap: 20px;
-            }
-            
-            .country-card {
-                padding: 24px 16px;
-                border-radius: 20px;
-            }
-            
-            .country-card .flag {
-                font-size: 48px;
-                margin-bottom: 10px;
-            }
-            
-            .country-card .name {
-                font-size: 15px;
-            }
-            
-            .country-card .count {
-                font-size: 13px;
-            }
-            
-            /* Quick Stats - larger */
-            .quick-stats {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 24px;
-                margin-bottom: 30px;
-            }
-            
-            .stat-card {
-                padding: 24px;
-                border-radius: 20px;
-            }
-            
-            .stat-icon {
-                font-size: 28px;
-                margin-bottom: 10px;
-            }
-            
-            .stat-value {
-                font-size: 28px;
-            }
-            
-            .stat-label {
-                font-size: 14px;
-                margin-top: 4px;
-            }
-            
-            /* Timeline - more spacious */
-            .timeline {
-                padding-left: 30px;
-            }
-            
-            .timeline::before {
-                left: 8px;
-            }
-            
-            .timeline-item {
-                margin-bottom: 24px;
-                padding-left: 30px;
-            }
-            
-            .timeline-item::before {
-                left: -25px;
-                top: 10px;
-                width: 16px;
-                height: 16px;
-            }
-            
-            .timeline-card {
-                padding: 20px 24px;
-                border-radius: 16px;
-            }
-            
-            .timeline-card .trip-title {
-                font-size: 18px;
-            }
-            
-            .timeline-card .trip-summary {
-                font-size: 14px;
-            }
-            
-            /* Charts - larger */
-            .chart-container {
-                height: 280px;
-            }
-            
-            /* Search bar - larger */
-            .search-bar {
-                padding: 16px 20px;
-                border-radius: 16px;
-            }
-            
-            .search-bar input {
-                font-size: 16px;
-            }
-            
-            /* Quick filters */
-            .quick-filters {
-                gap: 12px;
-                margin-bottom: 20px;
-            }
-            
-            .quick-filter {
-                padding: 10px 18px;
-                font-size: 13px;
-            }
-            
-            /* Filter pills */
-            .filter-pill {
-                padding: 8px 18px;
-                font-size: 14px;
-            }
-            
-            /* Summary card */
-            .summary-card {
-                padding: 28px;
-                border-radius: 24px;
-            }
-            
-            .total-amount {
-                font-size: 48px;
-            }
-            
-            .category-grid {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 16px;
-                margin-top: 20px;
-            }
-            
-            .category-item {
-                padding: 18px 12px;
-                border-radius: 14px;
-            }
-            
-            .category-item .icon {
-                font-size: 28px;
-            }
-            
-            .category-item .amount {
-                font-size: 18px;
-            }
-            
-            .category-item .label {
-                font-size: 13px;
-            }
-            
-            /* Expense items */
-            .expense-item {
-                padding: 18px 20px;
-                margin-bottom: 12px;
-            }
-            
-            .expense-icon {
-                width: 48px;
-                height: 48px;
-                font-size: 22px;
-            }
-            
-            .expense-info .name {
-                font-size: 16px;
-            }
-            
-            .expense-info .trip-name {
-                font-size: 13px;
-            }
-            
-            .expense-amount {
-                font-size: 18px;
-            }
-            
-            /* Map */
-            #map {
-                height: 350px;
-                border-radius: 16px;
-            }
-            
-            /* Trip card */
-            .trip-card {
-                padding: 20px;
-                border-radius: 20px;
-            }
-            
-            .trip-title {
-                font-size: 18px;
-            }
-            
-            /* Section titles */
-            .section-title {
-                font-size: 18px;
-                margin-bottom: 16px;
-            }
-            
-            /* Modal */
-            .modal {
-                max-width: 480px;
-                padding: 32px;
-            }
-            
-            .modal h3 {
-                font-size: 22px;
-            }
-            
-            .modal-input {
-                padding: 16px 20px;
-                font-size: 16px;
-                margin-bottom: 16px;
-            }
-            
-            .modal-btn {
-                padding: 14px;
-                font-size: 15px;
-            }
+            background: none;
         }
         
-        /* ===== LARGE DESKTOP ===== */
-        @media (min-width: 1440px) {
-            body {
-                padding: 60px;
-            }
-            
-            .container {
-                max-width: 1100px;
-            }
-            
-            .header h1 {
-                font-size: 36px;
-            }
-            
-            .country-grid {
-                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            }
-            
-            .stat-value {
-                font-size: 32px;
-            }
-        }
-
-
-        /* Mobile specific */
-        @media (max-width: 480px) {
-            body { padding: 12px; padding-bottom: 80px; }
-            .header h1 { font-size: 22px; }
-            .total-amount { font-size: 32px; }
-            .category-grid { grid-template-columns: repeat(2, 1fr); }
-            .chart-row { grid-template-columns: 1fr; }
-            .chart-container { height: 180px; }
-            .filter-pills { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; padding-bottom: 5px; }
-            .filter-pill { flex-shrink: 0; }
-            #map { height: 200px; }
-            .country-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
-            .country-card { padding: 14px 10px; }
-            .country-card .flag { font-size: 28px; }
-            .country-card .name { font-size: 11px; }
-            .country-card .count { font-size: 10px; }
-            .quick-stats { gap: 10px; }
-            .stat-card { padding: 14px 10px; }
-            .stat-value { font-size: 16px; }
-            .stat-label { font-size: 10px; }
-        }
-
-
+        .mobile-nav-item.active { color: var(--accent); }
+        .mobile-nav-item-icon { font-size: 22px; }
         
-        /* ===== SIDEBAR NAVIGATION ===== */
-        .app-layout { display: flex; min-height: 100vh; }
+        /* Leaflet dark theme */
+        .leaflet-popup-content-wrapper { background: var(--bg-card); color: var(--text-primary); border-radius: 12px; }
+        .leaflet-popup-tip { background: var(--bg-card); }
+        .leaflet-control-zoom a { background: var(--bg-card) !important; color: var(--text-primary) !important; }
+        .leaflet-control-attribution { background: var(--bg-card) !important; color: var(--text-secondary) !important; }
         
-        .sidebar {
-            position: fixed;
-            left: 0; top: 0; bottom: 0;
-            width: 68px;
-            background: rgba(20, 20, 35, 0.98);
-            backdrop-filter: blur(12px);
-            border-right: 1px solid rgba(255,255,255,0.06);
-            display: flex; flex-direction: column;
-            align-items: center; padding: 16px 0;
-            z-index: 1000;
-        }
-        
-        .sidebar-logo { font-size: 26px; margin-bottom: 24px; }
-        
-        .nav-item {
-            width: 50px; height: 50px;
-            display: flex; align-items: center; justify-content: center;
-            border-radius: 14px; margin-bottom: 6px;
-            cursor: pointer; transition: all 0.25s;
-            font-size: 22px; color: #6b7280;
-            position: relative;
-        }
-        .nav-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
-        .nav-item.active {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: #fff;
-            box-shadow: 0 4px 15px rgba(16,185,129,0.35);
-        }
-        .nav-item .nav-label {
-            position: absolute; left: 62px;
-            background: #1a1a2e; padding: 6px 12px;
-            border-radius: 8px; font-size: 13px;
-            white-space: nowrap; opacity: 0;
-            pointer-events: none; transition: opacity 0.2s;
-            border: 1px solid rgba(255,255,255,0.08);
-        }
-        .nav-item:hover .nav-label { opacity: 1; }
-        
-        .sidebar-spacer { flex: 1; }
-        
-        .theme-btn {
-            width: 50px; height: 50px;
-            display: flex; align-items: center; justify-content: center;
-            border-radius: 14px; cursor: pointer;
-            transition: all 0.25s; font-size: 22px;
-            color: #6b7280; background: none; border: none;
-        }
-        .theme-btn:hover { background: rgba(255,255,255,0.06); color: #fff; }
-        
-        /* Main content */
-        .main-content {
-            flex: 1;
-            margin-left: 68px;
-            min-height: 100vh;
-        }
-        
-        /* Page sections */
-        .page-section { display: none; }
-        .page-section.active { display: block; }
-        
-        /* Mobile bottom nav */
+        /* Responsive */
         @media (max-width: 768px) {
-            .sidebar {
-                position: fixed; bottom: 0; left: 0; right: 0; top: auto;
-                width: 100%; height: 68px;
-                flex-direction: row; justify-content: space-around;
-                padding: 0 8px; border-right: none;
-                border-top: 1px solid rgba(255,255,255,0.06);
-            }
-            .sidebar-logo, .sidebar-spacer { display: none; }
-            .nav-item { width: 52px; height: 52px; margin-bottom: 0; font-size: 20px; }
-            .nav-item .nav-label { display: none; }
-            .main-content { margin-left: 0; margin-bottom: 68px; padding: 12px; }
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; padding: 16px; padding-bottom: 100px; }
+            .mobile-nav { display: block; }
+            .quick-stats { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            .stat-value { font-size: 18px; }
+            .chart-grid { grid-template-columns: 1fr; }
+            .country-grid { grid-template-columns: repeat(3, 1fr); }
         }
         
-        /* Desktop sidebar */
-        @media (min-width: 1024px) {
-            .sidebar { width: 76px; }
-            .main-content { margin-left: 76px; padding: 24px 32px; }
-            .nav-item { width: 54px; height: 54px; font-size: 24px; }
+        @media (max-width: 480px) {
+            .page-header h1 { font-size: 24px; }
+            .quick-stats { grid-template-columns: 1fr; }
+            .stat-card { display: flex; align-items: center; gap: 12px; text-align: left; }
+            .stat-icon { margin-bottom: 0; }
         }
-        
-        @media (min-width: 1440px) {
-            .sidebar { width: 84px; }
-            .main-content { margin-left: 84px; padding: 30px 50px; }
-            .nav-item { width: 58px; height: 58px; font-size: 26px; }
-        }
-
     </style>
 </head>
 <body>
-    <div class="container">
-        
-                <!-- HOME SECTION -->
-                <section class="page-section active" id="homeSection">
-                    <div class="container">
-
-        <div class="header">
-            <div class="header-top">
-                <div>
-                    <h1>🌍 旅行足迹</h1>
-                    <div class="subtitle" id="tripCount">1個旅程 · 總消費 HK$0</div>
-                </div>
-                <button class="theme-toggle" id="themeToggle" title="切換主題">
-                    <span id="themeIcon">🌙</span>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-logo">🦵</div>
+            <div class="sidebar-nav">
+                <button class="nav-item active" data-page="home">
+                    <span>🏠</span>
+                </button>
+                <button class="nav-item" data-page="map">
+                    <span>🗺️</span>
+                </button>
+                <button class="nav-item" data-page="stats">
+                    <span>📊</span>
+                </button>
+                <button class="nav-item" data-page="trips">
+                    <span>📅</span>
+                </button>
+                <button class="nav-item" data-page="search">
+                    <span>🔍</span>
+                </button>
+                <button class="nav-item" data-page="settings">
+                    <span>⚙️</span>
                 </button>
             </div>
-        </div>
-
-        <!-- Country Quick Access -->
-        <div class="country-section">
-            <div class="section-header">
-                <div class="section-title">🏷️ 我的旅程</div>
-                <button class="add-trip-btn" id="addTripBtn">
-                    <span>＋</span> 新旅程
-                </button>
-            </div>
-            <div class="country-grid" id="countryGrid"></div>
-        </div>
-
-        <!-- Quick Stats -->
-        <div class="quick-stats" id="quickStats">
-            <div class="stat-card">
-                <div class="stat-icon">✈️</div>
-                <div class="stat-value" id="totalTrips">1</div>
-                <div class="stat-label">旅程</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">💰</div>
-                <div class="stat-value" id="totalSpent">HK$0</div>
-                <div class="stat-label">總消費</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">📍</div>
-                <div class="stat-value" id="totalPlaces">0</div>
-                <div class="stat-label">地點</div>
-            </div>
-        </div>
-
-        <!-- Timeline / Recent Trips -->
-        <div class="timeline-section" id="timelineSection">
-            <div class="section-header">
-                <div class="section-title">📅 時間線</div>
-                <select class="year-filter" id="yearFilter">
-                    <option value="all">全部年份</option>
-                </select>
-            </div>
-            <div class="timeline" id="timeline"></div>
-        </div>
-
-        <!-- Search Bar -->
-        <div class="search-wrapper">
-            <div class="search-bar">
-                <span class="search-icon">🔍</span>
-                <input type="text" id="searchInput" placeholder="搜尋旅程、消費、地點...">
-                <button class="search-clear" id="searchClear">×</button>
-            </div>
-            <div class="search-suggestions" id="searchSuggestions"></div>
-        </div>
+            <div class="sidebar-spacer"></div>
+            <button class="sidebar-theme" id="themeToggle">🌙</button>
+        </nav>
         
-        <!-- Quick Filters -->
-        <div class="quick-filters" id="quickFilters">
-            <div class="quick-filter" data-filter="today">📅 今日</div>
-            <div class="quick-filter" data-filter="week">🗓️ 本週</div>
-            <div class="quick-filter" data-filter="month">📆 本月</div>
-            <div class="quick-filter" data-filter="high">💰 高消費</div>
-            <div class="quick-filter" data-filter="food">🍽️ 美食</div>
-            <div class="quick-filter" data-filter="transport">🚌 交通</div>
-        </div>
-        
-        <!-- Search Stats -->
-        <div class="search-stats" id="searchStats"></div>
-
-        <!-- Trip Selector (hidden, using new homepage) -->
-        <div class="trip-selector" style="display:none;">
-            <div class="trip-selector-header">
-                <div class="trip-selector-title">📍 切換旅程</div>
-                <button class="add-trip-btn" id="addTripBtn">
-                    <span>＋</span> 新旅程
-                </button>
-            </div>
-            <div class="trip-tabs" id="tripTabs"></div>
-        </div>
-
-        <!-- Search Bar -->
-        <div class="search-wrapper">
-            <div class="search-bar">
-                <span class="search-icon">🔍</span>
-                <input type="text" id="searchInput" placeholder="搜尋餐廳、地點、金額...">
-                <button class="search-clear" id="searchClear">×</button>
-            </div>
-            <div class="search-suggestions" id="searchSuggestions"></div>
-        </div>
-        
-        <!-- Quick Filters -->
-        <div class="quick-filters" id="quickFilters">
-            <div class="quick-filter" data-filter="today">📅 今日</div>
-            <div class="quick-filter" data-filter="week">🗓️ 本週</div>
-            <div class="quick-filter" data-filter="month">📆 本月</div>
-            <div class="quick-filter" data-filter="high">💰 高消費</div>
-            <div class="quick-filter" data-filter="food">🍽️ 美食</div>
-            <div class="quick-filter" data-filter="transport">🚌 交通</div>
-        </div>
-        
-        <!-- Search Stats -->
-        <div class="search-stats" id="searchStats"></div>
-
-        <!-- Filter Pills -->
-        <div class="filter-section">
-            <div class="filter-label">地區</div>
-            <div class="filter-pills" id="locationFilters">
-                <div class="filter-pill active" data-value="all">全部</div>
-                <div class="filter-pill" data-value="深圳">🇨🇳 深圳</div>
-                <div class="filter-pill" data-value="香港">🇭🇰 香港</div>
-                <div class="filter-pill" data-value="澳門">🇲🇴 澳門</div>
-                <div class="filter-pill" data-value="台灣">🇹🇼 台灣</div>
-            </div>
-        </div>
-
-        <div class="filter-section">
-            <div class="filter-label">類別</div>
-            <div class="filter-pills" id="categoryFilters">
-                <div class="filter-pill active" data-value="all">全部</div>
-                <div class="filter-pill" data-value="交通">🚌 交通</div>
-                <div class="filter-pill" data-value="餐飲">🍽️ 餐飲</div>
-                <div class="filter-pill" data-value="休閒">💆 休閒</div>
-                <div class="filter-pill" data-value="購物">🛍️ 購物</div>
-            </div>
-        </div>
-
-        <!-- Summary Card -->
-        <div class="summary-card" id="summaryCard">
-            <div class="total-amount" id="totalAmount">HK$0.00</div>
-            <div class="total-label">總消費</div>
-            <div class="category-grid">
-                <div class="category-item">
-                    <div class="icon">🚌</div>
-                    <div class="amount" id="catTransport">$0</div>
-                    <div class="label">交通</div>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Home Page -->
+            <div class="page active" id="page-home">
+                <div class="page-header">
+                    <h1>🦵 旅行足迹</h1>
+                    <p>記錄你的每一段旅程</p>
                 </div>
-                <div class="category-item">
-                    <div class="icon">🍽️</div>
-                    <div class="amount" id="catFood">$0</div>
-                    <div class="label">餐飲</div>
-                </div>
-                <div class="category-item">
-                    <div class="icon">💆</div>
-                    <div class="amount" id="catLeisure">$0</div>
-                    <div class="label">休閒</div>
-                </div>
-                <div class="category-item">
-                    <div class="icon">🛍️</div>
-                    <div class="amount" id="catShopping">$0</div>
-                    <div class="label">購物</div>
-                </div>
-            </div>
-        </div>
-
-        
-                    </div><!-- end container -->
-                </section><!-- end homeSection -->
                 
-                <!-- MAP SECTION -->
-                <section class="page-section" id="mapSection">
-                    <div class="container">
-
-        <div class="map-section">
-            <div class="map-card">
-                <div class="map-header">
-                    <div class="map-title">🗺️ 足迹地圖</div>
-                    <button class="map-toggle" id="mapToggle">展開地圖</button>
+                <div class="quick-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">✈️</div>
+                        <div class="stat-value" id="totalTrips">0</div>
+                        <div class="stat-label">旅程</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-value" id="totalSpent">$0</div>
+                        <div class="stat-label">總消費</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📍</div>
+                        <div class="stat-value" id="totalPlaces">0</div>
+                        <div class="stat-label">地點</div>
+                    </div>
                 </div>
+                
+                <div class="card">
+                    <div class="card-title">🏷️ 國家分類</div>
+                    <div class="country-grid" id="countryGrid"></div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">💸 消費概覽</div>
+                    <div id="expenseSummary"></div>
+                </div>
+            </div>
+            
+            <!-- Map Page -->
+            <div class="page" id="page-map">
+                <div class="page-header">
+                    <h1>🗺️ 足迹地圖</h1>
+                    <p>你走過的地方</p>
+                </div>
+                <button class="map-toggle" id="mapToggle">展開地圖</button>
                 <div id="mapWrapper" style="display:none;">
                     <div id="map"></div>
                 </div>
             </div>
-        </div>
-
-        
-                    </div><!-- end container -->
-                </section><!-- end mapSection -->
-                
-                <!-- STATS SECTION -->
-                <section class="page-section" id="statsSection">
-                    <div class="container">
-
-        <div class="charts-section" id="chartsSection">
-            <div class="chart-row">
-                <div class="chart-card">
-                    <div class="chart-title">📊 消費分佈</div>
-                    <div class="chart-container">
-                        <canvas id="pieChart"></canvas>
-                    </div>
+            
+            <!-- Stats Page -->
+            <div class="page" id="page-stats">
+                <div class="page-header">
+                    <h1>📊 消費統計</h1>
+                    <p>分析你的消費習慣</p>
                 </div>
-                <div class="chart-card">
-                    <div class="chart-title">📈 類別比較</div>
-                    <div class="chart-container">
-                        <canvas id="barChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        
-                    </div><!-- end container -->
-                </section><!-- end statsSection -->
-                
-                <!-- TRIPS SECTION -->
-                <section class="page-section" id="tripsSection">
-                    <div class="container">
-
-        <div id="tripSectionTitle" class="section-title">📍 行程記錄</div>
-        <div id="tripList"></div>
-
-        
-                    </div><!-- end container -->
-                </section><!-- end tripsSection -->
-                
-                <!-- SEARCH SECTION -->
-                <section class="page-section" id="searchSection">
-                    <div class="container">
-
-        <div class="all-expenses-section" id="expenseSectionTitle">
-            <div class="section-title">💸 消費明細</div>
-            <div id="allExpensesList"></div>
-        </div>
-
-        
-                    
-                </section><!-- end tripsSection -->
-                
-                <!-- SEARCH SECTION -->
-                <section class="page-section" id="searchSection">
-                    <div class="container">
-
-                    </div><!-- end container -->
-                </section><!-- end searchSection -->
-                
-                <!-- SETTINGS SECTION -->
-                <section class="page-section" id="settingsSection">
-                    <div class="container">
-                        <div class="settings-content">
-                            <h2 style="margin-bottom:20px;">⚙️ 設定</h2>
-                            <div style="background:rgba(255,255,255,0.08);border-radius:16px;padding:20px;margin-bottom:16px;">
-                                <h3 style="font-size:15px;margin-bottom:12px;">🎨 外觀</h3>
-                                <div style="display:flex;align-items:center;justify-content:space-between;">
-                                    <span>深色模式</span>
-                                    <button onclick="toggleTheme()" style="background:#10b981;color:#fff;border:none;padding:8px 16px;border-radius:10px;cursor:pointer;">切換</button>
-                                </div>
-                            </div>
-                            <div style="background:rgba(255,255,255,0.08);border-radius:16px;padding:20px;margin-bottom:16px;">
-                                <h3 style="font-size:15px;margin-bottom:12px;">💾 數據</h3>
-                                <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                                    <button onclick="exportData()" style="background:rgba(255,255,255,0.1);color:#fff;border:none;padding:10px 16px;border-radius:10px;cursor:pointer;">📤 匯出數據</button>
-                                    <button onclick="alert('請聯繫我們導入數據')" style="background:rgba(255,255,255,0.1);color:#fff;border:none;padding:10px 16px;border-radius:10px;cursor:pointer;">📥 匯入數據</button>
-                                </div>
-                            </div>
-                            <div style="background:rgba(255,255,255,0.08);border-radius:16px;padding:20px;">
-                                <h3 style="font-size:15px;margin-bottom:12px;">ℹ️ 關於</h3>
-                                <p style="color:#6b7280;font-size:13px;">旅行足跡檔案 v1.0</p>
-                                <p style="color:#6b7280;font-size:12px;margin-top:6px;">記錄你的每一次旅程 ✈️</p>
-                            </div>
+                <div class="chart-grid">
+                    <div class="chart-card">
+                        <div class="chart-card-title">📊 消費分佈</div>
+                        <div class="chart-container">
+                            <canvas id="pieChart"></canvas>
                         </div>
                     </div>
-                </section><!-- end settingsSection -->
-
-        <div class="empty-state hidden" id="emptyState">
-            <div class="icon">🔍</div>
-            <div>找不到相關消費記錄</div>
-        </div>
-    </div>
-
-    <!-- Add Trip Modal -->
-    <div class="modal-overlay hidden" id="addTripModal">
-        <div class="modal">
-            <h3>🧳 新旅程</h3>
-            <input type="text" class="modal-input" id="newTripName" placeholder="旅程名稱 (例如：澳門美食之旅)">
-            <input type="date" class="modal-input" id="newTripDate">
-            <select class="modal-select" id="newTripLocation">
-                <option value="深圳">🇨🇳 深圳</option>
-                <option value="香港">🇭🇰 香港</option>
-                <option value="澳門">🇲🇴 澳門</option>
-                <option value="台灣">🇹🇼 台灣</option>
-            </select>
-            <div class="modal-actions">
-                <button class="modal-btn cancel" id="cancelTripBtn">取消</button>
-                <button class="modal-btn confirm" id="confirmTripBtn">創建</button>
+                    <div class="chart-card">
+                        <div class="chart-card-title">📈 類別比較</div>
+                        <div class="chart-container">
+                            <canvas id="barChart"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+            
+            <!-- Trips Page -->
+            <div class="page" id="page-trips">
+                <div class="page-header">
+                    <h1>📅 旅程記錄</h1>
+                    <p>所有行程一目了然</p>
+                </div>
+                <div id="tripList"></div>
+            </div>
+            
+            <!-- Search Page -->
+            <div class="page" id="page-search">
+                <div class="page-header">
+                    <h1>🔍 搜尋</h1>
+                    <p>快速搵到消費記錄</p>
+                </div>
+                <div class="search-bar">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchInput" placeholder="搜尋餐廳、地點...">
+                </div>
+                <div class="filter-pills" id="categoryFilters">
+                    <div class="filter-pill active" data-value="all">全部</div>
+                    <div class="filter-pill" data-value="交通">🚌 交通</div>
+                    <div class="filter-pill" data-value="餐飲">🍽️ 餐飲</div>
+                    <div class="filter-pill" data-value="休閒">💆 休閒</div>
+                    <div class="filter-pill" data-value="購物">🛍️ 購物</div>
+                </div>
+                <div id="searchResults"></div>
+            </div>
+            
+            <!-- Settings Page -->
+            <div class="page" id="page-settings">
+                <div class="page-header">
+                    <h1>⚙️ 設定</h1>
+                    <p>自訂你的旅行档案</p>
+                </div>
+                
+                <div class="settings-group">
+                    <div class="settings-title">外觀</div>
+                    <div class="settings-item">
+                        <div class="settings-item-left">
+                            <span class="settings-item-icon">🌙</span>
+                            <div>
+                                <div class="settings-item-label">深色模式</div>
+                                <div class="settings-item-desc">開啟深色主題</div>
+                            </div>
+                        </div>
+                        <div class="toggle active" id="darkModeToggle"></div>
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <div class="settings-title">數據</div>
+                    <div class="settings-item" id="exportBtn">
+                        <div class="settings-item-left">
+                            <span class="settings-item-icon">📤</span>
+                            <div>
+                                <div class="settings-item-label">匯出數據</div>
+                                <div class="settings-item-desc">下載你的旅行記錄</div>
+                            </div>
+                        </div>
+                        <span>→</span>
+                    </div>
+                    <div class="settings-item" id="importBtn">
+                        <div class="settings-item-left">
+                            <span class="settings-item-icon">📥</span>
+                            <div>
+                                <div class="settings-item-label">匯入數據</div>
+                                <div class="settings-item-desc">從備份恢復</div>
+                            </div>
+                        </div>
+                        <span>→</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Mobile Bottom Nav -->
+        <nav class="mobile-nav">
+            <div class="mobile-nav-inner">
+                <button class="mobile-nav-item active" data-page="home">
+                    <span class="mobile-nav-item-icon">🏠</span>
+                    <span>首頁</span>
+                </button>
+                <button class="mobile-nav-item" data-page="map">
+                    <span class="mobile-nav-item-icon">🗺️</span>
+                    <span>地圖</span>
+                </button>
+                <button class="mobile-nav-item" data-page="stats">
+                    <span class="mobile-nav-item-icon">📊</span>
+                    <span>統計</span>
+                </button>
+                <button class="mobile-nav-item" data-page="trips">
+                    <span class="mobile-nav-item-icon">📅</span>
+                    <span>旅程</span>
+                </button>
+                <button class="mobile-nav-item" data-page="settings">
+                    <span class="mobile-nav-item-icon">⚙️</span>
+                    <span>設定</span>
+                </button>
+            </div>
+        </nav>
     </div>
 
     <script>
-        // Default trip data with country tags
+        // Trip data
         const defaultTrips = [
             {
                 id: 1,
                 name: '深圳灣一日遊',
                 date: '2026-06-07',
-                location: '深圳',
-                country: '中國',
-                center: [22.4709, 113.9295],
+                location: '🇨🇳 深圳',
+                country: 'china',
                 places: [
                     { name: '深圳灣口岸', lat: 22.4709, lng: 113.9295, type: 'transport', icon: '🚌', time: '11:50' },
                     { name: '泰适SPA馆', lat: 22.4938, lng: 113.9304, type: 'leisure', icon: '💆', time: '14:44' },
@@ -1400,442 +725,143 @@
             }
         ];
 
-        // Load trips from localStorage or use default
         let trips = JSON.parse(localStorage.getItem('travelTrips')) || JSON.parse(JSON.stringify(defaultTrips));
-        let currentTripId = parseInt(localStorage.getItem('currentTripId')) || trips[0].id;
-
-        // Save trips to localStorage
-        function saveTrips() {
-            localStorage.setItem('travelTrips', JSON.stringify(trips));
-            localStorage.setItem('currentTripId', currentTripId);
-        }
-
-        // Get current trip
-        function getCurrentTrip() {
-            return trips.find(t => t.id === currentTripId) || trips[0];
-        }
-
-        // Get total across all trips
-        function getTotalAcrossAllTrips() {
-            return trips.reduce((sum, t) => {
-                return sum + t.expenses.reduce((s, e) => s + e.amount, 0);
-            }, 0);
-        }
-
-        // Filter state
-        let currentFilters = {
-            location: 'all',
-            category: 'all',
-            search: ''
-        };
-
-        // Chart instances
-        let pieChart = null;
-        let barChart = null;
         let map = null;
         let markers = [];
-
-        // Color palette
-        const colors = {
-            transport: '#3b82f6',
-            food: '#f97316',
-            leisure: '#10b981',
-            shopping: '#8b5cf6',
-            other: '#64748b'
+        let pieChart, barChart;
+        
+        // Country flags
+        const countryFlags = {
+            'china': { flag: '🇨🇳', name: '中國', emoji: '深圳/上海/北京' },
+            'hongkong': { flag: '🇭🇰', name: '香港', emoji: '香港' },
+            'macau': { flag: '🇲🇴', name: '澳門', emoji: '澳門' },
+            'taiwan': { flag: '🇹🇼', name: '台灣', emoji: '台北/台中' },
+            'japan': { flag: '🇯🇵', name: '日本', emoji: '東京/大阪' },
+            'korea': { flag: '🇰🇷', name: '韓國', emoji: '首爾/釜山' },
+            'australia': { flag: '🇦🇺', name: '澳洲', emoji: '悉尼/墨爾本' },
+            'usa': { flag: '🇺🇸', name: '美國', emoji: '紐約/LA' },
+            'europe': { flag: '🇪🇺', name: '歐洲', emoji: '英法德' }
         };
 
-        // Type colors for map markers
-        const typeColors = {
-            transport: '#3b82f6',
-            food: '#f97316',
-            leisure: '#10b981',
-            shopping: '#8b5cf6'
-        };
+        // Theme
+        const themeToggle = document.getElementById('themeToggle');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        
+        function setTheme(dark) {
+            if (dark) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = '☀️';
+                darkModeToggle.classList.add('active');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                themeToggle.textContent = '🌙';
+                darkModeToggle.classList.remove('active');
+            }
+            localStorage.setItem('theme', dark ? 'dark' : 'light');
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            const isDark = document.documentElement.hasAttribute('data-theme');
+            setTheme(!isDark);
+        });
+        
+        darkModeToggle.addEventListener('click', () => {
+            const isDark = document.documentElement.hasAttribute('data-theme');
+            setTheme(!isDark);
+        });
+        
+        // Init theme
+        if (localStorage.getItem('theme') === 'light') {
+            setTheme(false);
+        } else {
+            setTheme(true);
+        }
 
-        // Location emoji map
-        const locationEmoji = {
-            '深圳': '🇨🇳',
-            '香港': '🇭🇰',
-            '澳門': '🇲🇴',
-            '台灣': '🇹🇼'
-        };
+        // Navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(n => n.classList.remove('active'));
+            
+            document.getElementById('page-' + pageId).classList.add('active');
+            document.querySelectorAll(`[data-page="${pageId}"]`).forEach(n => n.classList.add('active'));
+            
+            if (pageId === 'map' && map) {
+                setTimeout(() => map.invalidateSize(), 100);
+            }
+        }
+        
+        document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(btn => {
+            btn.addEventListener('click', () => showPage(btn.dataset.page));
+        });
 
-        // Render trip tabs
-        function renderTripTabs() {
-            const container = document.getElementById('tripTabs');
-            container.innerHTML = trips.map(trip => `
-                <div class="trip-tab ${trip.id === currentTripId ? 'active' : ''}" data-id="${trip.id}">
-                    <span>${locationEmoji[trip.location] || '📍'}</span>
-                    <span>${trip.name}</span>
-                    <span class="trip-delete" data-id="${trip.id}">×</span>
+        // Stats
+        function updateStats() {
+            const totalSpent = trips.reduce((sum, t) => sum + t.expenses.reduce((s, e) => s + e.amount, 0), 0);
+            const totalPlaces = trips.reduce((sum, t) => sum + t.places.length, 0);
+            
+            document.getElementById('totalTrips').textContent = trips.length;
+            document.getElementById('totalSpent').textContent = '$' + Math.round(totalSpent);
+            document.getElementById('totalPlaces').textContent = totalPlaces;
+        }
+
+        // Country Grid
+        function renderCountryGrid() {
+            const grid = document.getElementById('countryGrid');
+            const countries = {};
+            
+            trips.forEach(trip => {
+                const country = trip.country || 'china';
+                if (!countries[country]) {
+                    countries[country] = { flag: countryFlags[country]?.flag || '📍', name: countryFlags[country]?.name || trip.location, count: 0 };
+                }
+                countries[country].count++;
+            });
+            
+            grid.innerHTML = Object.entries(countries).map(([key, c]) => `
+                <div class="country-card">
+                    <div class="flag">${c.flag}</div>
+                    <div class="name">${c.name}</div>
+                    <div class="count">${c.count} 個旅程</div>
                 </div>
             `).join('');
-
-            // Update header subtitle
-            const total = getTotalAcrossAllTrips();
-            document.getElementById('tripCount').textContent = `${trips.length}個旅程 · 總消費 HK$${total.toFixed(0)}`;
         }
 
-        // Trip tab click
-        document.getElementById('tripTabs').addEventListener('click', (e) => {
-            const tab = e.target.closest('.trip-tab');
-            const deleteBtn = e.target.closest('.trip-delete');
-
-            if (deleteBtn) {
-                e.stopPropagation();
-                const id = parseInt(deleteBtn.dataset.id);
-                if (trips.length > 1) {
-                    trips = trips.filter(t => t.id !== id);
-                    if (currentTripId === id) {
-                        currentTripId = trips[0].id;
-                    }
-                    saveTrips();
-                    renderTripTabs();
-                    applyFilters();
-                    updateMapMarkers();
-                } else {
-                    alert('起碼要有一個旅程！');
-                }
-                return;
-            }
-
-            if (tab) {
-                currentTripId = parseInt(tab.dataset.id);
-                saveTrips();
-                renderTripTabs();
-                applyFilters();
-                updateMapMarkers();
-            }
-        });
-
-        // Add trip modal
-        document.getElementById('addTripBtn').addEventListener('click', () => {
-            document.getElementById('addTripModal').classList.remove('hidden');
-            document.getElementById('newTripName').value = '';
-            document.getElementById('newTripDate').value = new Date().toISOString().split('T')[0];
-            document.getElementById('newTripName').focus();
-        });
-
-        document.getElementById('cancelTripBtn').addEventListener('click', () => {
-            document.getElementById('addTripModal').classList.add('hidden');
-        });
-
-        document.getElementById('confirmTripBtn').addEventListener('click', () => {
-            const name = document.getElementById('newTripName').value.trim();
-            const date = document.getElementById('newTripDate').value;
-            const location = document.getElementById('newTripLocation').value;
-
-            if (!name) {
-                alert('請輸入旅程名稱');
-                return;
-            }
-
-            const newTrip = {
-                id: Date.now(),
-                name: name,
-                date: date,
-                location: location,
-                center: [22.5, 114.0],
-                places: [],
-                expenses: []
-            };
-
-            trips.push(newTrip);
-            currentTripId = newTrip.id;
-            saveTrips();
-            renderTripTabs();
-            applyFilters();
-            updateMapMarkers();
-            document.getElementById('addTripModal').classList.add('hidden');
-        });
-
-        // Map toggle
-        document.getElementById('mapToggle').addEventListener('click', function() {
-            const wrapper = document.getElementById('mapWrapper');
-            const btn = document.getElementById('mapToggle');
-            if (wrapper.style.display === 'none') {
-                wrapper.style.display = 'block';
-                btn.textContent = '收合地圖';
-                if (map) {
-                    setTimeout(() => map.invalidateSize(), 100);
-                }
-            } else {
-                wrapper.style.display = 'none';
-                btn.textContent = '展開地圖';
-            }
-        });
-
-        // Initialize map
-        function initMap() {
-            map = L.map('map').setView([22.4900, 113.9300], 13);
-
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
-                maxZoom: 19
-            }).addTo(map);
-
-            updateMapMarkers();
-        }
-
-        // Create custom marker icon
-        function createMarkerIcon(type, icon) {
-            const color = typeColors[type] || colors.other;
-            return L.divIcon({
-                className: 'custom-marker',
-                html: `<div style="
-                    background: ${color};
-                    width: 32px;
-                    height: 32px;
-                    border-radius: 50% 50% 50% 0;
-                    transform: rotate(-45deg);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-                    border: 2px solid rgba(255,255,255,0.3);
-                ">
-                    <span style="transform: rotate(45deg); font-size: 14px;">${icon}</span>
-                </div>`,
-                iconSize: [32, 32],
-                iconAnchor: [16, 32],
-                popupAnchor: [0, -32]
-            });
-        }
-
-        // Update map markers
-        function updateMapMarkers() {
-            if (!map) return;
-
-            markers.forEach(m => map.removeLayer(m));
-            markers = [];
-
-            const currentTrip = getCurrentTrip();
-            const typeLabels = { transport: '交通', food: '餐飲', leisure: '休閒', shopping: '購物' };
-
-            currentTrip.places.forEach(place => {
-                const marker = L.marker([place.lat, place.lng], {
-                    icon: createMarkerIcon(place.type, place.icon)
-                });
-
-                marker.bindPopup(`
-                    <div class="popup-content">
-                        <h4>${place.name}</h4>
-                        <p>${place.icon} ${typeLabels[place.type] || '其他'}</p>
-                        <p>🕐 ${place.time}</p>
-                    </div>
-                `);
-
-                marker.addTo(map);
-                markers.push(marker);
-            });
-
-            if (markers.length > 0) {
-                const group = L.featureGroup(markers);
-                map.fitBounds(group.getBounds().pad(0.2));
-            }
-        }
-
-        // Initialize charts
-        function initCharts() {
-            const pieCtx = document.getElementById('pieChart').getContext('2d');
-            const barCtx = document.getElementById('barChart').getContext('2d');
-
-            pieChart = new Chart(pieCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['交通', '餐飲', '休閒', '購物'],
-                    datasets: [{
-                        data: [0, 0, 0, 0],
-                        backgroundColor: [colors.transport, colors.food, colors.leisure, colors.shopping],
-                        borderWidth: 0,
-                        cutout: '65%'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                color: '#94a3b8',
-                                font: { size: 11 },
-                                padding: 10,
-                                usePointStyle: true
-                            }
-                        }
-                    }
-                }
-            });
-
-            barChart = new Chart(barCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['交通', '餐飲', '休閒', '購物'],
-                    datasets: [{
-                        data: [0, 0, 0, 0],
-                        backgroundColor: [colors.transport, colors.food, colors.leisure, colors.shopping],
-                        borderRadius: 6,
-                        borderSkipped: false
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: '#64748b', font: { size: 11 } }
-                        },
-                        y: {
-                            grid: { color: 'rgba(255,255,255,0.05)' },
-                            ticks: { color: '#64748b', font: { size: 10 } }
-                        }
-                    }
-                }
-            });
-        }
-
-        // Update charts
-        function updateCharts(totals) {
-            const data = [totals.transport, totals.food, totals.leisure, totals.shopping];
-
-            pieChart.data.datasets[0].data = data;
-            pieChart.update();
-
-            barChart.data.datasets[0].data = data;
-            barChart.update();
-
-            const hasData = data.some(v => v > 0);
-            document.getElementById('chartsSection').style.display = hasData ? 'block' : 'none';
-        }
-
-        // Filter click handlers
-        document.querySelectorAll('.filter-pills').forEach(container => {
-            container.addEventListener('click', (e) => {
-                const pill = e.target.closest('.filter-pill');
-                if (!pill) return;
-
-                container.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-                pill.classList.add('active');
-
-                const filterType = container.id === 'locationFilters' ? 'location' : 'category';
-                const value = pill.dataset.value;
-
-                currentFilters[filterType] = value;
-                applyFilters();
-            });
-        });
-
-        // Search input
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            currentFilters.search = e.target.value.toLowerCase();
-            applyFilters();
-        });
-
-        function applyFilters() {
-            const searchValue = currentFilters.search;
-
-            let totalTransport = 0, totalFood = 0, totalLeisure = 0, totalOther = 0;
-            let filteredTrips = [];
-            let filteredExpenses = [];
-
+        // Expense Summary
+        function renderExpenseSummary() {
+            const summary = {};
             trips.forEach(trip => {
-                let tripMatches = true;
-                let tripExpenses = [];
-
-                if (currentFilters.location !== "all" && trip.location !== currentFilters.location) {
-                    tripMatches = false;
-                }
-
-                if (searchValue) {
-                    const searchLower = searchValue.toLowerCase();
-                    const nameMatch = trip.name.toLowerCase().includes(searchLower);
-                    const expenseMatch = trip.expenses.some(e =>
-                        e.name.toLowerCase().includes(searchLower) ||
-                        e.category.toLowerCase().includes(searchLower)
-                    );
-                    if (!nameMatch && !expenseMatch) {
-                        tripMatches = false;
+                trip.expenses.forEach(exp => {
+                    if (!summary[exp.category]) {
+                        summary[exp.category] = { icon: exp.icon, total: 0 };
                     }
-                }
-
-                if (currentFilters.category !== "all") {
-                    tripExpenses = trip.expenses.filter(e => e.category === currentFilters.category);
-                    if (tripExpenses.length === 0) {
-                        tripMatches = false;
-                    }
-                } else {
-                    tripExpenses = trip.expenses;
-                }
-
-                if (tripMatches) {
-                    filteredTrips.push(trip);
-                    trip.expenses.forEach(exp => {
-                        if (currentFilters.category === "all" || exp.category === currentFilters.category) {
-                            filteredExpenses.push({...exp, tripName: trip.name, tripDate: trip.date, tripLocation: trip.location});
-                        }
-                    });
-                }
+                    summary[exp.category].total += exp.amount;
+                });
             });
-
-            filteredExpenses.forEach(exp => {
-                switch(exp.category) {
-                    case "交通": totalTransport += exp.amount; break;
-                    case "餐飲": totalFood += exp.amount; break;
-                    case "休閒": totalLeisure += exp.amount; break;
-                    default: totalOther += exp.amount;
-                }
-            });
-
-            const total = totalTransport + totalFood + totalLeisure + totalOther;
-
-            document.getElementById('totalAmount').textContent = `HK$${total.toFixed(2)}`;
-            document.getElementById('catTransport').textContent = `$${totalTransport.toFixed(0)}`;
-            document.getElementById('catFood').textContent = `$${totalFood.toFixed(0)}`;
-            document.getElementById('catLeisure').textContent = `$${totalLeisure.toFixed(0)}`;
-            document.getElementById('catShopping').textContent = `$${totalOther.toFixed(0)}`;
-
-            updateCharts({
-                transport: totalTransport,
-                food: totalFood,
-                leisure: totalLeisure,
-                shopping: totalOther
-            });
-
-            if (filteredExpenses.length === 0) {
-                document.getElementById('summaryCard').classList.add('hidden');
-            } else {
-                document.getElementById('summaryCard').classList.remove('hidden');
-            }
-
-            document.getElementById('tripSectionTitle').classList.toggle('hidden', filteredTrips.length === 0);
-            document.getElementById('expenseSectionTitle').classList.toggle('hidden', filteredExpenses.length === 0);
-            document.getElementById('emptyState').classList.toggle('hidden', filteredExpenses.length > 0);
-
-            renderTrips(filteredTrips);
-            renderExpenses(filteredExpenses);
+            
+            const container = document.getElementById('expenseSummary');
+            container.innerHTML = Object.entries(summary).map(([cat, data]) => `
+                <div class="expense-item">
+                    <div class="expense-left">
+                        <div class="expense-icon">${data.icon}</div>
+                        <div class="expense-info">
+                            <div class="name">${cat}</div>
+                        </div>
+                    </div>
+                    <div class="expense-amount">$${data.total.toFixed(0)}</div>
+                </div>
+            `).join('');
         }
 
-        function renderTrips(filteredTrips) {
+        // Trip List
+        function renderTripList() {
             const container = document.getElementById('tripList');
-
-            if (filteredTrips.length === 0) {
-                container.innerHTML = '';
-                return;
-            }
-
-            container.innerHTML = filteredTrips.map(trip => {
-                const total = trip.expenses.reduce((sum, e) => sum + e.amount, 0);
-
+            container.innerHTML = trips.map(trip => {
+                const total = trip.expenses.reduce((s, e) => s + e.amount, 0);
                 return `
                     <div class="trip-card">
                         <div class="trip-header">
                             <div class="trip-date">${trip.date}</div>
-                            <div class="trip-location">${locationEmoji[trip.location] || '📍'} ${trip.location}</div>
+                            <div class="trip-location">${trip.location}</div>
                         </div>
                         <div class="trip-title">${trip.name}</div>
                         <div class="trip-expenses">
@@ -1852,28 +878,32 @@
             }).join('');
         }
 
-        function renderExpenses(expenses) {
-            const container = document.getElementById('allExpensesList');
-            const iconMap = {
-                '交通': '🚌',
-                '餐飲': '🍽️',
-                '休閒': '💆',
-                '收藏': '🎴',
-                '購物': '🛍️'
-            };
-
-            if (expenses.length === 0) {
-                container.innerHTML = '';
+        // Search
+        function renderSearch(query, category) {
+            const container = document.getElementById('searchResults');
+            let results = [];
+            
+            trips.forEach(trip => {
+                trip.expenses.forEach(exp => {
+                    if ((!query || exp.name.toLowerCase().includes(query.toLowerCase()) || exp.category.includes(query)) &&
+                        (!category || category === 'all' || exp.category === category)) {
+                        results.push({...exp, tripName: trip.name, tripDate: trip.date});
+                    }
+                });
+            });
+            
+            if (results.length === 0) {
+                container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary)">沒有找到消費記錄</div>';
                 return;
             }
-
-            container.innerHTML = expenses.map(exp => `
+            
+            container.innerHTML = results.map(exp => `
                 <div class="expense-item">
                     <div class="expense-left">
-                        <div class="expense-icon">${iconMap[exp.category] || '💰'}</div>
+                        <div class="expense-icon">${exp.icon}</div>
                         <div class="expense-info">
                             <div class="name">${exp.name}</div>
-                            <div class="trip-name">${locationEmoji[exp.tripLocation] || '📍'} ${exp.tripName} · ${exp.time}</div>
+                            <div class="meta">${exp.tripName} · ${exp.time}</div>
                         </div>
                     </div>
                     <div class="expense-amount">−$${exp.amount.toFixed(2)}</div>
@@ -1881,277 +911,156 @@
             `).join('');
         }
 
-        
-        let searchHistory = JSON.parse(localStorage.getItem('searchHistory')) || [];
-        let activeQuickFilter = null;
-        
-        document.getElementById('quickFilters').addEventListener('click', (e) => {
-            const filter = e.target.closest('.quick-filter');
-            if (!filter) return;
-            const filterType = filter.dataset.filter;
-            
-            if (activeQuickFilter === filterType) {
-                filter.classList.remove('active');
-                activeQuickFilter = null;
-                document.getElementById('searchInput').value = '';
-                currentFilters.search = '';
-                applyFilters();
-                updateSearchStats();
-                return;
-            }
-            
-            document.querySelectorAll('.quick-filter').forEach(f => f.classList.remove('active'));
-            filter.classList.add('active');
-            activeQuickFilter = filterType;
-            
-            if (filterType === 'today') {
-                document.getElementById('searchInput').value = '📅 今日';
-                currentFilters.search = '2026-06-07';
-            } else if (filterType === 'week' || filterType === 'month') {
-                document.getElementById('searchInput').value = filterType === 'week' ? '🗓️ 本週' : '📆 本月';
-                currentFilters.search = filterType;
-            } else if (filterType === 'high') {
-                document.getElementById('searchInput').value = '💰 高消費';
-                currentFilters.search = 'high';
-            } else if (filterType === 'food') {
-                currentFilters.category = '餐飲';
-                document.querySelectorAll('#categoryFilters .filter-pill').forEach(p => p.classList.toggle('active', p.dataset.value === '餐飲'));
-            } else if (filterType === 'transport') {
-                currentFilters.category = '交通';
-                document.querySelectorAll('#categoryFilters .filter-pill').forEach(p => p.classList.toggle('active', p.dataset.value === '交通'));
-            }
-            applyFilters();
-            updateSearchStats();
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const cat = document.query('#categoryFilters .filter-pill.active')?.dataset.value || 'all';
+            renderSearch(e.target.value, cat);
         });
-        
-        function showSuggestions(query) {
-            const container = document.getElementById('searchSuggestions');
-            if (!query || query.length < 1) { container.classList.remove('visible'); return; }
-            const suggestions = [];
-            const q = query.toLowerCase();
+
+        document.getElementById('categoryFilters').addEventListener('click', (e) => {
+            const pill = e.target.closest('.filter-pill');
+            if (!pill) return;
+            document.querySelectorAll('#categoryFilters .filter-pill').forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            const query = document.getElementById('searchInput').value;
+            renderSearch(query, pill.dataset.value);
+        });
+
+        // Map
+        document.getElementById('mapToggle').addEventListener('click', function() {
+            const wrapper = document.getElementById('mapWrapper');
+            if (wrapper.style.display === 'none') {
+                wrapper.style.display = 'block';
+                this.textContent = '收合地圖';
+                if (map) setTimeout(() => map.invalidateSize(), 100);
+            } else {
+                wrapper.style.display = 'none';
+                this.textContent = '展開地圖';
+            }
+        });
+
+        function initMap() {
+            map = L.map('map').setView([22.5, 114], 10);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '© OpenStreetMap © CARTO',
+                maxZoom: 19
+            }).addTo(map);
+            
+            updateMapMarkers();
+        }
+
+        function updateMapMarkers() {
+            if (!map) return;
+            markers.forEach(m => map.removeLayer(m));
+            markers = [];
+            
+            const typeLabels = { transport: '交通', food: '餐飲', leisure: '休閒', shopping: '購物' };
+            const colors = { transport: '#3b82f6', food: '#f97316', leisure: '#10b981', shopping: '#8b5cf6' };
+            
             trips.forEach(trip => {
-                if (trip.name.toLowerCase().includes(q)) {
-                    suggestions.push({ type: 'trip', icon: locationEmoji[trip.location] || '📍', name: trip.name, meta: trip.date + ' · ' + trip.location });
-                }
-                trip.expenses.forEach(exp => {
-                    if (exp.name.toLowerCase().includes(q) || exp.category.toLowerCase().includes(q)) {
-                        suggestions.push({ type: 'expense', icon: exp.icon, name: exp.name, meta: trip.name + ' · ' + exp.time });
-                    }
+                trip.places.forEach(place => {
+                    const color = colors[place.type] || '#64748b';
+                    const icon = L.divIcon({
+                        className: 'custom-marker',
+                        html: `<div style="background:${color};width:32px;height:32px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.3);"><span style="transform:rotate(45deg);font-size:14px;">${place.icon}</span></div>`,
+                        iconSize: [32, 32],
+                        iconAnchor: [16, 32]
+                    });
+                    
+                    const marker = L.marker([place.lat, place.lng], { icon });
+                    marker.bindPopup(`<b>${place.name}</b><br>${place.icon} ${typeLabels[place.type]}<br>🕐 ${place.time}`);
+                    marker.addTo(map);
+                    markers.push(marker);
                 });
             });
-            if (suggestions.length === 0) { container.classList.remove('visible'); return; }
-            container.innerHTML = suggestions.slice(0, 10).map(s => '<div class="suggestion-item" data-name="' + s.name + '"><span class="suggestion-icon">' + s.icon + '</span><div class="suggestion-text"><div class="name">' + s.name + '</div><div class="meta">' + s.meta + '</div></div><span class="suggestion-type">' + (s.type === 'trip' ? '旅程' : '消費') + '</span></div>').join('');
-            container.classList.add('visible');
-        }
-        
-        document.getElementById('searchSuggestions').addEventListener('click', (e) => {
-            const item = e.target.closest('.suggestion-item');
-            if (!item) return;
-            const name = item.dataset.name;
-            document.getElementById('searchInput').value = name;
-            currentFilters.search = name.toLowerCase();
-            document.getElementById('searchSuggestions').classList.remove('visible');
-            applyFilters();
-            updateSearchStats();
-            if (!searchHistory.includes(name)) { searchHistory.unshift(name); searchHistory = searchHistory.slice(0, 5); localStorage.setItem('searchHistory', JSON.stringify(searchHistory)); }
-        });
-        
-        document.getElementById('searchClear').addEventListener('click', () => {
-            document.getElementById('searchInput').value = '';
-            currentFilters.search = '';
-            document.getElementById('searchClear').classList.remove('visible');
-            document.getElementById('searchSuggestions').classList.remove('visible');
-            applyFilters();
-            updateSearchStats();
-        });
-        
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            const value = e.target.value;
-            document.getElementById('searchClear').classList.toggle('visible', value.length > 0);
-            currentFilters.search = value.toLowerCase();
-            if (value.length > 0) {
-                showSuggestions(value);
-                document.getElementById('quickFilters').style.display = 'none';
-            } else {
-                document.getElementById('searchSuggestions').classList.remove('visible');
-                document.getElementById('quickFilters').style.display = 'flex';
-                activeQuickFilter = null;
-                document.querySelectorAll('.quick-filter').forEach(f => f.classList.remove('active'));
+            
+            if (markers.length > 0) {
+                const group = L.featureGroup(markers);
+                map.fitBounds(group.getBounds().pad(0.2));
             }
-            applyFilters();
-            updateSearchStats();
-        });
-        
-        function updateSearchStats() {
-            const statsEl = document.getElementById('searchStats');
-            const filteredExpenses = getFilteredExpenses();
-            if (!currentFilters.search && !activeQuickFilter) { statsEl.textContent = ''; return; }
-            const total = filteredExpenses.reduce((sum, e) => sum + e.amount, 0);
-            statsEl.textContent = '搵到 ' + filteredExpenses.length + ' 項消費，共 HK$' + Math.round(total);
-        }
-        
-        function getFilteredExpenses() {
-            let results = [];
-            trips.forEach(trip => { trip.expenses.forEach(exp => { results.push({...exp, tripName: trip.name, tripDate: trip.date, tripLocation: trip.location}); }); });
-            const q = currentFilters.search;
-            if (activeQuickFilter === 'high') {
-                const avg = results.reduce((s,e) => s + e.amount, 0) / results.length;
-                results = results.filter(e => e.amount >= avg * 1.5);
-            } else if (activeQuickFilter === 'today') {
-                results = results.filter(e => e.tripDate === '2026-06-07');
-            } else if (activeQuickFilter === 'week' || activeQuickFilter === 'month') {
-                results = results.filter(e => e.tripDate >= '2026-06-01');
-            }
-            if (q && q !== 'high' && q !== 'week' && q !== 'month') {
-                results = results.filter(e => e.name.toLowerCase().includes(q) || e.category.toLowerCase().includes(q) || e.tripName.toLowerCase().includes(q));
-            }
-            return results;
         }
 
-        
-        // Theme toggle
-        function setTheme(theme) {
-            document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem('theme', theme);
-            document.getElementById('themeIcon').textContent = theme === 'dark' ? '🌙' : '☀️';
-        }
-        
-        document.getElementById('themeToggle').addEventListener('click', () => {
-            const current = document.documentElement.getAttribute('data-theme') || 'dark';
-            setTheme(current === 'dark' ? 'light' : 'dark');
-        });
-        
-        // Load saved theme
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        setTheme(savedTheme);
-        
-        // Country flags
-        const countryFlags = {
-            '日本': '🇯🇵', '東京': '🇯🇵', '大阪': '🇯🇵', '京都': '🇯🇵',
-            '澳洲': '🇦🇺', '悉尼': '🇦🇺', '墨爾本': '🇦🇺',
-            '中國': '🇨🇳', '上海': '🇨🇳', '深圳': '🇨🇳', '北京': '🇨🇳',
-            '台灣': '🇹🇼', '台北': '🇹🇼', '高雄': '🇹🇼',
-            '香港': '🇭🇰', '澳門': '🇲🇴',
-            '泰國': '🇹🇭', '曼谷': '🇹🇭',
-            '韓國': '🇰🇷', '首爾': '🇰🇷',
-            '新加坡': '🇸🇬',
-            '美國': '🇺🇸', '歐洲': '🇪🇺', '英國': '🇬🇧', '法國': '🇫🇷'
-        };
-        
-        function getCountryFlag(country) {
-            return countryFlags[country] || '🌍';
-        }
-        
-        // Render country grid
-        function renderCountryGrid() {
-            const container = document.getElementById('countryGrid');
-            const countryCount = {};
+        // Charts
+        function initCharts() {
+            const totals = { transport: 0, food: 0, leisure: 0, shopping: 0 };
+            const catMap = { '交通': 'transport', '餐飲': 'food', '休閒': 'leisure', '購物': 'shopping' };
+            
             trips.forEach(trip => {
-                const country = trip.country || '其他';
-                countryCount[country] = (countryCount[country] || 0) + 1;
+                trip.expenses.forEach(exp => {
+                    const key = catMap[exp.category] || 'shopping';
+                    totals[key] += exp.amount;
+                });
             });
-            let html = '';
-            for (const [country, count] of Object.entries(countryCount)) {
-                html += '<div class="country-card" data-country="' + country + '">';
-                html += '<div class="flag">' + getCountryFlag(country) + '</div>';
-                html += '<div class="name">' + country + '</div>';
-                html += '<div class="count">' + count + '個旅程</div>';
-                html += '</div>';
-            }
-            container.innerHTML = html;
-        }
-        
-        // Render timeline
-        function renderTimeline() {
-            const container = document.getElementById('timeline');
-            const sortedTrips = [...trips].sort((a, b) => new Date(b.date) - new Date(a.date));
-            container.innerHTML = sortedTrips.map(trip => {
-                const total = trip.expenses.reduce((s, e) => s + e.amount, 0);
-                return '<div class="timeline-item" data-trip-id="' + trip.id + '">' +
-                    '<div class="timeline-date">' + trip.date + '</div>' +
-                    '<div class="timeline-card">' +
-                        '<div class="trip-header">' +
-                            '<div class="trip-title">' + getCountryFlag(trip.country || trip.location) + ' ' + trip.name + '</div>' +
-                            '<div class="trip-location">' + (trip.location || trip.country) + '</div>' +
-                        '</div>' +
-                        '<div class="trip-summary">' +
-                            '<span>💰 HK$' + Math.round(total) + '</span>' +
-                            '<span>📍 ' + trip.places.length + '個地點</span>' +
-                            '<span>💸 ' + trip.expenses.length + '項消費</span>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>';
-            }).join('');
-        }
-        
-        // Update quick stats
-        function updateQuickStats() {
-            document.getElementById('totalTrips').textContent = trips.length;
-            const totalSpent = trips.reduce((sum, t) => sum + t.expenses.reduce((s, e) => s + e.amount, 0), 0);
-            document.getElementById('totalSpent').textContent = 'HK$' + Math.round(totalSpent);
-            const totalPlaces = trips.reduce((sum, t) => sum + t.places.length, 0);
-            document.getElementById('totalPlaces').textContent = totalPlaces;
+            
+            const data = [totals.transport, totals.food, totals.leisure, totals.shopping];
+            const colors = ['#3b82f6', '#f97316', '#10b981', '#8b5cf6'];
+            
+            pieChart = new Chart(document.getElementById('pieChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['交通', '餐飲', '休閒', '購物'],
+                    datasets: [{ data, backgroundColor: colors, borderWidth: 0, cutout: '65%' }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#8899a6', font: { size: 11 }, padding: 10 } } } }
+            });
+            
+            barChart = new Chart(document.getElementById('barChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['交通', '餐飲', '休閒', '購物'],
+                    datasets: [{ data, backgroundColor: colors, borderRadius: 6, borderSkipped: false }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+                    scales: { x: { grid: { display: false }, ticks: { color: '#8899a6' } },
+                              y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8899a6' } } }
+                }
+            });
         }
 
-        
-        
-        // ===== Page Navigation =====
-        function navigateToPage(pageName) {
-            // Update nav items
-            document.querySelectorAll(".nav-item").forEach(n => {
-                n.classList.toggle("active", n.dataset.page === pageName);
-            });
-            
-            // Show/hide page sections
-            document.querySelectorAll(".page-section").forEach(s => {
-                s.classList.toggle("active", s.id === pageName + "Section");
-            });
-            
-            // Special handling
-            if (pageName === "map" && typeof map !== "undefined" && map) {
-                setTimeout(() => map.invalidateSize(), 150);
-            }
-            
-            // Scroll to top
-            window.scrollTo(0, 0);
-        }
-        
-        // Nav click handlers
-        document.querySelectorAll(".nav-item[data-page]").forEach(nav => {
-            nav.addEventListener("click", () => {
-                navigateToPage(nav.dataset.page);
-            });
-        });
-        
-        // Sidebar theme button
-        document.getElementById("sidebarThemeBtn").addEventListener("click", toggleTheme);
-
-        
-        function exportData() {
-            const data = {
-                trips: trips,
-                exportedAt: new Date().toISOString()
-            };
-            const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
+        // Export/Import
+        document.getElementById('exportBtn').addEventListener('click', () => {
+            const data = JSON.stringify(trips, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
+            const a = document.createElement('a');
             a.href = url;
-            a.download = "travel-data-" + new Date().toISOString().split("T")[0] + ".json";
+            a.download = 'travel-records.json';
             a.click();
-        }
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            renderTripTabs();
-            renderCountryGrid();
-            renderTimeline();
-            updateQuickStats();
-            initCharts();
-            initMap();
-            applyFilters();
         });
+
+        document.getElementById('importBtn').addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    try {
+                        trips = JSON.parse(ev.target.result);
+                        localStorage.setItem('travelTrips', JSON.stringify(trips));
+                        init();
+                    } catch (err) {
+                        alert('Invalid file format');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        });
+
+        // Init
+        function init() {
+            updateStats();
+            renderCountryGrid();
+            renderExpenseSummary();
+            renderTripList();
+            renderSearch('', 'all');
+            initMap();
+            initCharts();
+        }
+        
+        init();
     </script>
-            </main>
-        </div>
-    </body>
+</body>
 </html>
