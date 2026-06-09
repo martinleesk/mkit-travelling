@@ -411,18 +411,25 @@
         }
         
         .back-btn {
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            min-height: 44px;
             border-radius: 12px;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            font-size: 18px;
+            font-size: 20px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all var(--transition);
             color: var(--text-primary);
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
+            z-index: 10;
+            flex-shrink: 0;
         }
         
         .back-btn:hover { border-color: var(--accent); transform: scale(1.05); }
