@@ -1128,9 +1128,8 @@
             document.getElementById('page-' + pageId).classList.add('active');
             document.querySelectorAll(`[data-page="${pageId}"]`).forEach(n => n.classList.add('active'));
             
-            if (pageId !== 'home' || !currentTrip) {
+            if (pageId !== 'home' && currentTrip) {
                 document.getElementById('tripDetail').classList.remove('active');
-                document.getElementById('page-home').classList.add('active');
             }
             
             if (pageId === 'map') {
