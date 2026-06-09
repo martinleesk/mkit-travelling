@@ -176,12 +176,61 @@
         .page-header p { color: var(--text-secondary); font-size: 13px; }
         
         /* Home: Calendar Filter */
+        .home-layout {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .home-filters {
+            min-width: 280px;
+            flex-shrink: 0;
+        }
+
+        .home-results {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .pagination-btn {
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .pagination-btn:hover { border-color: var(--accent); color: var(--text-primary); }
+        .pagination-btn.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        .cal-filter-wrapper {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+            align-items: flex-start;
+        }
+
         .home-calendar {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius);
             padding: 16px 18px;
-            margin-bottom: 16px;
+            flex: 1;
         }
         
         .cal-header {
@@ -283,9 +332,16 @@
         /* Home: Country Filter */
         .country-filter {
             display: flex;
+            flex-direction: column;
             gap: 6px;
-            flex-wrap: wrap;
-            margin-bottom: 14px;
+            min-width: 120px;
+        }
+
+        .country-filter-title {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            font-weight: 600;
         }
 
         .country-btn {
@@ -297,6 +353,7 @@
             font-size: 12px;
             cursor: pointer;
             transition: all var(--transition);
+            text-align: center;
         }
 
         .country-btn:hover { border-color: var(--accent); color: var(--text-primary); }
@@ -776,6 +833,12 @@
             .main-content { margin-left: 0; padding: 20px 16px; padding-bottom: 90px; }
             .mobile-nav { display: block; }
             .page-header h1 { font-size: 22px; }
+            .home-layout { flex-direction: column; }
+            .home-filters { min-width: unset; }
+            .cal-filter-wrapper { flex-direction: column; }
+            .country-filter { flex-direction: row; flex-wrap: wrap; min-width: unset; }
+            .country-filter-title { width: 100%; margin-bottom: 8px; }
+        }
             .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
             .stat-value { font-size: 18px; }
             .place-list { grid-template-columns: 1fr; }
@@ -835,54 +898,68 @@
                     <p>記錄你的每一段旅程</p>
                 </div>
                 
-                <!-- Calendar Filter -->
-                <div class="home-calendar">
-                    <div class="cal-header">
-                        <div class="cal-nav-btns">
-                            <button class="cal-nav-btn" id="prevMonth">←</button>
+                <!-- Home Layout: Left Filters + Right Results -->
+                <div class="home-layout">
+                    <!-- Left: Filters -->
+                    <div class="home-filters">
+                        <!-- Calendar + Filter Wrapper -->
+                        <div class="cal-filter-wrapper">
+                            <!-- Calendar Filter -->
+                            <div class="home-calendar">
+                                <div class="cal-header">
+                                    <div class="cal-nav-btns">
+                                        <button class="cal-nav-btn" id="prevMonth">←</button>
+                                    </div>
+                                    <div class="cal-current" id="currentMonth"></div>
+                                    <div class="cal-nav-btns">
+                                        <button class="cal-nav-btn" id="nextMonth">→</button>
+                                    </div>
+                                </div>
+                                <div class="cal-ym-filter">
+                                    <select id="calYear" class="cal-select"></select>
+                                    <select id="calMonth" class="cal-select">
+                                        <option value="0">一月</option>
+                                        <option value="1">二月</option>
+                                        <option value="2">三月</option>
+                                        <option value="3">四月</option>
+                                        <option value="4">五月</option>
+                                        <option value="5">六月</option>
+                                        <option value="6">七月</option>
+                                        <option value="7">八月</option>
+                                        <option value="8">九月</option>
+                                        <option value="9">十月</option>
+                                        <option value="10">十一月</option>
+                                        <option value="11">十二月</option>
+                                    </select>
+                                </div>
+                                <div class="cal-grid" id="homeCalGrid"></div>
+                            </div>
+
+                            <!-- Destination Filter -->
+                            <div class="country-filter" id="countryFilter">
+                                <div class="country-filter-title">地區</div>
+                                <button class="country-btn active" data-country="all">全部</button>
+                                <button class="country-btn" data-country="香港">香港</button>
+                                <button class="country-btn" data-country="深圳">深圳</button>
+                                <button class="country-btn" data-country="澳門">澳門</button>
+                                <button class="country-btn" data-country="台灣">台灣</button>
+                                <button class="country-btn" data-country="日本">日本</button>
+                            </div>
                         </div>
-                        <div class="cal-current" id="currentMonth"></div>
-                        <div class="cal-nav-btns">
-                            <button class="cal-nav-btn" id="nextMonth">→</button>
+
+                        <!-- Search -->
+                        <div class="search-box">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" class="search-input" id="searchInput" placeholder="搜尋旅程...">
                         </div>
                     </div>
-                    <div class="cal-ym-filter">
-                        <select id="calYear" class="cal-select"></select>
-                        <select id="calMonth" class="cal-select">
-                            <option value="0">一月</option>
-                            <option value="1">二月</option>
-                            <option value="2">三月</option>
-                            <option value="3">四月</option>
-                            <option value="4">五月</option>
-                            <option value="5">六月</option>
-                            <option value="6">七月</option>
-                            <option value="7">八月</option>
-                            <option value="8">九月</option>
-                            <option value="9">十月</option>
-                            <option value="10">十一月</option>
-                            <option value="11">十二月</option>
-                        </select>
+
+                    <!-- Right: Results -->
+                    <div class="home-results">
+                        <div class="trip-list" id="tripList"></div>
+                        <div class="pagination" id="pagination"></div>
                     </div>
-                    <div class="cal-grid" id="homeCalGrid"></div>
                 </div>
-                
-                <!-- Destination Filter -->
-                <div class="country-filter" id="countryFilter">
-                    <button class="country-btn active" data-country="all">全部</button>
-                    <button class="country-btn" data-country="香港">🇭🇰 香港</button>
-                    <button class="country-btn" data-country="深圳">🇨🇳 深圳</button>
-                    <button class="country-btn" data-country="澳門">🇲🇴 澳門</button>
-                    <button class="country-btn" data-country="台灣">🇹🇼 台灣</button>
-                    <button class="country-btn" data-country="日本">🇯🇵 日本</button>
-                </div>
-                
-                <!-- Search -->
-                <div class="search-box">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" class="search-input" id="searchInput" placeholder="搜尋旅程...">
-                </div>
-                
-                <div class="trip-list" id="tripList"></div>
             </div>
             
             <!-- Trip Detail -->
@@ -1299,15 +1376,32 @@
 
         document.getElementById('searchInput').addEventListener('input', () => filterTrips());
 
+        const ITEMS_PER_PAGE = 10;
+        let currentPage = 1;
+        let filteredTrips = trips;
+
         function renderTripList(tripData = trips) {
             const container = document.getElementById('tripList');
+            filteredTrips = tripData;
 
             if (tripData.length === 0) {
                 container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🦵</div><div class="empty-state-text">沒有找到旅程記錄</div></div>`;
+                document.getElementById('pagination').innerHTML = '';
                 return;
             }
 
-            container.innerHTML = tripData.map((trip, i) => {
+            currentPage = 1;
+            renderPaginatedTrips();
+            renderPagination();
+        }
+
+        function renderPaginatedTrips() {
+            const container = document.getElementById('tripList');
+            const start = (currentPage - 1) * ITEMS_PER_PAGE;
+            const end = start + ITEMS_PER_PAGE;
+            const pageTrips = filteredTrips.slice(start, end);
+
+            container.innerHTML = pageTrips.map((trip, i) => {
                 const total = trip.expenses.reduce((s, e) => s + e.amount, 0);
                 return `
                     <div class="trip-card stagger-${Math.min(i + 1, 5)}" data-id="${trip.id}">
@@ -1341,6 +1435,31 @@
 
             container.querySelectorAll('.trip-card').forEach(card => {
                 card.addEventListener('click', () => showTripDetail(parseInt(card.dataset.id)));
+            });
+        }
+
+        function renderPagination() {
+            const container = document.getElementById('pagination');
+            const totalPages = Math.ceil(filteredTrips.length / ITEMS_PER_PAGE);
+
+            if (totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+            }
+            container.innerHTML = html;
+
+            container.querySelectorAll('.pagination-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentPage = parseInt(btn.dataset.page);
+                    renderPaginatedTrips();
+                    renderPagination();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
             });
         }
 
