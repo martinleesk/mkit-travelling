@@ -830,7 +830,7 @@
         
         @media (max-width: 768px) {
             .sidebar { display: none; }
-            .main-content { margin-left: 0; padding: 20px 16px; padding-bottom: 90px; }
+            .main-content { margin-left: 0; padding: 16px 12px; padding-bottom: 90px; max-width: 100%; }
             .mobile-nav { display: block; }
             .page-header h1 { font-size: 22px; }
             .home-layout { flex-direction: column; }
@@ -838,6 +838,9 @@
             .cal-filter-wrapper { flex-direction: column; }
             .country-filter { flex-direction: row; flex-wrap: wrap; min-width: unset; }
             .country-filter-title { width: 100%; margin-bottom: 8px; }
+            .home-calendar { padding: 12px 8px; }
+            .cal-grid { gap: 2px; }
+            .cal-day { font-size: 12px; }
         }
             .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
             .stat-value { font-size: 18px; }
