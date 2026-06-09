@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🦵 旅行足跡檔案</title>
+    <title>🦵 旅程記錄</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -824,7 +824,7 @@
             <!-- Home Page -->
             <div class="page active" id="page-home">
                 <div class="page-header">
-                    <h1>🦵 旅行足跡</h1>
+                    <h1>🦵 旅程記錄</h1>
                     <p>記錄你的每一段旅程</p>
                 </div>
                 
@@ -859,7 +859,7 @@
                     <div class="cal-grid" id="homeCalGrid"></div>
                 </div>
                 
-                <!-- Country Filter -->
+                <!-- Destination Filter -->
                 <div class="country-filter" id="countryFilter">
                     <button class="country-btn active" data-country="all">全部</button>
                     <button class="country-btn" data-country="香港">🇭🇰 香港</button>
@@ -892,7 +892,7 @@
                 
                 <div class="map-container">
                     <div class="map-header">
-                        <div class="map-title">🗺️ 足跡地圖</div>
+                        <div class="map-title">🗺️ 地圖</div>
                         <button class="map-toggle" id="mapToggle">展開</button>
                     </div>
                     <div id="mapWrapper" style="display:none;">
@@ -1254,7 +1254,7 @@
         }
         updateCalSelects();
 
-        // Country Filter
+        // Destination Filter
         let currentCountry = 'all';
         let currentDateFilter = null;
 
