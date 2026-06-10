@@ -1018,6 +1018,10 @@
             
             <!-- Map Page -->
             <div class="page" id="page-map">
+                <div class="map-info-bar" id="mapInfoBar">
+                    <span id="mapPlaceCount">共 0 個地點</span>
+                    <span id="mapTripCount">0 個旅程</span>
+                </div>
                 <div id="fullMap"></div>
                 <div class="map-legend" id="mapLegend">
                     <div class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span>交通</div>
@@ -1167,8 +1171,8 @@
         };
 
         // Theme
-        let isDark = localStorage.getItem('theme') !== 'light';
-
+        let isDark = true;
+        
         function setTheme(dark) {
             isDark = dark;
             if (dark) {
@@ -1176,20 +1180,18 @@
                 document.getElementById('themeToggle').textContent = '☀️';
                 document.getElementById('themeToggleIcon').textContent = '☀️';
                 document.getElementById('themeToggleLabel').textContent = '淺色模式';
-                document.querySelector('#themeToggleSetting .toggle').classList.add('active');
             } else {
                 document.documentElement.setAttribute('data-theme', 'light');
                 document.getElementById('themeToggle').textContent = '🌙';
                 document.getElementById('themeToggleIcon').textContent = '🌙';
                 document.getElementById('themeToggleLabel').textContent = '深色模式';
-                document.querySelector('#themeToggleSetting .toggle').classList.remove('active');
             }
             localStorage.setItem('theme', dark ? 'dark' : 'light');
-
+            
             // Refresh maps
             if (fullMap) { fullMap.remove(); fullMap = null; }
             if (tripMap) { tripMap.remove(); tripMap = null; }
-
+            
             // Re-init full map if on map page
             if (document.getElementById('page-map').classList.contains('active')) {
                 setTimeout(initFullMap, 100);

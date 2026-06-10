@@ -268,52 +268,50 @@
             border-radius: 10px;
             background: var(--bg-secondary);
             border: 1px solid var(--border);
-            /* Calendar */
-            .home-calendar {
-                background: var(--bg-card);
-                border: 1px solid var(--border);
-                border-radius: var(--radius);
-                padding: 20px;
-                margin-bottom: 16px;
-            }
-
-            .cal-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 16px;
-                font-size: 18px;
-                font-weight: 600;
-            }
-
-            .cal-grid {
-                display: grid;
-                grid-template-columns: repeat(7, 1fr);
-                gap: 4px;
-            }
-
-            .cal-day-header {
-                text-align: center;
-                font-size: 13px;
-                font-weight: 600;
-                color: var(--text-secondary);
-                padding: 8px 0;
-            }
-
-            .cal-day {
-                aspect-ratio: 1;
-                background: var(--bg-secondary);
-                border: 1px solid transparent;
-                border-radius: 10px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-                transition: all var(--transition);
-                font-size: 16px;
-                font-weight: 500;
-            }
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+            color: var(--text-primary);
+        }
+        
+        .cal-nav-btn:hover { border-color: var(--accent); transform: scale(1.05); }
+        
+        .cal-current {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            max-width: 420px;
+        }
+        
+        .cal-day-header {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-secondary);
+            padding: 6px 0;
+        }
+        
+        .cal-day {
+            aspect-ratio: 1;
+            background: var(--bg-secondary);
+            border: 1px solid transparent;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        
         .cal-day:hover { border-color: var(--accent); transform: scale(1.05); }
         .cal-day.empty { background: transparent; cursor: default; }
         .cal-day.empty:hover { transform: none; }
@@ -1018,6 +1016,10 @@
             
             <!-- Map Page -->
             <div class="page" id="page-map">
+                <div class="map-info-bar" id="mapInfoBar">
+                    <span id="mapPlaceCount">共 0 個地點</span>
+                    <span id="mapTripCount">0 個旅程</span>
+                </div>
                 <div id="fullMap"></div>
                 <div class="map-legend" id="mapLegend">
                     <div class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span>交通</div>
@@ -1167,8 +1169,8 @@
         };
 
         // Theme
-        let isDark = localStorage.getItem('theme') !== 'light';
-
+        let isDark = true;
+        
         function setTheme(dark) {
             isDark = dark;
             if (dark) {
@@ -1176,20 +1178,18 @@
                 document.getElementById('themeToggle').textContent = '☀️';
                 document.getElementById('themeToggleIcon').textContent = '☀️';
                 document.getElementById('themeToggleLabel').textContent = '淺色模式';
-                document.querySelector('#themeToggleSetting .toggle').classList.add('active');
             } else {
                 document.documentElement.setAttribute('data-theme', 'light');
                 document.getElementById('themeToggle').textContent = '🌙';
                 document.getElementById('themeToggleIcon').textContent = '🌙';
                 document.getElementById('themeToggleLabel').textContent = '深色模式';
-                document.querySelector('#themeToggleSetting .toggle').classList.remove('active');
             }
             localStorage.setItem('theme', dark ? 'dark' : 'light');
-
+            
             // Refresh maps
             if (fullMap) { fullMap.remove(); fullMap = null; }
             if (tripMap) { tripMap.remove(); tripMap = null; }
-
+            
             // Re-init full map if on map page
             if (document.getElementById('page-map').classList.contains('active')) {
                 setTimeout(initFullMap, 100);
