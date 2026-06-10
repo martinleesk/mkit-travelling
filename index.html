@@ -314,6 +314,15 @@
             border-color: var(--accent);
         }
 
+        .cal-day.today {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+            font-weight: 700;
+        }
+
+        .cal-day.today:hover { transform: scale(1.08); }
+
         .cal-day.selected-day {
             background: var(--accent);
             border-color: var(--accent);
@@ -778,9 +787,11 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: var(--bg-secondary);
+            background: rgba(13, 21, 32, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-top: 1px solid var(--border);
-            padding: 8px 12px;
+            padding: 6px 8px 10px;
             z-index: 100;
         }
         
@@ -790,19 +801,25 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 2px;
-            padding: 6px 8px;
-            border-radius: 10px;
+            gap: 3px;
+            padding: 8px 12px;
+            border-radius: 14px;
             cursor: pointer;
             color: var(--text-secondary);
-            font-size: 9px;
+            font-size: 10px;
+            font-weight: 500;
             transition: all var(--transition);
             border: none;
             background: none;
+            min-width: 56px;
         }
         
-        .mobile-nav-item.active { color: var(--accent); }
-        .mobile-nav-item-icon { font-size: 20px; }
+        .mobile-nav-item.active {
+            color: var(--accent);
+            background: var(--accent-soft);
+        }
+        
+        .mobile-nav-item-icon { font-size: 22px; }
         
         /* Leaflet Dark Theme */
         .leaflet-popup-content-wrapper { 
@@ -1252,17 +1269,21 @@
                 tripDates[d].push(t);
             });
             
+            const today = new Date();
+            const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                 const hasTrip = tripDates[dateStr];
+                const isToday = dateStr === todayStr;
                 
                 if (hasTrip) {
-                    html += `<div class="cal-day has-trip" data-date="${dateStr}">
+                    html += `<div class="cal-day has-trip${isToday ? ' today' : ''}" data-date="${dateStr}">
                         <div class="cal-day-number">${day}</div>
                         <div class="cal-day-dot"></div>
                     </div>`;
                 } else {
-                    html += `<div class="cal-day" data-date="${dateStr}"><div class="cal-day-number">${day}</div></div>`;
+                    html += `<div class="cal-day${isToday ? ' today' : ''}" data-date="${dateStr}"><div class="cal-day-number">${day}</div></div>`;
                 }
             }
             
