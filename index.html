@@ -241,83 +241,74 @@
             margin-bottom: 12px;
         }
 
-        .cal-ym-filter {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-            justify-content: center;
-        }
-
-        .cal-select {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-primary);
-            padding: 6px 10px;
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        .cal-select:focus { outline: none; border-color: var(--accent); }
-        
+        /* Calendar nav buttons */
         .cal-nav-btns { display: flex; gap: 6px; }
-        
+
         .cal-nav-btn {
             width: 34px;
             height: 34px;
             border-radius: 10px;
             background: var(--bg-secondary);
             border: 1px solid var(--border);
-            /* Calendar */
-            .home-calendar {
-                background: var(--bg-card);
-                border: 1px solid var(--border);
-                border-radius: var(--radius);
-                padding: 20px;
-                margin-bottom: 16px;
-            }
+            color: var(--text);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
 
-            .cal-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 16px;
-                font-size: 18px;
-                font-weight: 600;
-            }
+        .cal-nav-btn:hover { background: var(--bg-hover); transform: scale(1.05); }
 
-            .cal-grid {
-                display: grid;
-                grid-template-columns: repeat(7, 1fr);
-                gap: 4px;
-            }
+        /* Calendar */
+        .home-calendar {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 16px;
+        }
 
-            .cal-day-header {
-                text-align: center;
-                font-size: 13px;
-                font-weight: 600;
-                color: var(--text-secondary);
-                padding: 8px 0;
-            }
+        .cal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            font-size: 18px;
+            font-weight: 600;
+        }
 
-            .cal-day {
-                aspect-ratio: 1;
-                background: var(--bg-secondary);
-                border: 1px solid transparent;
-                border-radius: 10px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-                transition: all var(--transition);
-                font-size: 16px;
-                font-weight: 500;
-            }
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+
+        .cal-day-header {
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            padding: 8px 0;
+        }
+
+        .cal-day {
+            aspect-ratio: 1;
+            background: var(--bg-secondary);
+            border: 1px solid transparent;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition);
+            font-size: 16px;
+            font-weight: 500;
+        }
+
         .cal-day:hover { border-color: var(--accent); transform: scale(1.05); }
         .cal-day.empty { background: transparent; cursor: default; }
         .cal-day.empty:hover { transform: none; }
-        
+
         .cal-day.has-trip {
             background: var(--accent-soft);
             border-color: var(--accent);
@@ -326,12 +317,13 @@
         .cal-day.selected-day {
             background: var(--accent);
             border-color: var(--accent);
+            color: white;
             transform: scale(1.05);
         }
 
         .cal-day-number { font-size: 12px; font-weight: 500; }
         .cal-day-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); margin-top: 2px; }
-        
+
         /* Home: Country Filter */
         .country-filter {
             display: flex;
@@ -848,19 +840,17 @@
             .trip-card { padding: 16px 14px; width: 100%; box-sizing: border-box; }
             .trip-title { font-size: 16px; }
             .search-box { width: 100%; }
-        }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-            .stat-value { font-size: 18px; }
-            .place-list { grid-template-columns: 1fr; }
-            .photo-grid { grid-template-columns: repeat(3, 1fr); }
-            #fullMap { height: calc(100vh - 120px); min-height: 350px; }
-        }
-        
-        @media (max-width: 480px) {
-            .stats-grid { grid-template-columns: 1fr 1fr; }
-            .trip-card { padding: 14px 12px; }
-            .trip-title { font-size: 14px; }
-            #map { height: 240px; }
+            
+            @media (max-width: 480px) {
+                .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+                .stat-value { font-size: 18px; }
+                .place-list { grid-template-columns: 1fr; }
+                .photo-grid { grid-template-columns: repeat(3, 1fr); }
+                #fullMap { height: calc(100vh - 120px); min-height: 350px; }
+                .trip-card { padding: 14px 12px; }
+                .trip-title { font-size: 14px; }
+                #map { height: 240px; }
+            }
         }
     </style>
 </head>
@@ -1292,21 +1282,13 @@
 
         document.getElementById('prevMonth').addEventListener('click', () => {
             currentCalMonth.setMonth(currentCalMonth.getMonth() - 1);
-            updateCalSelects();
             renderHomeCalendar();
         });
 
         document.getElementById('nextMonth').addEventListener('click', () => {
             currentCalMonth.setMonth(currentCalMonth.getMonth() + 1);
-            updateCalSelects();
             renderHomeCalendar();
         });
-
-        // Year/Month selects
-        function updateCalSelects() {
-            document.getElementById('calYear').value = currentCalMonth.getFullYear();
-            document.getElementById('calMonth').value = currentCalMonth.getMonth();
-        }
 
         // Destination Filter
         let currentCountry = 'all';
