@@ -663,6 +663,20 @@
             border-radius: var(--radius-sm);
             margin-top: 12px;
             flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .map-legend #mapPlaceCount,
+        .map-legend #mapTripCount {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .legend-divider {
+            width: 1px;
+            height: 16px;
+            background: var(--border);
         }
 
         .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
@@ -994,6 +1008,9 @@
             <div class="page" id="page-map">
                 <div id="fullMap"></div>
                 <div class="map-legend" id="mapLegend">
+                    <span id="mapPlaceCount">共 0 個地點</span>
+                    <span id="mapTripCount">0 個旅程</span>
+                    <div class="legend-divider"></div>
                     <div class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span>交通</div>
                     <div class="legend-item"><span class="legend-dot" style="background:#f97316"></span>餐飲</div>
                     <div class="legend-item"><span class="legend-dot" style="background:#10b981"></span>休閒</div>
