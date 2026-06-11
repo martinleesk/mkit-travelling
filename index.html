@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MKiT Travelling | 旅程記錄</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
@@ -61,6 +62,36 @@
             --border-hover: rgba(0, 0, 0, 0.12);
             --shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
         }
+        
+        /* p5.js Canvas */
+        #p5-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.35;
+        }
+        
+        /* ASCII Art Decorations */
+        .ascii-deco {
+            position: fixed;
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            line-height: 1;
+            color: var(--accent-purple);
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 0;
+            white-space: pre;
+            user-select: none;
+        }
+        
+        .ascii-deco-1 { top: 10%; left: 2%; }
+        .ascii-deco-2 { bottom: 15%; right: 3%; }
+        .ascii-deco-3 { top: 60%; left: 1%; }
         
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
@@ -1164,6 +1195,21 @@
 </head>
 <body>
     <div class="app-layout">
+        <!-- ASCII Art Decorations -->
+        <div class="ascii-deco ascii-deco-1">  ✈️
+  ╱╲
+ ╱  ╲
+╱____╲
+  ║║</div>
+        <div class="ascii-deco ascii-deco-2">🌍
+ ━━━━━━━━━
+  ║ ║
+  ║ ║</div>
+        <div class="ascii-deco ascii-deco-3">  📸
+ ┌──┐
+ │🎞│
+ └──┘</div>
+        
         <!-- Sidebar -->
         <nav class="sidebar">
             <div class="sidebar-logo">
@@ -2172,6 +2218,69 @@
         // Init
         renderHomeCalendar();
         renderTripList();
+        setTheme(isDark);
+        
+        // p5.js Animated Background
+        new p5((p) => {
+            let particles = [];
+            const PARTICLE_COUNT = 25;
+            
+            p.setup = () => {
+                const canvas = p.createCanvas(p.windowWidth, p.windowHeight);
+                canvas.parent('p5-canvas');
+                canvas.id('p5-canvas');
+                canvas.style('position', 'fixed');
+                canvas.style('top', '0');
+                canvas.style('left', '0');
+                canvas.style('z-index', '0');
+                canvas.style('pointer-events', 'none');
+                canvas.style('opacity', '0.35');
+                
+                for (let i = 0; i < PARTICLE_COUNT; i++) {
+                    particles.push({
+                        x: p.random(p.width),
+                        y: p.random(p.height),
+                        vx: p.random(-0.3, 0.3),
+                        vy: p.random(-0.3, 0.3),
+                        size: p.random(3, 8),
+                        hue: p.random([280, 320, 200, 30, 180]) // purple, pink, blue, orange, green
+                    });
+                }
+                p.noStroke();
+            };
+            
+            p.draw = () => {
+                p.clear();
+                particles.forEach(pt => {
+                    pt.x += pt.vx;
+                    pt.y += pt.vy;
+                    
+                    // Wrap around edges
+                    if (pt.x < 0) pt.x = p.width;
+                    if (pt.x > p.width) pt.x = 0;
+                    if (pt.y < 0) pt.y = p.height;
+                    if (pt.y > p.height) pt.y = 0;
+                    
+                    const colors = {
+                        280: [218, 119, 242], // purple
+                        320: [247, 131, 172], // pink
+                        200: [77, 171, 247],   // blue
+                        30:  [255, 169, 77],   // orange
+                        180: [105, 219, 124]   // green
+                    };
+                    const c = colors[pt.hue] || colors[280];
+                    p.fill(c[0], c[1], c[2], 60);
+                    p.ellipse(pt.x, pt.y, pt.size * 2);
+                    
+                    // Glow effect
+                    p.fill(c[0], c[1], c[2], 20);
+                    p.ellipse(pt.x, pt.y, pt.size * 4);
+                });
+            };
+            
+            p.windowResized = () => {
+                p.resizeCanvas(p.windowWidth, p.windowHeight);
+            };
+        });
     </script>
-</body>
 </html>
