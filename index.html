@@ -904,6 +904,227 @@
         
         .custom-marker { background: none !important; border: none !important; }
         
+        /* Timeline */
+        .timeline-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 18px;
+            position: relative;
+        }
+        
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .timeline-title {
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .timeline-title svg { width: 16px; height: 16px; fill: var(--accent-purple); }
+        
+        .timeline {
+            position: relative;
+            padding-left: 24px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--accent-purple), var(--accent-blue), var(--accent-pink));
+            border-radius: 2px;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-bottom: 20px;
+            padding-left: 20px;
+        }
+        
+        .timeline-item:last-child { padding-bottom: 0; }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 4px;
+            width: 16px;
+            height: 16px;
+            background: var(--bg-card);
+            border: 3px solid var(--accent-purple);
+            border-radius: 50%;
+            z-index: 1;
+        }
+        
+        .timeline-item.food::before { border-color: var(--accent-orange); }
+        .timeline-item.transport::before { border-color: var(--accent-blue); }
+        .timeline-item.leisure::before { border-color: var(--accent-green); }
+        .timeline-item.shopping::before { border-color: var(--accent-pink); }
+        
+        .timeline-time {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--accent-solid);
+            margin-bottom: 4px;
+        }
+        
+        .timeline-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .timeline-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .timeline-icon svg { width: 16px; height: 16px; fill: currentColor; }
+        
+        .timeline-info { flex: 1; min-width: 0; }
+        .timeline-name { font-size: 13px; font-weight: 500; }
+        .timeline-meta { font-size: 10px; color: var(--text-secondary); margin-top: 2px; }
+        
+        .timeline-rating {
+            display: flex;
+            gap: 2px;
+        }
+        
+        .star-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            color: var(--text-muted);
+            transition: all 0.15s;
+        }
+        
+        .star-btn svg { width: 16px; height: 16px; fill: currentColor; }
+        .star-btn.filled { color: var(--accent-yellow); }
+        .star-btn:hover { transform: scale(1.2); }
+        
+        /* Weather Widget */
+        .weather-widget {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            color: white;
+        }
+        
+        .weather-icon { font-size: 36px; }
+        .weather-icon svg { width: 48px; height: 48px; fill: white; }
+        
+        .weather-info { flex: 1; }
+        .weather-location { font-size: 12px; opacity: 0.9; }
+        .weather-temp { font-size: 28px; font-weight: 700; }
+        .weather-desc { font-size: 11px; opacity: 0.85; }
+        
+        .weather-loading { flex: 1; font-size: 13px; opacity: 0.8; }
+        
+        /* Photo Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .lightbox.active { display: flex; }
+        
+        .lightbox-img {
+            max-width: 90%;
+            max-height: 85vh;
+            border-radius: var(--radius-sm);
+            object-fit: contain;
+        }
+        
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 44px;
+            height: 44px;
+            background: var(--bg-card);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+        }
+        
+        .lightbox-close svg { width: 24px; height: 24px; fill: white; }
+        .lightbox-close:hover { background: var(--accent-solid); transform: scale(1.1); }
+        
+        .lightbox-delete {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--radius-xs);
+            cursor: pointer;
+            font-size: 13px;
+            transition: all var(--transition);
+        }
+        
+        .lightbox-delete:hover { background: #ff4444; transform: scale(1.05); }
+        
+        /* Photo item delete btn */
+        .photo-delete {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 24px;
+            height: 24px;
+            background: rgba(255, 107, 107, 0.9);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+        
+        .photo-delete svg { width: 12px; height: 12px; fill: white; }
+        .photo-item:hover .photo-delete { display: flex; }
+        
         /* Responsive */
         @media (max-width: 1024px) {
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1054,6 +1275,20 @@
                 </div>
                 
                 <div class="stats-grid" id="statsGrid"></div>
+                
+                <div class="weather-widget" id="weatherWidget">
+                    <div class="weather-loading">正在載入天氣資訊...</div>
+                </div>
+                
+                <div class="timeline-container" id="timelineContainer">
+                    <div class="timeline-header">
+                        <div class="timeline-title">
+                            <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                            行程時間線
+                        </div>
+                    </div>
+                    <div class="timeline" id="timeline"></div>
+                </div>
                 
                 <div class="map-container">
                     <div class="map-header">
@@ -1211,6 +1446,15 @@
                 </button>
             </div>
         </nav>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="lightboxClose">
+            <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+        <img class="lightbox-img" id="lightboxImg" src="" alt="">
+        <button class="lightbox-delete" id="lightboxDelete">刪除相片</button>
     </div>
 
     <script>
@@ -1590,6 +1834,12 @@
             `;
             document.getElementById('statsGrid').innerHTML = statsHtml;
 
+            // Weather
+            fetchWeather(trip.location);
+            
+            // Timeline
+            renderTimeline(trip);
+
             // Places
             document.getElementById('placeList').innerHTML = trip.places.map(p => `
                 <div class="place-item">
@@ -1623,6 +1873,95 @@
 
             // Init map
             setTimeout(initTripMap, 100);
+        }
+        
+        // Weather
+        function fetchWeather(location) {
+            const widget = document.getElementById('weatherWidget');
+            const cityMap = { '深圳': 'Shenzhen', '香港': 'Hong+Kong', '澳門': 'Macau', '台灣': 'Taipei', '日本': 'Tokyo' };
+            const city = cityMap[location] || location;
+            
+            fetch(`https://wttr.in/${city}?format=j1`)
+                .then(r => r.json())
+                .then(data => {
+                    const current = data.current_condition[0];
+                    const temp = current.temp_C + '°C';
+                    const desc = current.weatherDesc[0].value;
+                    const icon = getWeatherIcon(current.weatherCode);
+                    widget.innerHTML = `
+                        <div class="weather-icon">${icon}</div>
+                        <div class="weather-info">
+                            <div class="weather-location">${location}</div>
+                            <div class="weather-temp">${temp}</div>
+                            <div class="weather-desc">${desc}</div>
+                        </div>
+                    `;
+                })
+                .catch(() => {
+                    widget.innerHTML = `
+                        <div class="weather-icon">${icons.empty}</div>
+                        <div class="weather-info">
+                            <div class="weather-location">${location}</div>
+                            <div class="weather-temp">--°C</div>
+                            <div class="weather-desc">天氣資訊暫不可用</div>
+                        </div>
+                    `;
+                });
+        }
+        
+        function getWeatherIcon(code) {
+            const icons2 = {
+                '113': '<svg viewBox="0 0 24 24" style="fill:white"><path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/></svg>',
+                '116': '<svg viewBox="0 0 24 24" style="fill:white"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>',
+                '119': '<svg viewBox="0 0 24 24" style="fill:white"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 7.69 9.48 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3z"/></svg>',
+                '143': '<svg viewBox="0 0 24 24" style="fill:white"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>'
+            };
+            return icons2[code] || icons2['116'];
+        }
+        
+        // Timeline
+        function renderTimeline(trip) {
+            const container = document.getElementById('timeline');
+            const ratings = JSON.parse(localStorage.getItem('placeRatings')) || {};
+            
+            container.innerHTML = trip.places.map((p, i) => {
+                const placeId = `${trip.id}-${i}`;
+                const rating = ratings[placeId] || 0;
+                return `
+                    <div class="timeline-item ${p.type}">
+                        <div class="timeline-time">${p.time}</div>
+                        <div class="timeline-content">
+                            <div class="timeline-icon" style="background: ${typeColors[p.type]}20; color: ${typeColors[p.type]}">${getIcon(p.type)}</div>
+                            <div class="timeline-info">
+                                <div class="timeline-name">${p.name}</div>
+                                <div class="timeline-meta">${typeLabels[p.type]}</div>
+                            </div>
+                            <div class="timeline-rating" data-place="${placeId}">
+                                ${[1,2,3,4,5].map(n => `
+                                    <button class="star-btn ${n <= rating ? 'filled' : ''}" data-rating="${n}">
+                                        <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Star rating handlers
+            container.querySelectorAll('.star-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const placeId = btn.closest('.timeline-rating').dataset.place;
+                    const newRating = parseInt(btn.dataset.rating);
+                    ratings[placeId] = newRating;
+                    localStorage.setItem('placeRatings', JSON.stringify(ratings));
+                    // Update UI
+                    btn.closest('.timeline-rating').querySelectorAll('.star-btn').forEach(b => {
+                        b.classList.toggle('filled', parseInt(b.dataset.rating) <= newRating);
+                    });
+                });
+            });
         }
 
         function renderDetailCharts(trip) {
@@ -1712,6 +2051,8 @@
         });
 
         // Photos
+        let lightboxIndex = null;
+        
         function renderPhotos() {
             const grid = document.getElementById('photoGrid');
             const empty = document.getElementById('photoEmpty');
@@ -1720,8 +2061,36 @@
                 empty.style.display = 'block';
             } else {
                 empty.style.display = 'none';
-                grid.innerHTML = photos.map((p, i) => `<div class="photo-item" data-index="${i}"><img src="${p}" style="width:100%;height:100%;object-fit:cover"></div>`).join('') + grid.querySelector('#addPhoto').outerHTML;
+                grid.innerHTML = photos.map((p, i) => `
+                    <div class="photo-item" data-index="${i}">
+                        <button class="photo-delete" data-index="${i}">
+                            <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                        </button>
+                        <img src="${p}" style="width:100%;height:100%;object-fit:cover">
+                    </div>
+                `).join('') + `<div class="photo-item photo-add" id="addPhoto"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>`;
             }
+            
+            // Photo click for lightbox
+            grid.querySelectorAll('.photo-item:not(.photo-add)').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    if (e.target.closest('.photo-delete')) return;
+                    lightboxIndex = parseInt(item.dataset.index);
+                    document.getElementById('lightboxImg').src = photos[lightboxIndex];
+                    document.getElementById('lightbox').classList.add('active');
+                });
+            });
+            
+            // Delete button handler
+            grid.querySelectorAll('.photo-delete').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const idx = parseInt(btn.dataset.index);
+                    photos.splice(idx, 1);
+                    localStorage.setItem('travelPhotos', JSON.stringify(photos));
+                    renderPhotos();
+                });
+            });
         }
 
         document.getElementById('addPhoto').addEventListener('click', () => {
@@ -1741,6 +2110,22 @@
                 }
             };
             input.click();
+        });
+        
+        // Lightbox
+        document.getElementById('lightboxClose').addEventListener('click', () => {
+            document.getElementById('lightbox').classList.remove('active');
+            lightboxIndex = null;
+        });
+        
+        document.getElementById('lightboxDelete').addEventListener('click', () => {
+            if (lightboxIndex !== null) {
+                photos.splice(lightboxIndex, 1);
+                localStorage.setItem('travelPhotos', JSON.stringify(photos));
+                renderPhotos();
+                document.getElementById('lightbox').classList.remove('active');
+                lightboxIndex = null;
+            }
         });
 
         // Export/Import
