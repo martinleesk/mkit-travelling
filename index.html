@@ -3,42 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🦵 旅程記錄</title>
+    <title>MKiT Travelling | 旅程記錄</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
+        /* SVG Icons */
+        .svg-icon { width: 24px; height: 24px; display: inline-block; vertical-align: middle; }
+        .svg-icon-sm { width: 18px; height: 18px; }
+        .svg-icon-lg { width: 32px; height: 32px; }
+        .svg-icon-xl { width: 48px; height: 48px; }
+
         :root {
-            --bg-primary: #080e14;
-            --bg-secondary: #0d1520;
-            --bg-card: #111c28;
-            --bg-card-hover: #162232;
-            --text-primary: #f0f4f8;
-            --text-secondary: #6b7c8f;
-            --text-muted: #4a5568;
-            --accent: #10b981;
-            --accent-soft: rgba(16,185,129,0.12);
-            --accent-glow: rgba(16,185,129,0.25);
-            --border: rgba(255,255,255,0.06);
-            --border-hover: rgba(255,255,255,0.12);
-            --shadow: 0 8px 32px rgba(0,0,0,0.4);
-            --shadow-glow: 0 0 20px var(--accent-glow);
+            /* Vibrant Color Palette */
+            --bg-primary: #0f0a1e;
+            --bg-secondary: #1a1230;
+            --bg-card: #241840;
+            --bg-card-hover: #2e2055;
+            --text-primary: #f8f4ff;
+            --text-secondary: #b8a9d4;
+            --text-muted: #7c6a9e;
+            
+            /* Vibrant Accents */
+            --accent-red: #ff6b6b;
+            --accent-orange: #ffa94d;
+            --accent-yellow: #ffd43b;
+            --accent-green: #69db7c;
+            --accent-blue: #4dabf7;
+            --accent-purple: #da77f2;
+            --accent-pink: #f783ac;
+            
+            /* Active accent (gradient) */
+            --accent: linear-gradient(135deg, var(--accent-pink), var(--accent-purple), var(--accent-blue));
+            --accent-solid: #da77f2;
+            --accent-soft: rgba(218, 119, 242, 0.15);
+            --accent-glow: rgba(218, 119, 242, 0.3);
+            
+            --border: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 255, 255, 0.15);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --shadow-glow: 0 0 24px var(--accent-glow);
             --radius: 20px;
-            --radius-sm: 12px;
+            --radius-sm: 14px;
+            --radius-xs: 8px;
             --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         [data-theme="light"] {
-            --bg-primary: #f5f7fa;
+            --bg-primary: #fff5f8;
             --bg-secondary: #ffffff;
             --bg-card: #ffffff;
-            --bg-card-hover: #f0f2f5;
-            --text-primary: #1a2432;
-            --text-secondary: #5a6577;
-            --text-muted: #9aa5b4;
-            --border: rgba(0,0,0,0.08);
-            --border-hover: rgba(0,0,0,0.15);
-            --shadow: 0 4px 24px rgba(0,0,0,0.1);
+            --bg-card-hover: #fff0f5;
+            --text-primary: #2d1f3d;
+            --text-secondary: #7c6a9e;
+            --text-muted: #b8a9d4;
+            --border: rgba(0, 0, 0, 0.06);
+            --border-hover: rgba(0, 0, 0, 0.12);
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -53,16 +74,26 @@
         
         /* Animations */
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(12px); }
             to { opacity: 1; transform: translateY(0); }
         }
         
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.08); }
+            50% { transform: scale(1.06); }
         }
         
-        .animate-fade { animation: fadeIn 0.35s ease forwards; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        
+        .animate-fade { animation: fadeIn 0.4s ease forwards; }
         .stagger-1 { animation-delay: 0.05s; opacity: 0; }
         .stagger-2 { animation-delay: 0.1s; opacity: 0; }
         .stagger-3 { animation-delay: 0.15s; opacity: 0; }
@@ -74,7 +105,7 @@
         
         /* Sidebar */
         .sidebar {
-            width: 72px;
+            width: 76px;
             background: var(--bg-secondary);
             border-right: 1px solid var(--border);
             display: flex;
@@ -87,11 +118,19 @@
         }
         
         .sidebar-logo {
-            font-size: 28px;
+            width: 48px;
+            height: 48px;
+            background: var(--accent);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin-bottom: 28px;
-            filter: drop-shadow(0 0 8px var(--accent-glow));
-            animation: pulse 3s ease-in-out infinite;
+            box-shadow: var(--shadow-glow);
+            animation: float 3s ease-in-out infinite;
         }
+        
+        .sidebar-logo svg { width: 28px; height: 28px; fill: white; }
         
         .sidebar-nav {
             display: flex;
@@ -102,19 +141,21 @@
         }
         
         .nav-item {
-            width: 52px;
-            height: 52px;
+            width: 56px;
+            height: 56px;
             border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
             cursor: pointer;
             transition: all var(--transition);
             color: var(--text-secondary);
             background: transparent;
             border: none;
+            position: relative;
         }
+        
+        .nav-item svg { width: 24px; height: 24px; fill: currentColor; transition: all var(--transition); }
         
         .nav-item:hover {
             background: var(--border);
@@ -123,10 +164,12 @@
         }
         
         .nav-item.active {
-            background: linear-gradient(135deg, var(--accent), #059669);
+            background: var(--accent);
             color: #fff;
             box-shadow: var(--shadow-glow);
         }
+        
+        .nav-item.active svg { fill: white; }
         
         .nav-item-label { font-size: 9px; margin-top: 3px; font-weight: 600; }
         .nav-item-wrap { display: flex; flex-direction: column; align-items: center; }
@@ -138,7 +181,6 @@
             border-radius: 14px;
             border: 1px solid var(--border);
             background: var(--bg-card);
-            font-size: 20px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -146,16 +188,18 @@
             transition: all var(--transition);
         }
         
-        .sidebar-theme:hover { border-color: var(--accent); transform: rotate(15deg); }
+        .sidebar-theme svg { width: 20px; height: 20px; fill: var(--text-secondary); }
+        .sidebar-theme:hover { border-color: var(--accent-solid); transform: rotate(15deg); }
+        .sidebar-theme:hover svg { fill: var(--accent-solid); }
         
         /* Main Content */
         .main-content {
             flex: 1;
-            margin-left: 72px;
+            margin-left: 76px;
             padding: 28px 40px;
             max-width: 1400px;
             margin: 0 auto;
-            width: calc(100% - 72px);
+            width: calc(100% - 76px);
             box-sizing: border-box;
         }
 
@@ -173,7 +217,7 @@
         
         /* Header */
         .page-header { margin-bottom: 20px; }
-        .page-header h1 { font-size: 26px; font-weight: 700; margin-bottom: 2px; }
+        .page-header h1 { font-size: 26px; font-weight: 700; margin-bottom: 2px; background: var(--accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
         .page-header p { color: var(--text-secondary); font-size: 13px; }
         
         /* Home: Calendar Filter */
@@ -203,7 +247,7 @@
 
         .pagination-btn {
             padding: 6px 12px;
-            border-radius: 8px;
+            border-radius: var(--radius-xs);
             border: 1px solid var(--border);
             background: var(--bg-card);
             color: var(--text-secondary);
@@ -212,11 +256,11 @@
             transition: all var(--transition);
         }
 
-        .pagination-btn:hover { border-color: var(--accent); color: var(--text-primary); }
+        .pagination-btn:hover { border-color: var(--accent-solid); color: var(--text-primary); }
         .pagination-btn.active {
             background: var(--accent);
             color: #fff;
-            border-color: var(--accent);
+            border-color: transparent;
         }
 
         .cal-filter-wrapper {
@@ -254,8 +298,12 @@
             font-size: 14px;
             cursor: pointer;
             transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-
+        
+        .cal-nav-btn svg { width: 14px; height: 14px; fill: currentColor; }
         .cal-nav-btn:hover { background: var(--bg-hover); transform: scale(1.05); }
 
         /* Calendar */
@@ -305,18 +353,18 @@
             font-weight: 500;
         }
 
-        .cal-day:hover { border-color: var(--accent); transform: scale(1.05); }
+        .cal-day:hover { border-color: var(--accent-solid); transform: scale(1.05); }
         .cal-day.empty { background: transparent; cursor: default; }
         .cal-day.empty:hover { transform: none; }
 
         .cal-day.has-trip {
             background: var(--accent-soft);
-            border-color: var(--accent);
+            border-color: var(--accent-solid);
         }
 
         .cal-day.today {
-            background: var(--accent);
-            border-color: var(--accent);
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+            border-color: transparent;
             color: white;
             font-weight: 700;
         }
@@ -325,13 +373,13 @@
 
         .cal-day.selected-day {
             background: var(--accent);
-            border-color: var(--accent);
+            border-color: transparent;
             color: white;
             transform: scale(1.05);
         }
 
         .cal-day-number { font-size: 12px; font-weight: 500; }
-        .cal-day-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); margin-top: 2px; }
+        .cal-day-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent-solid); margin-top: 2px; }
 
         /* Home: Country Filter */
         .country-filter {
@@ -360,11 +408,11 @@
             text-align: center;
         }
 
-        .country-btn:hover { border-color: var(--accent); color: var(--text-primary); }
+        .country-btn:hover { border-color: var(--accent-solid); color: var(--text-primary); }
         .country-btn.active {
             background: var(--accent);
             color: #fff;
-            border-color: var(--accent);
+            border-color: transparent;
         }
 
         /* Search */
@@ -379,7 +427,7 @@
             gap: 10px;
         }
         
-        .search-icon { font-size: 16px; color: var(--text-muted); }
+        .search-box svg { width: 16px; height: 16px; fill: var(--text-muted); }
         
         .search-input {
             flex: 1;
@@ -415,7 +463,7 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: linear-gradient(90deg, var(--accent), transparent);
+            background: var(--accent);
             opacity: 0;
             transition: opacity var(--transition);
         }
@@ -440,7 +488,7 @@
         .trip-date { font-size: 12px; color: var(--text-secondary); }
         .trip-location-badge {
             background: var(--accent-soft);
-            color: var(--accent);
+            color: var(--accent-solid);
             font-size: 11px;
             padding: 4px 10px;
             border-radius: 16px;
@@ -456,7 +504,8 @@
         }
         
         .trip-stat { display: flex; align-items: center; gap: 5px; }
-        .trip-stat-icon { font-size: 14px; opacity: 0.7; }
+        .trip-stat-icon { opacity: 0.7; }
+        .trip-stat-icon svg { width: 14px; height: 14px; fill: currentColor; }
         .trip-stat-value { font-size: 13px; font-weight: 600; }
         .trip-stat-label { font-size: 11px; color: var(--text-secondary); }
         
@@ -479,7 +528,6 @@
             border-radius: 12px;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            font-size: 20px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -493,7 +541,8 @@
             flex-shrink: 0;
         }
         
-        .back-btn:hover { border-color: var(--accent); transform: scale(1.05); }
+        .back-btn svg { width: 20px; height: 20px; fill: currentColor; }
+        .back-btn:hover { border-color: var(--accent-solid); transform: scale(1.05); }
         .detail-title { font-size: 20px; font-weight: 700; }
         .detail-meta { color: var(--text-secondary); font-size: 12px; margin-top: 2px; }
         
@@ -516,8 +565,9 @@
             animation: fadeIn 0.4s ease forwards;
         }
         
-        .stat-card:hover { border-color: var(--accent); transform: translateY(-2px); }
-        .stat-icon { font-size: 22px; margin-bottom: 4px; }
+        .stat-card:hover { border-color: var(--accent-solid); transform: translateY(-2px); }
+        .stat-icon { margin-bottom: 4px; }
+        .stat-icon svg { width: 22px; height: 22px; fill: currentColor; }
         .stat-value { font-size: 20px; font-weight: 700; }
         .stat-label { font-size: 10px; color: var(--text-secondary); margin-top: 2px; }
         
@@ -538,14 +588,15 @@
             margin-bottom: 12px;
         }
         
-        .map-title { font-size: 14px; font-weight: 600; }
+        .map-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .map-title svg { width: 16px; height: 16px; fill: var(--accent-solid); }
         
         .map-toggle {
-            background: var(--accent);
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
             color: #fff;
             border: none;
             padding: 8px 14px;
-            border-radius: 8px;
+            border-radius: var(--radius-xs);
             font-size: 12px;
             cursor: pointer;
             transition: all var(--transition);
@@ -563,6 +614,7 @@
         
         /* Places */
         .section-title { font-size: 14px; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+        .section-title svg { width: 16px; height: 16px; fill: var(--accent-solid); }
         
         .place-list {
             display: grid;
@@ -591,8 +643,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
         }
+        
+        .place-icon svg { width: 16px; height: 16px; fill: currentColor; }
         
         .place-name { font-size: 12px; font-weight: 500; }
         .place-time { font-size: 10px; color: var(--text-secondary); margin-top: 1px; }
@@ -607,7 +660,8 @@
             padding: 14px;
         }
         
-        .chart-card-title { font-size: 11px; color: var(--text-secondary); margin-bottom: 10px; }
+        .chart-card-title { font-size: 11px; color: var(--text-secondary); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+        .chart-card-title svg { width: 14px; height: 14px; fill: currentColor; }
         .chart-container { height: 180px; position: relative; }
         
         /* Expense List */
@@ -639,14 +693,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
             transition: all var(--transition);
         }
         
+        .expense-icon svg { width: 18px; height: 18px; fill: currentColor; }
         .expense-item:hover .expense-icon { transform: scale(1.1); }
         .expense-info .name { font-size: 13px; font-weight: 500; }
         .expense-info .meta { font-size: 10px; color: var(--text-secondary); margin-top: 1px; }
-        .expense-amount { font-size: 15px; font-weight: 700; color: #f87171; }
+        .expense-amount { font-size: 15px; font-weight: 700; color: var(--accent-red); }
         
         /* Map Page */
         .map-info-bar {
@@ -715,8 +769,8 @@
         .photo-item:hover { transform: scale(1.03); box-shadow: var(--shadow); }
         .photo-placeholder { color: var(--text-muted); font-size: 42px; opacity: 0.4; }
         .photo-add { border: 2px dashed var(--border); background: transparent; }
-        .photo-add:hover { border-color: var(--accent); background: var(--accent-soft); }
-        .photo-add-icon { font-size: 28px; }
+        .photo-add:hover { border-color: var(--accent-solid); background: var(--accent-soft); }
+        .photo-add svg { width: 28px; height: 28px; fill: var(--text-muted); }
         
         /* Settings */
         .settings-group { margin-bottom: 20px; }
@@ -744,7 +798,8 @@
         
         .settings-item:hover { border-color: var(--border-hover); transform: translateX(3px); }
         .settings-item-left { display: flex; align-items: center; gap: 12px; }
-        .settings-item-icon { font-size: 18px; }
+        .settings-item-icon { }
+        .settings-item-icon svg { width: 18px; height: 18px; fill: currentColor; }
         .settings-item-label { font-size: 14px; }
         .settings-item-desc { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
         
@@ -759,7 +814,7 @@
             transition: background var(--transition);
         }
         
-        .toggle.active { background: var(--accent); }
+        .toggle.active { background: var(--accent-solid); }
         
         .toggle::after {
             content: '';
@@ -777,7 +832,8 @@
         
         /* Empty State */
         .empty-state { text-align: center; padding: 40px 20px; color: var(--text-secondary); }
-        .empty-state-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.4; }
+        .empty-state-icon { margin-bottom: 12px; opacity: 0.4; }
+        .empty-state-icon svg { width: 48px; height: 48px; fill: currentColor; }
         .empty-state-text { font-size: 13px; }
         
         /* Mobile Nav */
@@ -787,7 +843,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(13, 21, 32, 0.95);
+            background: rgba(26, 18, 48, 0.95);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-top: 1px solid var(--border);
@@ -814,12 +870,12 @@
             min-width: 56px;
         }
         
+        .mobile-nav-item svg { width: 22px; height: 22px; fill: currentColor; }
+        
         .mobile-nav-item.active {
-            color: var(--accent);
+            color: var(--accent-solid);
             background: var(--accent-soft);
         }
-        
-        .mobile-nav-item-icon { font-size: 22px; }
         
         /* Leaflet Dark Theme */
         .leaflet-popup-content-wrapper { 
@@ -840,7 +896,7 @@
         }
         .leaflet-control-zoom a:hover { background: var(--bg-card-hover) !important; }
         .leaflet-control-attribution { 
-            background: rgba(8,14,20,0.85) !important; 
+            background: rgba(15, 10, 30, 0.85) !important; 
             color: var(--text-muted) !important; 
             font-size: 9px; 
         }
@@ -889,35 +945,39 @@
     <div class="app-layout">
         <!-- Sidebar -->
         <nav class="sidebar">
-            <div class="sidebar-logo">🦵</div>
+            <div class="sidebar-logo">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            </div>
             <div class="sidebar-nav">
                 <button class="nav-item active" data-page="home">
                     <div class="nav-item-wrap">
-                        <span>🏠</span>
+                        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
                         <span class="nav-item-label">首頁</span>
                     </div>
                 </button>
                 <button class="nav-item" data-page="map">
                     <div class="nav-item-wrap">
-                        <span>🗺️</span>
+                        <svg viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
                         <span class="nav-item-label">地圖</span>
                     </div>
                 </button>
                 <button class="nav-item" data-page="photos">
                     <div class="nav-item-wrap">
-                        <span>📸</span>
+                        <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
                         <span class="nav-item-label">相片</span>
                     </div>
                 </button>
                 <button class="nav-item" data-page="settings">
                     <div class="nav-item-wrap">
-                        <span>⚙️</span>
+                        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
                         <span class="nav-item-label">設定</span>
                     </div>
                 </button>
             </div>
             <div class="sidebar-spacer"></div>
-            <button class="sidebar-theme" id="themeToggle">🌙</button>
+            <button class="sidebar-theme" id="themeToggle">
+                <svg viewBox="0 0 24 24" class="moon-icon"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+            </button>
         </nav>
         
         <!-- Main Content -->
@@ -925,7 +985,7 @@
             <!-- Home Page -->
             <div class="page active" id="page-home">
                 <div class="page-header">
-                    <h1>🦵 旅程記錄</h1>
+                    <h1>MKiT Travelling</h1>
                     <p>記錄你的每一段旅程</p>
                 </div>
                 
@@ -939,11 +999,15 @@
                             <div class="home-calendar">
                                 <div class="cal-header">
                                     <div class="cal-nav-btns">
-                                        <button class="cal-nav-btn" id="prevMonth">←</button>
+                                        <button class="cal-nav-btn" id="prevMonth">
+                                            <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                                        </button>
                                     </div>
                                     <div class="cal-current" id="currentMonth"></div>
                                     <div class="cal-nav-btns">
-                                        <button class="cal-nav-btn" id="nextMonth">→</button>
+                                        <button class="cal-nav-btn" id="nextMonth">
+                                            <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                                        </button>
                                     </div>
                                 </div>
                                 
@@ -964,7 +1028,7 @@
 
                         <!-- Search -->
                         <div class="search-box">
-                            <span class="search-icon">🔍</span>
+                            <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
                             <input type="text" class="search-input" id="searchInput" placeholder="搜尋旅程...">
                         </div>
                     </div>
@@ -980,7 +1044,9 @@
             <!-- Trip Detail -->
             <div class="trip-detail" id="tripDetail">
                 <div class="detail-header">
-                    <button class="back-btn" id="backBtn">←</button>
+                    <button class="back-btn" id="backBtn">
+                        <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                    </button>
                     <div>
                         <div class="detail-title" id="detailTitle"></div>
                         <div class="detail-meta" id="detailMeta"></div>
@@ -991,7 +1057,10 @@
                 
                 <div class="map-container">
                     <div class="map-header">
-                        <div class="map-title">🗺️ 地圖</div>
+                        <div class="map-title">
+                            <svg viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
+                            地圖
+                        </div>
                         <button class="map-toggle" id="mapToggle">展開</button>
                     </div>
                     <div id="mapWrapper" style="display:none;">
@@ -999,25 +1068,37 @@
                     </div>
                 </div>
                 
-                <div class="section-title">📍 行程地點</div>
+                <div class="section-title">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                    行程地點
+                </div>
                 <div class="place-list" id="placeList"></div>
                 
                 <div class="chart-grid">
                     <div class="chart-card">
-                        <div class="chart-card-title">📊 消費分佈</div>
+                        <div class="chart-card-title">
+                            <svg viewBox="0 0 24 24" style="fill: var(--accent-pink)"><path d="M11 2v20c-5.07-.5-9-4.79-9-10s3.93-9.5 9-10zm2.03 0v8.99H22c-.47-4.74-4.24-8.52-8.97-8.99zm0 11.01V22c4.74-.47 8.5-4.25 8.97-8.99h-8.97z"/></svg>
+                            消費分佈
+                        </div>
                         <div class="chart-container">
                             <canvas id="detailPieChart"></canvas>
                         </div>
                     </div>
                     <div class="chart-card">
-                        <div class="chart-card-title">📈 金額比較</div>
+                        <div class="chart-card-title">
+                            <svg viewBox="0 0 24 24" style="fill: var(--accent-blue)"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
+                            金額比較
+                        </div>
                         <div class="chart-container">
                             <canvas id="detailBarChart"></canvas>
                         </div>
                     </div>
                 </div>
                 
-                <div class="section-title">💸 消費記錄</div>
+                <div class="section-title">
+                    <svg viewBox="0 0 24 24" style="fill: var(--accent-orange)"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+                    消費記錄
+                </div>
                 <div class="expense-list" id="expenseList"></div>
             </div>
             
@@ -1028,28 +1109,30 @@
                     <span id="mapPlaceCount">共 0 個地點</span>
                     <span id="mapTripCount">0 個旅程</span>
                     <div class="legend-divider"></div>
-                    <div class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span>交通</div>
-                    <div class="legend-item"><span class="legend-dot" style="background:#f97316"></span>餐飲</div>
-                    <div class="legend-item"><span class="legend-dot" style="background:#10b981"></span>休閒</div>
-                    <div class="legend-item"><span class="legend-dot" style="background:#8b5cf6"></span>購物</div>
+                    <div class="legend-item"><span class="legend-dot" style="background: #3b82f6"></span>交通</div>
+                    <div class="legend-item"><span class="legend-dot" style="background: #ffa94d"></span>餐飲</div>
+                    <div class="legend-item"><span class="legend-dot" style="background: #69db7c"></span>休閒</div>
+                    <div class="legend-item"><span class="legend-dot" style="background: #da77f2"></span>購物</div>
                 </div>
             </div>
             
             <!-- Photos Page -->
             <div class="page" id="page-photos">
                 <div class="page-header">
-                    <h1>📸 相片記錄</h1>
+                    <h1>相片記錄</h1>
                     <p>記錄旅途中的精彩瞬間</p>
                 </div>
                 
                 <div class="photo-grid" id="photoGrid">
                     <div class="photo-item photo-add" id="addPhoto">
-                        <span class="photo-add-icon">➕</span>
+                        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                     </div>
                 </div>
                 
                 <div class="empty-state" id="photoEmpty">
-                    <div class="empty-state-icon">📸</div>
+                    <div class="empty-state-icon">
+                        <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+                    </div>
                     <div class="empty-state-text">點擊上方 + 添加相片</div>
                 </div>
             </div>
@@ -1057,7 +1140,7 @@
             <!-- Settings Page -->
             <div class="page" id="page-settings">
                 <div class="page-header">
-                    <h1>⚙️ 設定</h1>
+                    <h1>設定</h1>
                     <p>自訂你的使用體驗</p>
                 </div>
 
@@ -1065,9 +1148,11 @@
                     <div class="settings-title">外觀</div>
                     <div class="settings-item" id="themeToggleSetting">
                         <div class="settings-item-left">
-                            <span class="settings-item-icon" id="themeToggleIcon">🌙</span>
+                            <span class="settings-item-icon" id="themeToggleIcon">
+                                <svg viewBox="0 0 24 24" class="moon-icon"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+                            </span>
                             <div>
-                                <div class="settings-item-label" id="themeToggleLabel">深色模式</div>
+                                <div class="settings-item-label" id="themeToggleLabel">淺色模式</div>
                                 <div class="settings-item-desc">切換淺色/深色主題</div>
                             </div>
                         </div>
@@ -1079,23 +1164,27 @@
                     <div class="settings-title">數據</div>
                     <div class="settings-item" id="exportBtn">
                         <div class="settings-item-left">
-                            <span class="settings-item-icon">📤</span>
+                            <span class="settings-item-icon">
+                                <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                            </span>
                             <div>
                                 <div class="settings-item-label">匯出數據</div>
                                 <div class="settings-item-desc">下載你的旅行記錄</div>
                             </div>
                         </div>
-                        <span>→</span>
+                        <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:var(--text-muted)"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
                     </div>
                     <div class="settings-item" id="importBtn">
                         <div class="settings-item-left">
-                            <span class="settings-item-icon">📥</span>
+                            <span class="settings-item-icon">
+                                <svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2v2h14v-2H5z"/></svg>
+                            </span>
                             <div>
                                 <div class="settings-item-label">匯入數據</div>
                                 <div class="settings-item-desc">從備份恢復</div>
                             </div>
                         </div>
-                        <span>→</span>
+                        <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:var(--text-muted)"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
                     </div>
                 </div>
             </div>
@@ -1105,19 +1194,19 @@
         <nav class="mobile-nav">
             <div class="mobile-nav-inner">
                 <button class="mobile-nav-item active" data-page="home">
-                    <span class="mobile-nav-item-icon">🏠</span>
+                    <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
                     <span>首頁</span>
                 </button>
                 <button class="mobile-nav-item" data-page="map">
-                    <span class="mobile-nav-item-icon">🗺️</span>
+                    <svg viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
                     <span>地圖</span>
                 </button>
                 <button class="mobile-nav-item" data-page="photos">
-                    <span class="mobile-nav-item-icon">📸</span>
+                    <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
                     <span>相片</span>
                 </button>
                 <button class="mobile-nav-item" data-page="settings">
-                    <span class="mobile-nav-item-icon">⚙️</span>
+                    <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
                     <span>設定</span>
                 </button>
             </div>
@@ -1125,29 +1214,47 @@
     </div>
 
     <script>
+        // SVG Icon helper
+        const icons = {
+            home: '<svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>',
+            map: '<svg viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>',
+            transport: '<svg viewBox="0 0 24 24"><path d="M12 2c-4 0-8 .5-8 4v9.5C4 17.43 5.57 19 7.5 19L6 20.5v.5h2.23l2-2H14l2 2h2v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-3.58-4-8-4zM7.5 17c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm3.5-6H6V6h5v5zm2.5 6c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm3.5-6h-5V6h5v5z"/></svg>',
+            food: '<svg viewBox="0 0 24 24"><path d="M8.1 13.34l2.83-2.83L3.91 3c-.32.02-.63.09-.93.18a6.006 6.006 0 0 0-1.73 3 6.006 6.006 0 0 0 .65 4.22l.97.97.97-.97a6.006 6.006 0 0 0 .65-4.22 6.006 6.006 0 0 0-1.73-3l1.89-1.89zM11 11l1.41 1.41L7.91 17l-1.41-1.41L11 11zM21 9V7c0-1.1-.9-2-2-2h-6c-1.1 0-2 .9-2 2v2c-1.1 0-2 .9-2 2s.9 2 2 2h6c1.1 0 2-.9 2-2s-.9-2-2-2zm0 4c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V13z"/></svg>',
+            leisure: '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>',
+            shopping: '<svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.09-.16.14-.33.14-.5 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>',
+            star: '<svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>',
+            location: '<svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>',
+            time: '<svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>',
+            money: '<svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>',
+            empty: '<svg viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>'
+        };
+        
+        function getIcon(type) {
+            return icons[type] || icons.location;
+        }
+        
         // Default trip data
         const defaultTrips = [
             {
                 id: 1,
                 name: '深圳灣一日遊',
                 date: '2026-06-07',
-                location: '🇨🇳 深圳',
+                location: '深圳',
                 country: 'china',
                 places: [
-                    { name: '深圳灣口岸', lat: 22.4709, lng: 113.9295, type: 'transport', icon: '🚌', time: '11:50' },
-                    { name: '泰适SPA馆', lat: 22.4938, lng: 113.9304, type: 'leisure', icon: '💆', time: '14:44' },
-                    { name: 'NEED創意韓國料理', lat: 22.4855, lng: 113.9412, type: 'food', icon: '🍽️', time: '15:52' },
-                    { name: '蔡潤越南粉', lat: 22.5012, lng: 113.9283, type: 'food', icon: '🍽️', time: '20:13' }
+                    { name: '深圳灣口岸', lat: 22.4709, lng: 113.9295, type: 'transport', time: '11:50' },
+                    { name: '泰适SPA馆', lat: 22.4938, lng: 113.9304, type: 'leisure', time: '14:44' },
+                    { name: 'NEED創意韓國料理', lat: 22.4855, lng: 113.9412, type: 'food', time: '15:52' },
+                    { name: '蔡潤越南粉', lat: 22.5012, lng: 113.9283, type: 'food', time: '20:13' }
                 ],
                 expenses: [
-                    { name: 'ZAKC直通車（去程）', amount: 60.00, category: '交通', icon: '🚌', time: '11:50' },
-                    { name: '泰适SPA馆', amount: 231.48, category: '休閒', icon: '💆', time: '14:44' },
-                    { name: 'NEED創意韓國料理', amount: 231.48, category: '餐飲', icon: '🍽️', time: '15:52' },
-                    { name: 'NEED創意韓國料理（加單）', amount: 37.22, category: '餐飲', icon: '🍽️', time: '15:52' },
-                    { name: 'ZAKC直通車（回程）', amount: 60.00, category: '交通', icon: '🚌', time: '16:49' },
-                    { name: '美團餐飲團購', amount: 393.16, category: '餐飲', icon: '🍽️', time: '19:35' },
-                    { name: '美團餐飲團購', amount: 393.16, category: '餐飲', icon: '🍽️', time: '19:35' },
-                    { name: '蔡潤越南粉', amount: 147.73, category: '餐飲', icon: '🍽️', time: '20:13' }
+                    { name: 'ZAKC直通車（去程）', amount: 60.00, category: '交通', time: '11:50' },
+                    { name: '泰适SPA馆', amount: 231.48, category: '休閒', time: '14:44' },
+                    { name: 'NEED創意韓國料理', amount: 231.48, category: '餐飲', time: '15:52' },
+                    { name: 'NEED創意韓國料理（加單）', amount: 37.22, category: '餐飲', time: '15:52' },
+                    { name: 'ZAKC直通車（回程）', amount: 60.00, category: '交通', time: '16:49' },
+                    { name: '美團餐飲團購', amount: 393.16, category: '餐飲', time: '19:35' },
+                    { name: '蔡潤越南粉', amount: 147.73, category: '餐飲', time: '20:13' }
                 ]
             }
         ];
@@ -1162,9 +1269,9 @@
         
         const typeColors = {
             transport: '#3b82f6',
-            food: '#f97316',
-            leisure: '#10b981',
-            shopping: '#8b5cf6'
+            food: '#ffa94d',
+            leisure: '#69db7c',
+            shopping: '#da77f2'
         };
         
         const typeLabels = {
@@ -1181,14 +1288,14 @@
             isDark = dark;
             if (dark) {
                 document.documentElement.setAttribute('data-theme', 'dark');
-                document.getElementById('themeToggle').textContent = '☀️';
-                document.getElementById('themeToggleIcon').textContent = '☀️';
+                document.getElementById('themeToggle').innerHTML = '<svg viewBox="0 0 24 24" style="fill: var(--text-secondary)"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>';
+                document.getElementById('themeToggleIcon').innerHTML = '<svg viewBox="0 0 24 24" style="fill: var(--text-secondary)"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>';
                 document.getElementById('themeToggleLabel').textContent = '淺色模式';
                 document.querySelector('#themeToggleSetting .toggle').classList.add('active');
             } else {
                 document.documentElement.setAttribute('data-theme', 'light');
-                document.getElementById('themeToggle').textContent = '🌙';
-                document.getElementById('themeToggleIcon').textContent = '🌙';
+                document.getElementById('themeToggle').innerHTML = '<svg viewBox="0 0 24 24" style="fill: var(--accent-yellow)"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>';
+                document.getElementById('themeToggleIcon').innerHTML = '<svg viewBox="0 0 24 24" style="fill: var(--accent-yellow)"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>';
                 document.getElementById('themeToggleLabel').textContent = '深色模式';
                 document.querySelector('#themeToggleSetting .toggle').classList.remove('active');
             }
@@ -1376,7 +1483,7 @@
             filteredTrips = tripData;
 
             if (tripData.length === 0) {
-                container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🦵</div><div class="empty-state-text">沒有找到旅程記錄</div></div>`;
+                container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">${icons.empty}</div><div class="empty-state-text">沒有找到旅程記錄</div></div>`;
                 document.getElementById('pagination').innerHTML = '';
                 return;
             }
@@ -1399,40 +1506,35 @@
                         <div class="trip-header">
                             <div class="trip-info">
                                 <div class="trip-title">${trip.name}</div>
-                                <div class="trip-date">📅 ${trip.date}</div>
+                                <div class="trip-date">${trip.date}</div>
                             </div>
                             <div class="trip-location-badge">${trip.location}</div>
                         </div>
                         <div class="trip-stats">
                             <div class="trip-stat">
-                                <span class="trip-stat-icon">💰</span>
-                                <span class="trip-stat-value">$${total.toFixed(0)}</span>
-                                <span class="trip-stat-label">消費</span>
-                            </div>
-                            <div class="trip-stat">
-                                <span class="trip-stat-icon">📍</span>
+                                <span class="trip-stat-icon">${icons.location}</span>
                                 <span class="trip-stat-value">${trip.places.length}</span>
                                 <span class="trip-stat-label">地點</span>
                             </div>
                             <div class="trip-stat">
-                                <span class="trip-stat-icon">🧾</span>
-                                <span class="trip-stat-value">${trip.expenses.length}</span>
-                                <span class="trip-stat-label">記錄</span>
+                                <span class="trip-stat-icon">${icons.money}</span>
+                                <span class="trip-stat-value">$${total.toFixed(0)}</span>
+                                <span class="trip-stat-label">消費</span>
                             </div>
                         </div>
-                    </div>
-                `;
-            }).join('');
+                    </div>`;
+            });
 
-            container.querySelectorAll('.trip-card').forEach(card => {
+            // Click handlers
+            document.querySelectorAll('.trip-card').forEach(card => {
                 card.addEventListener('click', () => showTripDetail(parseInt(card.dataset.id)));
             });
         }
 
         function renderPagination() {
-            const container = document.getElementById('pagination');
             const totalPages = Math.ceil(filteredTrips.length / ITEMS_PER_PAGE);
-
+            const container = document.getElementById('pagination');
+            
             if (totalPages <= 1) {
                 container.innerHTML = '';
                 return;
@@ -1440,7 +1542,7 @@
 
             let html = '';
             for (let i = 1; i <= totalPages; i++) {
-                html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+                html += `<button class="pagination-btn${i === currentPage ? ' active' : ''}" data-page="${i}">${i}</button>`;
             }
             container.innerHTML = html;
 
@@ -1449,253 +1551,206 @@
                     currentPage = parseInt(btn.dataset.page);
                     renderPaginatedTrips();
                     renderPagination();
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
                 });
             });
         }
 
         // Trip Detail
-        function showTripDetail(id) {
-            const trip = trips.find(t => t.id === id);
+        function showTripDetail(tripId) {
+            const trip = trips.find(t => t.id === tripId);
             if (!trip) return;
-            
             currentTrip = trip;
+
             document.getElementById('detailTitle').textContent = trip.name;
             document.getElementById('detailMeta').textContent = `${trip.date} · ${trip.location}`;
-            
+
+            // Stats
             const total = trip.expenses.reduce((s, e) => s + e.amount, 0);
-            
-            document.getElementById('statsGrid').innerHTML = `
+            const statsHtml = `
                 <div class="stat-card stagger-1">
-                    <div class="stat-icon">💰</div>
+                    <div class="stat-icon" style="color: var(--accent-blue)">${icons.location}</div>
+                    <div class="stat-value">${trip.places.length}</div>
+                    <div class="stat-label">行程地點</div>
+                </div>
+                <div class="stat-card stagger-2">
+                    <div class="stat-icon" style="color: var(--accent-orange)">${icons.food}</div>
+                    <div class="stat-value">${trip.expenses.filter(e => e.category === '餐飲').length}</div>
+                    <div class="stat-label">餐飲消費</div>
+                </div>
+                <div class="stat-card stagger-3">
+                    <div class="stat-icon" style="color: var(--accent-green)">${icons.leisure}</div>
+                    <div class="stat-value">${trip.expenses.filter(e => e.category === '休閒').length}</div>
+                    <div class="stat-label">休閒活動</div>
+                </div>
+                <div class="stat-card stagger-4">
+                    <div class="stat-icon" style="color: var(--accent-red)">${icons.money}</div>
                     <div class="stat-value">$${total.toFixed(0)}</div>
                     <div class="stat-label">總消費</div>
                 </div>
-                <div class="stat-card stagger-2">
-                    <div class="stat-icon">📍</div>
-                    <div class="stat-value">${trip.places.length}</div>
-                    <div class="stat-label">地點</div>
-                </div>
-                <div class="stat-card stagger-3">
-                    <div class="stat-icon">🧾</div>
-                    <div class="stat-value">${trip.expenses.length}</div>
-                    <div class="stat-label">記錄</div>
-                </div>
-                <div class="stat-card stagger-4">
-                    <div class="stat-icon">🍽️</div>
-                    <div class="stat-value">${Object.keys(trip.expenses.reduce((a, e) => (a[e.category] = 1, a), {})).length}</div>
-                    <div class="stat-label">類別</div>
-                </div>
             `;
-            
+            document.getElementById('statsGrid').innerHTML = statsHtml;
+
+            // Places
             document.getElementById('placeList').innerHTML = trip.places.map(p => `
                 <div class="place-item">
-                    <div class="place-icon">${p.icon}</div>
+                    <div class="place-icon" style="color: ${typeColors[p.type]}">${getIcon(p.type)}</div>
                     <div>
                         <div class="place-name">${p.name}</div>
-                        <div class="place-time">🕐 ${p.time} · ${typeLabels[p.type] || p.type}</div>
+                        <div class="place-time">${p.time}</div>
                     </div>
                 </div>
             `).join('');
-            
-            document.getElementById('expenseList').innerHTML = trip.expenses.map((exp, i) => `
-                <div class="expense-item" style="animation-delay: ${i * 0.03}s">
+
+            // Charts
+            renderDetailCharts(trip);
+
+            // Expenses
+            document.getElementById('expenseList').innerHTML = trip.expenses.map((e, i) => `
+                <div class="expense-item stagger-${Math.min(i + 1, 5)}">
                     <div class="expense-left">
-                        <div class="expense-icon">${exp.icon}</div>
+                        <div class="expense-icon" style="color: ${typeColors[e.category === '交通' ? 'transport' : e.category === '餐飲' ? 'food' : e.category === '休閒' ? 'leisure' : 'shopping']}">${getIcon(e.category === '交通' ? 'transport' : e.category === '餐飲' ? 'food' : e.category === '休閒' ? 'leisure' : 'shopping')}</div>
                         <div class="expense-info">
-                            <div class="name">${exp.name}</div>
-                            <div class="meta">${exp.category} · ${exp.time}</div>
+                            <div class="name">${e.name}</div>
+                            <div class="meta">${e.time} · ${e.category}</div>
                         </div>
                     </div>
-                    <div class="expense-amount">−$${exp.amount.toFixed(2)}</div>
+                    <div class="expense-amount">-$${e.amount.toFixed(2)}</div>
                 </div>
             `).join('');
-            
-            renderDetailCharts(trip);
+
             document.getElementById('tripDetail').classList.add('active');
             document.getElementById('page-home').classList.remove('active');
-            setTimeout(() => initTripMap(trip), 100);
+
+            // Init map
+            setTimeout(initTripMap, 100);
         }
 
-        // Map toggle
-        document.getElementById('mapToggle').addEventListener('click', function() {
-            const wrapper = document.getElementById('mapWrapper');
-            if (wrapper.style.display === 'none') {
-                wrapper.style.display = 'block';
-                this.textContent = '收合';
-                if (tripMap) setTimeout(() => tripMap.invalidateSize(), 100);
-            } else {
-                wrapper.style.display = 'none';
-                this.textContent = '展開';
-            }
-        });
+        function renderDetailCharts(trip) {
+            const ctx1 = document.getElementById('detailPieChart').getContext('2d');
+            const ctx2 = document.getElementById('detailBarChart').getContext('2d');
 
-        function initTripMap(trip) {
-            if (tripMap) { tripMap.remove(); tripMap = null; }
-            if (trip.places.length === 0) return;
-            
-            tripMap = L.map('map', { zoomControl: true }).setView([trip.places[0].lat, trip.places[0].lng], 14);
-            
-            const tileUrl = isDark 
-                ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-                : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
-            
-            L.tileLayer(tileUrl, { attribution: '© OpenStreetMap © CARTO', maxZoom: 19 }).addTo(tripMap);
-            
-            trip.places.forEach(place => {
-                const color = typeColors[place.type] || '#64748b';
-                const icon = L.divIcon({
-                    className: 'custom-marker',
-                    html: `<div style="background:${color};width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px ${color}66;font-size:14px;border:2px solid rgba(255,255,255,0.3);">${place.icon}</div>`,
-                    iconSize: [32, 32],
-                    iconAnchor: [16, 16]
-                });
-                
-                L.marker([place.lat, place.lng], { icon })
-                    .bindPopup(`<b>${place.name}</b><br><span>${place.icon} ${typeLabels[place.type]}</span><br><span>🕐 ${place.time}</span>`)
-                    .addTo(tripMap);
+            if (detailPieChart) detailPieChart.destroy();
+            if (detailBarChart) detailBarChart.destroy();
+
+            const categories = {};
+            trip.expenses.forEach(e => {
+                categories[e.category] = (categories[e.category] || 0) + e.amount;
             });
-            
-            const group = L.featureGroup(trip.places.map(p => L.marker([p.lat, p.lng])));
-            tripMap.fitBounds(group.getBounds().pad(0.3));
+
+            detailPieChart = new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(categories),
+                    datasets: [{
+                        data: Object.values(categories),
+                        backgroundColor: ['#3b82f6', '#ffa94d', '#69db7c', '#da77f2'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#b8a9d4', boxWidth: 12, padding: 8 } } } }
+            });
+
+            detailBarChart = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: trip.expenses.map(e => e.name.length > 10 ? e.name.substring(0, 10) + '...' : e.name),
+                    datasets: [{
+                        data: trip.expenses.map(e => e.amount),
+                        backgroundColor: trip.expenses.map(e => {
+                            if (e.category === '交通') return '#3b82f6';
+                            if (e.category === '餐飲') return '#ffa94d';
+                            if (e.category === '休閒') return '#69db7c';
+                            return '#da77f2';
+                        }),
+                        borderRadius: 6
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#b8a9d4', font: { size: 10 } }, grid: { display: false } }, y: { ticks: { color: '#b8a9d4' }, grid: { color: 'rgba(255,255,255,0.05)' } } } }
+            });
+        }
+
+        // Map
+        function initTripMap() {
+            if (!currentTrip || tripMap) return;
+            tripMap = L.map('map').setView([22.5, 113.93], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(tripMap);
+
+            currentTrip.places.forEach(p => {
+                const color = typeColors[p.type];
+                const icon = L.divIcon({ className: 'custom-marker', html: `<div style="width:24px;height:24px;background:${color};border-radius:50%;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3)"></div>`, iconSize: [24, 24] });
+                L.marker([p.lat, p.lng], { icon }).addTo(tripMap).bindPopup(`<b>${p.name}</b><br><span>${p.time}</span>`);
+            });
         }
 
         function initFullMap() {
-            const mapEl = document.getElementById('fullMap');
-            if (!mapEl) return;
+            if (fullMap) return;
+            fullMap = L.map('fullMap').setView([22.5, 113.93], 12);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(fullMap);
 
-            // Update info bar
-            let totalPlaces = 0;
-            let tripCount = 0;
-            trips.forEach(t => { if (t.places.length > 0) tripCount++; totalPlaces += t.places.length; });
-            document.getElementById('mapPlaceCount').textContent = `共 ${totalPlaces} 個地點`;
-            document.getElementById('mapTripCount').textContent = `${tripCount} 個旅程`;
+            document.getElementById('mapPlaceCount').textContent = `共 ${trips.reduce((s, t) => s + t.places.length, 0)} 個地點`;
+            document.getElementById('mapTripCount').textContent = `${trips.length} 個旅程`;
 
-            if (fullMap) { fullMap.remove(); fullMap = null; }
-            
-            fullMap = L.map('fullMap', { 
-                zoomControl: true,
-                attributionControl: true
-            }).setView([22.5, 114], 10);
-            
-            const tileUrl = isDark 
-                ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-                : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
-            
-            L.tileLayer(tileUrl, { 
-                attribution: '© OpenStreetMap contributors © CARTO',
-                maxZoom: 19
-            }).addTo(fullMap);
-            
             trips.forEach(trip => {
-                trip.places.forEach(place => {
-                    const color = typeColors[place.type] || '#64748b';
-                    const icon = L.divIcon({
-                        className: 'custom-marker',
-                        html: `<div style="background:${color};width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px ${color}88;font-size:16px;border:3px solid rgba(255,255,255,0.4);">${place.icon}</div>`,
-                        iconSize: [36, 36],
-                        iconAnchor: [18, 18]
-                    });
-                    
-                    L.marker([place.lat, place.lng], { icon })
-                        .bindPopup(`<b>${place.name}</b><br><span>${trip.name}</span><br><span>${place.icon} ${typeLabels[place.type]}</span>`)
-                        .addTo(fullMap);
+                trip.places.forEach(p => {
+                    const color = typeColors[p.type];
+                    const icon = L.divIcon({ className: 'custom-marker', html: `<div style="width:16px;height:16px;background:${color};border-radius:50%;border:2px solid white"></div>`, iconSize: [16, 16] });
+                    L.marker([p.lat, p.lng], { icon }).addTo(fullMap).bindPopup(`<b>${trip.name}</b><br>${p.name}<br><span>${p.time}</span>`);
                 });
             });
-            
-            // Fit all markers
-            const allMarkers = [];
-            trips.forEach(trip => {
-                trip.places.forEach(p => allMarkers.push(L.marker([p.lat, p.lng])));
-            });
-            if (allMarkers.length > 0) {
-                const group = L.featureGroup(allMarkers);
-                fullMap.fitBounds(group.getBounds().pad(0.2));
-            }
-            
-            setTimeout(() => fullMap.invalidateSize(), 100);
         }
 
-        // Charts
-        function renderDetailCharts(trip) {
-            const totals = { '交通': 0, '餐飲': 0, '休閒': 0, '購物': 0 };
-            trip.expenses.forEach(exp => {
-                if (totals[exp.category] !== undefined) totals[exp.category] += exp.amount;
-            });
-            
-            const labels = Object.keys(totals).filter(k => totals[k] > 0);
-            const data = labels.map(l => totals[l]);
-            const colors = labels.map(l => l === '交通' ? '#3b82f6' : l === '餐飲' ? '#f97316' : l === '休閒' ? '#10b981' : '#8b5cf6');
-            
-            if (detailPieChart) detailPieChart.destroy();
-            if (detailBarChart) detailBarChart.destroy();
-            
-            detailPieChart = new Chart(document.getElementById('detailPieChart'), {
-                type: 'doughnut',
-                data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 0, cutout: '60%' }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#8899a6', font: { size: 11 }, padding: 12 } } } }
-            });
-            
-            detailBarChart = new Chart(document.getElementById('detailBarChart'), {
-                type: 'bar',
-                data: { labels, datasets: [{ data, backgroundColor: colors, borderRadius: 6, borderSkipped: false }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#8899a6', font: { size: 11 } } }, y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#8899a6', font: { size: 11 } } } } }
-            });
-        }
+        document.getElementById('mapToggle').addEventListener('click', () => {
+            const wrapper = document.getElementById('mapWrapper');
+            if (wrapper.style.display === 'none') {
+                wrapper.style.display = 'block';
+                document.getElementById('mapToggle').textContent = '收合';
+                setTimeout(() => { if (tripMap) tripMap.invalidateSize(); }, 100);
+            } else {
+                wrapper.style.display = 'none';
+                document.getElementById('mapToggle').textContent = '展開';
+            }
+        });
 
         // Photos
         function renderPhotos() {
-            const container = document.getElementById('photoGrid');
+            const grid = document.getElementById('photoGrid');
             const empty = document.getElementById('photoEmpty');
             
             if (photos.length === 0) {
                 empty.style.display = 'block';
-                container.innerHTML = `
-                    <div class="photo-item photo-add" id="addPhoto">
-                        <span class="photo-add-icon">➕</span>
-                    </div>
-                `;
             } else {
                 empty.style.display = 'none';
-                container.innerHTML = photos.map((p, i) => `
-                    <div class="photo-item" data-index="${i}">
-                        <span class="photo-placeholder">🖼️</span>
-                    </div>
-                `).join('') + `
-                    <div class="photo-item photo-add" id="addPhoto">
-                        <span class="photo-add-icon">➕</span>
-                    </div>
-                `;
+                grid.innerHTML = photos.map((p, i) => `<div class="photo-item" data-index="${i}"><img src="${p}" style="width:100%;height:100%;object-fit:cover"></div>`).join('') + grid.querySelector('#addPhoto').outerHTML;
             }
-            
-            document.getElementById('addPhoto').addEventListener('click', () => {
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.accept = 'image/*';
-                input.multiple = true;
-                input.onchange = (e) => {
-                    Array.from(e.target.files).forEach(file => {
-                        const reader = new FileReader();
-                        reader.onload = (ev) => {
-                            photos.push({ url: ev.target.result, date: new Date().toISOString().split('T')[0] });
-                            localStorage.setItem('travelPhotos', JSON.stringify(photos));
-                            renderPhotos();
-                        };
-                        reader.readAsDataURL(file);
-                    });
-                };
-                input.click();
-            });
         }
+
+        document.getElementById('addPhoto').addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        photos.push(ev.target.result);
+                        localStorage.setItem('travelPhotos', JSON.stringify(photos));
+                        renderPhotos();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
+        });
 
         // Export/Import
         document.getElementById('exportBtn').addEventListener('click', () => {
-            const data = JSON.stringify({ trips, photos }, null, 2);
-            const blob = new Blob([data], { type: 'application/json' });
+            const data = { trips, photos, version: 1 };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'travel-records.json';
+            a.download = `mkit-travelling-backup-${new Date().toISOString().slice(0, 10)}.json`;
             a.click();
         });
 
@@ -1705,32 +1760,33 @@
             input.accept = '.json';
             input.onchange = (e) => {
                 const file = e.target.files[0];
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    try {
-                        const data = JSON.parse(ev.target.result);
-                        if (data.trips) trips = data.trips;
-                        if (data.photos) photos = data.photos;
-                        localStorage.setItem('travelTrips', JSON.stringify(trips));
-                        localStorage.setItem('travelPhotos', JSON.stringify(photos));
-                        renderHomeCalendar();
-                        renderTripList();
-                    } catch (err) {
-                        alert('格式無效');
-                    }
-                };
-                reader.readAsText(file);
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        try {
+                            const data = JSON.parse(ev.target.result);
+                            if (data.trips) {
+                                trips = data.trips;
+                                localStorage.setItem('travelTrips', JSON.stringify(trips));
+                            }
+                            if (data.photos) {
+                                photos = data.photos;
+                                localStorage.setItem('travelPhotos', JSON.stringify(photos));
+                            }
+                            location.reload();
+                        } catch (err) {
+                            alert('無效的備份檔案');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
             };
             input.click();
         });
 
         // Init
-        function init() {
-            renderHomeCalendar();
-            renderTripList();
-        }
-
-        init();
+        renderHomeCalendar();
+        renderTripList();
     </script>
 </body>
 </html>
